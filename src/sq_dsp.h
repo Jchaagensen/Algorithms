@@ -56,7 +56,9 @@ int sq_imag(FILE* instream, FILE* outstream, unsigned int nsamples);
 int sq_fft(FILE* instream, FILE* outstream, 
            unsigned int fft_len, 
            unsigned char is_inverted, 
-           unsigned char is_measured );
+           unsigned char is_measured,
+           unsigned char inverse
+          );
 
 /**
  * Takes a signal and adds a complex DC offset to it.

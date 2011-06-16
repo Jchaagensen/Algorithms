@@ -26,16 +26,17 @@ char *usage_text[] =
     "  sqfftw [OPTIONS] ...                                                  ",
     "DESCRIPTION                                                             ",
     "  -l  integer length of transform                                       ",
-    "  -i  invert spectrum neg. <--> pos.                                    ",
+    "  -n  invert spectrum neg. <--> pos.                                    ",
     "  -m  measure plan instead of estimate.  This will cause an initial     ",
     "      delay but should result in an optimized transform.                ",
+    "  -i inverse transform                                                  ",
     "                                                                        "
 };
 
 unsigned char is_inverted = 0;
 unsigned char is_measured = 0;
-
 unsigned int fft_len = 0;
+unsigned char inverse = 0;
 
 int main(int argc, char *argv[])
 {
@@ -48,16 +49,18 @@ int main(int argc, char *argv[])
             case 'l':
                 sscanf(optarg, "%u", &fft_len);
                 break;
-            case 'i':
+            case 'n':
                 is_inverted = 1;
                 break;
             case 'm':
                 is_measured = 1;
                 break;
+            case 'i':
+                inverse = 1;
         }
     }
     
-    int status = sq_fft(stdin, stdout, fft_len, is_inverted, is_measured);
+    int status = sq_fft(stdin, stdout, fft_len, is_inverted, is_measured, inverse);
     
     if(status < 0)
     {

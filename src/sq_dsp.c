@@ -169,7 +169,7 @@ int sq_imag(FILE* instream, FILE* outstream, unsigned int nsamples)
     return sq_component(instream, outstream, nsamples, IMAG);
 }
 
-int sq_fft(FILE* instream, FILE* outstream, unsigned int fft_len, unsigned char is_inverted, unsigned char is_measured)
+int sq_fft(FILE* instream, FILE* outstream, unsigned int fft_len, unsigned char is_inverted, unsigned char is_measured, unsigned char inverse)
 {
     if (fft_len <= 0)
         return ERR_ARG_BOUNDS;
@@ -180,8 +180,11 @@ int sq_fft(FILE* instream, FILE* outstream, unsigned int fft_len, unsigned char 
     int i;
 
     fft_bfr = (fftwf_complex*) fftwf_malloc(sizeof(fftwf_complex) * fft_len);
-    plan = fftwf_plan_dft_1d(fft_len, fft_bfr, fft_bfr,
-                             FFTW_FORWARD, (is_measured ? FFTW_MEASURE : FFTW_ESTIMATE));
+    plan = fftwf_plan_dft_1d(fft_len, 
+                             fft_bfr, 
+                             fft_bfr,
+                             (inverse ? FFTW_BACKWARD : FFTW_FORWARD),
+                             (is_measured ? FFTW_MEASURE : FFTW_ESTIMATE));
 
     while (fread(fft_bfr, sizeof(fftwf_complex), fft_len, instream) == fft_len)
     {
