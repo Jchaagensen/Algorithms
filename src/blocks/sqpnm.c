@@ -30,12 +30,15 @@ char *usage_text[] =
     "      distribution in the right tail.  (m - s) scaled to 0.  (m + 3s)   ",
     "      scaled to 255. Values outside of range are clipped.               ",
     "  -x  flag, power values not scaled                                     ",
+    "  -d  fraction of columns to be discarded from each edge. This will make",
+    "      the number of columns in the resulting image less than specified. ",
     "                                                                        "
 };
 
 float *imgbfr;
 unsigned int rows = 0;
 unsigned int cols = 0;
+float chop_fraction = 0.0;
 
 int (*scale_fnctn)(float* img_buf, int rows, int cols);
 
@@ -45,7 +48,7 @@ int main(int argc, char *argv[])
 
     scale_fnctn = sq_linear_scale;
 
-    while ((opt = getopt(argc, argv, "r:c:px")) != -1)
+    while ((opt = getopt(argc, argv, "r:c:d:px")) != -1)
     {
         switch (opt)
         {
@@ -55,6 +58,9 @@ int main(int argc, char *argv[])
             case 'c':
                 sscanf(optarg, "%u", &cols);
                 break;
+            case 'd':
+                sscanf(optarg, "%f", &chop_fraction);
+                break;
             case 'p':
                 scale_fnctn = sq_power_scale;
                 break;
@@ -63,7 +69,7 @@ int main(int argc, char *argv[])
                 break;
         }
     }
-
+    
     imgbfr = malloc(sizeof(float) * rows * cols);
     if(imgbfr == NULL)
     {
@@ -81,7 +87,7 @@ int main(int argc, char *argv[])
     }
 
     scale_fnctn(imgbfr, rows, cols);
-    sq_write_pnm(stdout, imgbfr, rows, cols);
+    sq_write_pnm(stdout, imgbfr, rows, cols, chop_fraction);
 
     free(imgbfr);
 

@@ -191,6 +191,7 @@ int sq_fft(FILE* instream, FILE* outstream, unsigned int fft_len, unsigned char 
         if (is_inverted)
             for (i = 0; i < fft_len; i++)
                 fft_bfr[i][1] = -fft_bfr[i][1];  // conjugate
+
         fftwf_execute(plan);
         //  write negative channels first ...
         fwrite(&fft_bfr[fft_len/2], sizeof(fftwf_complex), fft_len / 2, outstream);

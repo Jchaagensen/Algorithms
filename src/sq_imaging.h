@@ -12,6 +12,6 @@ int sq_power_scale(float* img_buf, int rows, int cols);
 int sq_no_scale(float* img_buf, int rows, int cols);
 
 int sq_read_img(FILE* instream, float* img_buf, int rows, int cols);
-int sq_write_pnm(FILE* outstream, float* img_buf, int rows, int cols);
+int sq_write_pnm(FILE* outstream, float* img_buf, int rows, int cols, float chop_fraction);
 
 #endif

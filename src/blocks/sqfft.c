@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 {
     int opt;
 
-    while ((opt = getopt(argc, argv, "l:im")) != -1)
+    while ((opt = getopt(argc, argv, "l:nmi")) != -1)
     {
         switch (opt)
         {
