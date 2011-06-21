@@ -105,38 +105,78 @@ int sq_read_img(FILE* instream, float* img_buf, int rows, int cols)
     }
 }
 
-int sq_write_pnm(FILE* outstream, float* img_buf, int rows, int cols, float edge_chop_fraction)
+int sq_write_img(FILE* outstream, float* img_buf, int rows, int cols)
+{
+    unsigned int rowi;
+    
+    if (!((rows > 0) && (cols > 0)))
+        return ERR_ARG_BOUNDS;
+    
+    for (rowi = 0; rowi < rows; rowi++)
+    {
+        if (!(fwrite(&img_buf[rowi*cols], sizeof(float), cols, outstream) == cols))
+        {
+            rows = rowi;
+            break;
+        }
+    }
+    
+    if (!(rows > 0))
+    {
+        free(img_buf);
+        return ERR_STREAM_WRITE;
+    }
+}
+
+
+int sq_chop(float* img_in, float* img_out, int rows, int cols, float width_chop_fraction, float height_chop_fraction)
 {
     unsigned int rowi;
     unsigned int coli;
     
-    unsigned int col_first = cols * edge_chop_fraction;
-    unsigned int col_last  = cols * (1 - edge_chop_fraction);
+    unsigned int col_first = cols * width_chop_fraction;
+    unsigned int col_last = cols * (1 - width_chop_fraction);
     unsigned int col_count = col_last - col_first;
     
-    fprintf(stderr, "%f of the data from each edge has been discarded. Rows: %d, Columns: %d.\n", edge_chop_fraction, rows, col_count);
+    unsigned int row_first = rows * height_chop_fraction;
+    unsigned int row_last = rows * (1 - height_chop_fraction);
+    unsigned int row_count = row_last - row_first;
+    
+    //fprintf(stderr, "%f of the data from each edge has been discarded. Rows: %d, Columns: %d.\n", width_chop_fraction, rows, col_count);
+    
+    //img_out = malloc(sizeof(float) * row_count * col_count);
+    float imgvalf;
+    
+    for (rowi = row_first; rowi < row_last; rowi++)
+    {
+        for(coli = col_first; coli < col_last; coli++)
+        {
+            img_out[col_count*(rowi - row_first) + (coli - col_first)] = img_in[cols*rowi + coli];;
+        }
+    }
+}
+
+int sq_write_pnm(FILE* outstream, float* img_buf, int rows, int cols)
+{
+    unsigned int imgi;
     
     float imgvalf;
     unsigned char imgvalb;
 
     fprintf(outstream, "P5\n");
-    fprintf(outstream, "%u %u\n", col_count, rows);
+    fprintf(outstream, "%u %u\n", cols, rows);
     fprintf(outstream, "%u\n", MAX_PIXEL_VAL);
 
-    for (rowi = 0; rowi < rows; rowi++)
+    for (imgi= 0; imgi < rows * cols; imgi++)
     {
-        for(coli = col_first; coli < col_last; coli++)
-        {
-            imgvalf = img_buf[cols*rowi + coli];
-            
-            if (imgvalf < 0.0)
-                imgvalf = 0.0;
-            if (imgvalf > (float) MAX_PIXEL_VAL) 
-                imgvalf = (float) MAX_PIXEL_VAL;
-            
-            imgvalb = (unsigned char) imgvalf;
-            fwrite(&imgvalb, 1, 1, outstream);
-        }
+        imgvalf = img_buf[imgi];
+        
+        if (imgvalf < 0.0)
+            imgvalf = 0.0;
+        if (imgvalf > (float) MAX_PIXEL_VAL) 
+            imgvalf = (float) MAX_PIXEL_VAL;
+        
+        imgvalb = (unsigned char) imgvalf;
+        fwrite(&imgvalb, 1, 1, outstream);
     }
-    
 }

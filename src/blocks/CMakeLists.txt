@@ -18,6 +18,7 @@ set(PROGRAMS sqfft
              sqpnm
              sqwola
              sqgensine
+             sqedgechop
    )
 
 foreach(program ${PROGRAMS})
