@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <sys/types.h>
+#include <fftw3.h>
 
 /** 
  * Prints a processing block's usage to the output stream.
@@ -48,6 +49,8 @@ int sq_read_stream(FILE* instream, FILE* outstream, int ncolumns);
  * @return Code; negative if error.
  */
 int sq_sample(FILE* instream, FILE* outstream, unsigned int nsamples);
+
+void sq_channelswap(fftwf_complex* buffer, unsigned int length);
 
 float sq_randgaus();
 

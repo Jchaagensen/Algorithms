@@ -1,6 +1,8 @@
 #include <time.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
+#include <fftw3.h>
 
 #include "sq_constants.h"
 #include "sq_utils.h"
@@ -182,3 +184,14 @@ void sq_error_handle(int errcode)
     sq_error_print("\n");
 }
 
+void sq_channelswap(fftwf_complex* buffer, unsigned int length)
+{
+    fftwf_complex* arr = malloc(length * sizeof(*buffer));
+
+    memcpy(&arr[0], &buffer[length / 2], sizeof(*buffer) * length / 2);
+    memcpy(&arr[length / 2], &buffer[0], sizeof(*buffer) * length / 2);
+    
+    memcpy(&buffer[0], &arr[0], sizeof(*buffer) * length);
+    
+    free(arr);
+}
