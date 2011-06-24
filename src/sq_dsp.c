@@ -264,6 +264,12 @@ int sq_fft(FILE* instream, FILE* outstream, unsigned int fft_len, unsigned char 
                 sq_channelswap(fft_bfr, fft_len);
                 // perform ifft
                 fftwf_execute(plan);
+                
+                for(i = 0; i < fft_len; i++)
+                {
+                    fft_bfr[i][0] = fft_bfr[i][0] / fft_len;
+                    fft_bfr[i][1] = fft_bfr[i][1] / fft_len;
+                }
             }
             else
             {
