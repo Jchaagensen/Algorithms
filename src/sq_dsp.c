@@ -257,9 +257,22 @@ int sq_fft(FILE* instream, FILE* outstream, unsigned int fft_len, unsigned char 
         if (is_inverted)
             for (i = 0; i < fft_len; i++)
                 fft_bfr[i][1] = -fft_bfr[i][1];  // conjugate
-                
-            fftwf_execute(plan);
             
+            if(inverse)
+            {
+                // move channels back to their original positions before the fft, so  that ifft gets what it expects
+                sq_channelswap(fft_bfr, fft_len);
+                // perform ifft
+                fftwf_execute(plan);
+            }
+            else
+            {
+                // perform fft
+                fftwf_execute(plan);
+                // write negative channels on the left, and then positive channels on the right
+                sq_channelswap(fft_bfr, fft_len);
+            }
+
             fwrite(&fft_bfr[0], sizeof(fftwf_complex), fft_len , outstream);
     }
     
