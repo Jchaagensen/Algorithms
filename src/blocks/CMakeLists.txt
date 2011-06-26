@@ -21,8 +21,19 @@ set(PROGRAMS sqfft
              sqedgechop
    )
 
+set(SCRIPTS sqautocorr
+   )
+
+
 foreach(program ${PROGRAMS})
     add_executable(${program} ${program}.c)
     target_link_libraries(${program} setikit)
 endforeach(program)
+
+foreach(script ${SCRIPTS})
+    file(COPY ${script}.sh DESTINATION ${EXECUTABLE_OUTPUT_PATH}) 
+    exec_program("chmod +x ${EXECUTABLE_OUTPUT_PATH}/${script}.sh")
+endforeach(script)
+
+    
 
