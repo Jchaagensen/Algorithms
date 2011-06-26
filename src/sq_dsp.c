@@ -8,6 +8,36 @@
 #include "sq_dsp.h"
 #include "sq_utils.h"
 
+int sq_abs(FILE* instream, FILE* outstream, unsigned int nsamples)
+{
+    float *smpls_bfr;
+    unsigned int smpli;
+
+    if ((nsamples < 2) || (nsamples >= MAX_SMPLS_LEN))
+        return ERR_ARG_BOUNDS;
+
+    smpls_bfr = malloc(nsamples * sizeof(float) * 2);
+    if(smpls_bfr == NULL)
+        return ERR_MALLOC;
+    
+    while (fread(smpls_bfr, sizeof(float) * 2, nsamples, instream) == nsamples)
+    {
+        for (smpli = 0; smpli < nsamples ; smpli++)
+        {
+            smpls_bfr[(smpli<<1)+0] =
+              sqrt(  (smpls_bfr[(smpli<<1)+0] * smpls_bfr[(smpli<<1)+0]) +
+                (smpls_bfr[(smpli<<1)+1] * smpls_bfr[(smpli<<1)+1])   );
+            smpls_bfr[(smpli<<1)+1] = 0.0;
+        }
+
+        fwrite(smpls_bfr, sizeof(float) * 2, nsamples, outstream);
+    }
+
+    free(smpls_bfr);
+
+    return 0;
+}
+
 int sq_power(FILE* instream, FILE* outstream, unsigned int nsamples)
 {
     float *smpls_bfr;
