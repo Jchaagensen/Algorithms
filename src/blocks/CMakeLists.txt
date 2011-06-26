@@ -19,6 +19,7 @@ set(PROGRAMS sqfft
              sqwola
              sqgensine
              sqedgechop
+             sqabs
    )
 
 set(SCRIPTS sqautocorr

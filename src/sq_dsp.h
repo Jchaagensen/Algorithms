@@ -122,4 +122,6 @@ int sq_wola(FILE* instream, FILE* outstream,
             unsigned int overlap,
             unsigned char is_window_dump);
 
+int sq_abs(FILE* instream, FILE* outstream, unsigned int nsamples);
+
 #endif
