@@ -89,35 +89,38 @@ int sq_window(FILE* instream, FILE* outstream, unsigned int wndw_len)
     if (!((wndw_len >= 2) && (wndw_len <= MAX_WNDW_LEN)))
         return ERR_ARG_BOUNDS;
 
-    wndw_bfr = malloc(wndw_len * 4);
+    wndw_bfr = malloc(wndw_len * sizeof(float));
     if(wndw_bfr == NULL)
         return ERR_MALLOC;
-    in_bfr = malloc(wndw_len * 4 * 2);
+    in_bfr = malloc(wndw_len * sizeof(float) * 2);
     if(in_bfr == NULL)
         return ERR_MALLOC;
-    out_bfr = malloc(wndw_len * 4 * 2);
+    out_bfr = malloc(wndw_len * sizeof(float) * 2);
     if(out_bfr == NULL)
         return ERR_MALLOC;
 
     unsigned int wndwi, bfri;
 
+    //FILE* f = fopen("window.dat", "w");
     for (wndwi = 0; wndwi < wndw_len; wndwi++)
     {
         wndw_bfr[wndwi] =
             cos(((((float)wndwi) - ((wndw_len - 1.0) / 2.0)) / ((wndw_len - 1.0) / 2.0)) * (M_PI / 2.0));
+  //      fprintf(f, "%f\n", wndw_bfr[wndwi]);
     }
+//    fclose(f);
 
-    fread(&in_bfr[(wndw_len/2)*2], 8, wndw_len / 2, instream);
-    memcpy(&in_bfr[0], &in_bfr[(wndw_len/2)*2], (wndw_len / 2)*4*2);
+    fread(&in_bfr[(wndw_len/2)*2], sizeof(float) * 2, wndw_len / 2, instream);
+    memcpy(&in_bfr[0], &in_bfr[(wndw_len/2)*2], (wndw_len / 2)* sizeof(float) *2);
 
-    while (fread(&in_bfr[(wndw_len/2)*2], 8, wndw_len / 2, instream) == (wndw_len / 2))
+    while (fread(&in_bfr[(wndw_len/2)*2], sizeof(float) * 2, wndw_len / 2, instream) == (wndw_len / 2))
     {
         for (bfri = 0; bfri < wndw_len; bfri++)
         {
             out_bfr[(bfri<<1)+0] = in_bfr[(bfri<<1)+0] * wndw_bfr[bfri];
             out_bfr[(bfri<<1)+1] = in_bfr[(bfri<<1)+1] * wndw_bfr[bfri];
         }
-        fwrite(out_bfr, 8, wndw_len, outstream);
+        fwrite(out_bfr, sizeof(float) * 2, wndw_len, outstream);
         memcpy(&in_bfr[0], &in_bfr[(wndw_len/2)*2], (wndw_len / 2)*4*2);
     }
 
