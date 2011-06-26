@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 {
     int opt;
     
-    while ((opt = getopt(argc, argv, "l:s:a:w:n")) != -1)
+    while ((opt = getopt(argc, argv, "l:s:a:w:n:")) != -1)
     {
         switch (opt)
         {
