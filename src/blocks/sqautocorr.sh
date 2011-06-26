@@ -2,9 +2,9 @@
 
 while getopts l: OPTION
 do
-    case ${OPTION} in
-        l) length=${OPTARG};;
-       \?) print -u2 "Usage: ${PROG_NAME} [ -l points ] [data]"
+    case $OPTION in
+        l) length=$OPTARG;;
+       \?) print -u2 "Usage: $0 [ -l points ] [data]"
            exit 2;;
     esac
 done
