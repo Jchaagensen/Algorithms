@@ -36,8 +36,10 @@ char *usage_text[] =
 };
 
 float *imgbfr;
+float* imgbfr_avg;
 unsigned int rows = 0;
 unsigned int cols = 0;
+unsigned int averagelines = 0;
 float chop_fraction = 0.0;
 
 int (*scale_fnctn)(float* img_buf, int rows, int cols);
@@ -48,7 +50,7 @@ int main(int argc, char *argv[])
 
     scale_fnctn = sq_linear_scale;
 
-    while ((opt = getopt(argc, argv, "r:c:px")) != -1)
+    while ((opt = getopt(argc, argv, "r:c:a:px")) != -1)
     {
         switch (opt)
         {
@@ -57,6 +59,9 @@ int main(int argc, char *argv[])
                 break;
             case 'c':
                 sscanf(optarg, "%u", &cols);
+                break;
+            case 'a':
+                sscanf(optarg, "%u", &averagelines);
                 break;
             case 'p':
                 scale_fnctn = sq_power_scale;
@@ -84,7 +89,17 @@ int main(int argc, char *argv[])
     }
 
     scale_fnctn(imgbfr, rows, cols);
-    sq_write_pnm(stdout, imgbfr, rows, cols);
+    
+    // Now optionally average the lines as desired
+    if(averagelines > 0)
+    {
+        imgbfr_avg = malloc(sizeof(float) * rows/averagelines * cols);
+        sq_average_lines(imgbfr, rows, cols, imgbfr_avg, averagelines);
+        sq_write_pnm(stdout, imgbfr_avg, rows/averagelines, cols);
+        free(imgbfr_avg);
+    }
+    else
+        sq_write_pnm(stdout, imgbfr, rows, cols);
 
     free(imgbfr);
 
