@@ -96,12 +96,14 @@ int main(int argc, char *argv[])
         imgbfr_avg = malloc(sizeof(float) * rows/averagelines * cols);
         sq_average_lines(imgbfr, rows, cols, imgbfr_avg, averagelines);
         sq_write_pnm(stdout, imgbfr_avg, rows/averagelines, cols);
+        scale_fnctn(imgbfr_avg, rows/averagelines, cols);
         free(imgbfr_avg);
     }
     else
+    {
         sq_write_pnm(stdout, imgbfr, rows, cols);
-
-    free(imgbfr);
+        free(imgbfr);
+    }
 
     exit(EXIT_SUCCESS);
 }
