@@ -180,3 +180,33 @@ int sq_write_pnm(FILE* outstream, float* img_buf, int rows, int cols)
         fwrite(&imgvalb, 1, 1, outstream);
     }
 }
+
+    
+int sq_average_lines(float* img_in, int rows, int cols, float* img_out, int avglines)
+{
+    unsigned int rowi, coli, rowi_out;
+    int rows_out = rows/avglines;
+    float* average_row = calloc(cols, sizeof(float));
+
+    rowi_out = 0;
+    for(rowi = 0; rowi < rows; rowi++)
+    {
+        for(coli = 0; coli < cols; coli++)
+            average_row[coli] += img_in[cols*rowi + coli];
+
+        if((rowi + 1) % avglines == 0)
+        {
+            for(coli = 0; coli < cols; coli++)
+            {
+                average_row[coli] /= avglines;
+                img_out[cols*rowi_out + coli] = average_row[coli];
+                average_row[coli] = 0;
+            }
+            rowi_out++;
+        }
+    }
+
+    free(average_row);
+}
+
+
