@@ -26,12 +26,11 @@ char *usage_text[] =
     "DESCRIPTION                                                             ",
     "  -r  pos. integer (required), image rows                               ",
     "  -c  pos. integer (required), image columns                            ",
+    "  -a  Number of lines to average                                        ",
     "  -p  flag, scale appropriate for power values which have an exponential",
     "      distribution in the right tail.  (m - s) scaled to 0.  (m + 3s)   ",
     "      scaled to 255. Values outside of range are clipped.               ",
     "  -x  flag, power values not scaled                                     ",
-    "  -d  fraction of columns to be discarded from each edge. This will make",
-    "      the number of columns in the resulting image less than specified. ",
     "                                                                        "
 };
 

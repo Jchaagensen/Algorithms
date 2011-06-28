@@ -141,10 +141,7 @@ int sq_chop(float* img_in, float* img_out, int rows, int cols, float width_chop_
     unsigned int row_first = rows * height_chop_fraction;
     unsigned int row_last = rows * (1 - height_chop_fraction);
     unsigned int row_count = row_last - row_first;
-    
-    //fprintf(stderr, "%f of the data from each edge has been discarded. Rows: %d, Columns: %d.\n", width_chop_fraction, rows, col_count);
-    
-    //img_out = malloc(sizeof(float) * row_count * col_count);
+
     float imgvalf;
     
     for (rowi = row_first; rowi < row_last; rowi++)
