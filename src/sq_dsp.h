@@ -124,4 +124,6 @@ int sq_wola(FILE* instream, FILE* outstream,
 
 int sq_abs(FILE* instream, FILE* outstream, unsigned int nsamples);
 
+int sq_crossmultiply(FILE* instream1, FILE* instream2, FILE* outstream, unsigned int nsamples);
+
 #endif

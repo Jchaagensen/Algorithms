@@ -68,6 +68,50 @@ int sq_power(FILE* instream, FILE* outstream, unsigned int nsamples)
     return 0;
 }
 
+int sq_crossmultiply(FILE* instream1, FILE* instream2, FILE* outstream, unsigned int nsamples){
+    float *bfr1, *bfr2;
+    float real = 0, imag = 0;
+    unsigned int smpli;
+
+    if((nsamples < 2) || (nsamples >= MAX_SMPLS_LEN))
+        return ERR_ARG_BOUNDS;
+
+    bfr1 = malloc(nsamples * sizeof(float) * 2);
+    if(bfr1 == NULL)
+        return ERR_MALLOC;
+    bfr2 = malloc(nsamples * sizeof(float) * 2);
+    if(bfr2 == NULL)
+        return ERR_MALLOC;
+
+    while(
+          (fread(bfr1, sizeof(float) * 2, nsamples, instream1) == nsamples) &&
+          (fread(bfr2, sizeof(float) * 2, nsamples, instream2) == nsamples)
+         )
+    {
+        for(smpli = 0; smpli < nsamples; smpli++)
+        {
+            real = 
+                (bfr1[(smpli<<1)+0]*bfr2[(smpli<<1)+0]) -
+                (bfr1[(smpli<<1)+1]*bfr2[(smpli<<1)+1]);
+
+            imag = 
+                (bfr1[(smpli<<1)+0]*bfr2[(smpli<<1)+1]) +
+                (bfr2[(smpli<<1)+1]*bfr1[(smpli<<1)+0]);
+
+            // re-use a buffer to save memory
+            bfr1[(smpli<<1)+0] = real;
+            bfr1[(smpli<<1)+1] = imag;
+        }
+        
+        fwrite(bfr1, sizeof(float) * 2, nsamples, outstream);
+    }
+    
+    free(bfr1);
+    free(bfr2);
+    
+    return 0;
+}
+
 int sq_sum(FILE* instream, FILE* outstream, unsigned int nsamples)
 {
 
