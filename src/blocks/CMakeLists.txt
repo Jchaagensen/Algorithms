@@ -20,9 +20,12 @@ set(PROGRAMS sqfft
              sqgensine
              sqedgechop
              sqabs
+             sqcrossmultiply
    )
 
 set(SCRIPTS sqautocorr
+            sqcrosscorr
+            sqconvolution
    )
 
 
