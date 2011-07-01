@@ -70,25 +70,33 @@ int main(int argc, char *argv[])
                 break;
         }
     }
+
+    fprintf(stderr, "Allocating image\n");
     
     imgbfr = malloc(sizeof(float) * rows * cols);
+
+    fprintf(stderr, "Allocated image\n");
     if(imgbfr == NULL)
     {
         sq_error_handle(ERR_MALLOC);
         exit(EXIT_FAILURE);
     }
     
+    fprintf(stderr, "reading image\n");
     int read_status = sq_read_img(stdin, imgbfr, rows, cols);
     
+    fprintf(stderr, "read image\n");
     if(read_status < 0)
     {
         free(imgbfr);
         sq_error_handle(read_status);
         exit(EXIT_FAILURE);
     }
+fprintf(stderr, "Scaling image\n");
 
     scale_fnctn(imgbfr, rows, cols);
     
+    fprintf(stderr, "Scaled image\n");
     // Now optionally average the lines as desired
     if(averagelines > 0)
     {
@@ -104,5 +112,6 @@ int main(int argc, char *argv[])
         free(imgbfr);
     }
 
+    fprintf(stderr, "Exiting image\n");
     exit(EXIT_SUCCESS);
 }
