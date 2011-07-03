@@ -10,6 +10,17 @@
 #include "sq_dsp.h"
 #include "sq_utils.h"
 
+char* usage_text[] = 
+{
+    "                                                                   ",
+    "NAME                                                               ",
+    "   sqpower - computes the instantaneous power                      ",
+    "SYNOPSIS                                                           ",
+    "   sqpower [OPTIONS] ...                                             ",
+    "DESCRIPTION                                                        ",
+    "   -l number of samples to read in one go.                         "
+};
+
 unsigned int smpls_len = 100000;
 
 int main(int argc, char **argv)
@@ -17,13 +28,19 @@ int main(int argc, char **argv)
 
     int opt;
 
-    while ((opt = getopt(argc, argv, "l:")) != -1)
+    while ((opt = getopt(argc, argv, "hl:")) != -1)
     {
         switch (opt)
         {
+            case 'h':
+                print_usage(usage_text);
+                exit(EXIT_FAILURE);
             case 'l':
                 sscanf(optarg, "%u", &smpls_len);
                 break;
+            default:
+                print_usage(usage_text);
+                exit(EXIT_FAILURE);
         }
     }
 

@@ -11,6 +11,20 @@
 #include "sq_dsp.h"
 #include "sq_utils.h"
 
+char* usage_text[] = 
+{
+    "                                                                   ",
+    "NAME                                                               ",
+    "   sqmix - Centers the chosen frequency of the signal to the center",
+    "           of the spectrum.                                        ",
+    "SYNOPSIS                                                           ",
+    "   sqmix [OPTIONS] ...                                             ",
+    "DESCRIPTION                                                        ",
+    "   -l number of samples to read in one go.                         ",
+    "   -r radians per sample                                           ",
+    "   -c frequency to heterodyne                                      "
+};
+
 unsigned int data_len = 1000000;
 float channel = 0.0;
 float rad_per_sample = 0.0;
@@ -20,10 +34,13 @@ int main(int argc, char **argv)
 {
     int opt;
 
-    while ((opt = getopt(argc, argv, "l:r:c:")) != -1)
+    while ((opt = getopt(argc, argv, "hl:r:c:")) != -1)
     {
         switch (opt)
         {
+            case 'h':
+                print_usage(usage_text);
+                exit(EXIT_FAILURE);
             case 'l':
                 sscanf(optarg, "%u", &data_len);
                 break;
@@ -34,6 +51,9 @@ int main(int argc, char **argv)
                 sscanf(optarg, "%f", &channel);
                 rad_per_sample = TWO_PI * (channel / (float) SQ_STAGE1_FFT_LEN);  
                 break;
+            default:
+                print_usage(usage_text);
+                exit(EXIT_FAILURE);
         }
     }
     

@@ -10,29 +10,21 @@
 #include "sq_imaging.h"
 #include "sq_constants.h"
 
-//          1         2         3         4         5         6         7
-// 123456789012345678901234567890123456789012345678901234567890123456789012
 char *usage_text[] =
 {
     "                                                                        ",
     "NAME                                                                    ",
-    "  sqpnm - reads series of float values in raster-scan order (top-left to",
-    "          bottom-right), scales the values, and then outputs the values ",
-    "          in 8-bit grayscale (PGM) image format.  Default scale         ",
-    "          algorithm is linear.  Smallest value scaled to 0.  Largest    ",
-    "          value scaled to 255.                                          ",
+    "  sqedgechop - reads series of float values in raster-scan order        ",
+    "               (top-left to bottom-right), scales the values, and then  ",
+    "               discards (chops off) a specified fraction of lines from  ",
+    "               the top-and-bottom edges or the left-and-right edges,    ",
     "SYNOPSIS                                                                ",
-    "  sqpnm [OPTIONS] ...                                                   ",
+    "  sqedgechop [OPTIONS] ...                                              ",
     "DESCRIPTION                                                             ",
     "  -r  pos. integer (required), image rows                               ",
     "  -c  pos. integer (required), image columns                            ",
-    "  -p  flag, scale appropriate for power values which have an exponential",
-    "      distribution in the right tail.  (m - s) scaled to 0.  (m + 3s)   ",
-    "      scaled to 255. Values outside of range are clipped.               ",
-    "  -x  flag, power values not scaled                                     ",
-    "  -d  fraction of columns to be discarded from each edge. This will make",
-    "      the number of columns in the resulting image less than specified. ",
-    "                                                                        "
+    "  -x  fraction of columns to be discarded from the left and right edges.",
+    "  -y  fraction of columns to be discarded from the top and bottom edges."
 };
 
 float *imgbfr, *imgbfr_chopped;
@@ -49,22 +41,28 @@ int main(int argc, char *argv[])
     
     scale_fnctn = sq_linear_scale;
     
-    while ((opt = getopt(argc, argv, "r:c:w:h:")) != -1)
+    while ((opt = getopt(argc, argv, "hr:c:x:y:")) != -1)
     {
         switch (opt)
         {
+            case 'h':
+                print_usage(usage_text);
+                exit(EXIT_SUCCESS);
             case 'r':
                 sscanf(optarg, "%u", &rows);
                 break;
             case 'c':
                 sscanf(optarg, "%u", &cols);
                 break;
-            case 'w':
+            case 'x':
                 sscanf(optarg, "%f", &width_chop_fraction);
                 break;
-            case 'h':
+            case 'y':
                 sscanf(optarg, "%f", &height_chop_fraction);
                 break;
+            default:
+                print_usage(usage_text);
+                exit(EXIT_SUCCESS);
         }
     }
     

@@ -11,6 +11,23 @@
 #include "sq_signals.h"
 #include "sq_utils.h"
 
+char* usage_text[] = 
+{
+    "                                                                       ",
+    "NAME                                                                   ",
+    "   sqgensine - generates a gaussian-noisy complex sinusoid of the form ",
+    "               sin*SNR + noise, cos*SNR + noise, sin*SNR + noise, ...  ",
+    "SYNOPSIS                                                               ",
+    "   sqgensine [OPTIONS] ...                                             ",
+    "DESCRIPTION                                                            ",
+    "   -l Number of samples to do in one go                                ",
+    "   -s Length of the sinusoid in terms of number of cycles              ",
+    "   -a Length of a cycle in terms of number of samples                  ",
+    "   -w Wavelength of the sinusoid                                       ",
+    "   -n The SNR (Signal to Noise Ratio)                                  "
+};
+
+
 unsigned int nsamples = 1000000;
 unsigned int length = 16777216;
 unsigned int sine_array_length = 128;
@@ -21,10 +38,13 @@ int main(int argc, char *argv[])
 {
     int opt;
     
-    while ((opt = getopt(argc, argv, "l:s:a:w:n:")) != -1)
+    while ((opt = getopt(argc, argv, "hl:s:a:w:n:")) != -1)
     {
         switch (opt)
         {
+            case 'h':
+                print_usage(usage_text);
+                exit(EXIT_SUCCESS);
             case 'l':
                 sscanf(optarg, "%u", &nsamples);
                 break;
@@ -40,6 +60,9 @@ int main(int argc, char *argv[])
             case 'n':
                 sscanf(optarg, "%f", &SNR);
                 break;
+            default:
+                print_usage(usage_text);
+                exit(EXIT_SUCCESS);
         }
     }
     

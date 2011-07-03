@@ -28,13 +28,19 @@ unsigned int cols = 0;
 int main(int argc, char *argv[])
 {
     int opt;
-    while ((opt = getopt(argc, argv, "c:")) != -1)
+    while ((opt = getopt(argc, argv, "hc:")) != -1)
     {
         switch (opt)
         {
+            case 'h':
+                print_usage(usage_text);
+                exit(EXIT_FAILURE);
             case 'c':
                 sscanf(optarg, "%u", &cols);
                 break;
+            default:
+                print_usage(usage_text);
+                exit(EXIT_FAILURE);
         }
     }
 

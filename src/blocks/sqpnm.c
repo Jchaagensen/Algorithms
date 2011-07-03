@@ -49,10 +49,13 @@ int main(int argc, char *argv[])
 
     scale_fnctn = sq_linear_scale;
 
-    while ((opt = getopt(argc, argv, "r:c:a:px")) != -1)
+    while ((opt = getopt(argc, argv, "hr:c:a:px")) != -1)
     {
         switch (opt)
         {
+            case 'h':
+                print_usage(usage_text);
+                exit(EXIT_FAILURE);
             case 'r':
                 sscanf(optarg, "%u", &rows);
                 break;
@@ -68,6 +71,9 @@ int main(int argc, char *argv[])
             case 'x':
                 scale_fnctn = sq_no_scale;
                 break;
+            default:
+                print_usage(usage_text);
+                exit(EXIT_FAILURE);
         }
     }
 

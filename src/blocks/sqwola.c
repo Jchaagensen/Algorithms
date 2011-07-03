@@ -44,10 +44,13 @@ int main(int argc, char *argv[])
     unsigned char argflags = 0;
     int opt;
 
-    while ((opt = getopt(argc, argv, "l:f:o:w")) != -1)
+    while ((opt = getopt(argc, argv, "hl:f:o:w")) != -1)
     {
         switch (opt)
         {
+            case 'h':
+                print_usage(usage_text);
+                exit(EXIT_FAILURE);
             case 'l':
                 sscanf(optarg, "%u", &fftlen);
                 argflags |= 0x01;
@@ -63,6 +66,9 @@ int main(int argc, char *argv[])
             case 'w':
                 is_window_dump = 1;
                 break;
+            default:
+                print_usage(usage_text);
+                exit(EXIT_FAILURE);
         }
     }
     if (!(argflags == 0x07))

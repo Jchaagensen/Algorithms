@@ -9,19 +9,37 @@
 #include "sq_dsp.h"
 #include "sq_utils.h"
 
+char* usage_text[] = 
+{
+    "                                                                   ",
+    "NAME                                                               ",
+    "   sqconjugate - computes the complex conjugate of complex samples.",
+    "                 re, im, re, im, ... to re, -im, re, -im, ...      ",
+    "SYNOPSIS                                                           ",
+    "   sqconjugate [OPTIONS] ...                                       ",
+    "DESCRIPTION                                                        ",
+    "   -l number of samples to read in one go.                         "
+};
+
 unsigned int data_len = 1000000;
 
 int main(int argc, char **argv)
 {
     int opt;
 
-    while ((opt = getopt(argc, argv, "l:")) != -1)
+    while ((opt = getopt(argc, argv, "hl:")) != -1)
     {
         switch (opt)
         {
+            case 'h':
+                print_usage(usage_text);
+                exit(EXIT_SUCCESS);
             case 'l':
                 sscanf(optarg, "%u", &data_len);
                 break;
+            default:
+                print_usage(usage_text);
+                exit(EXIT_SUCCESS);
         }
     }
     
@@ -31,6 +49,7 @@ int main(int argc, char **argv)
     {
         fprintf(stderr, "%s encountered a fatal error.", argv[0]);
         sq_error_handle(status);
+        print_usage(usage_text);
         exit(EXIT_FAILURE);
     }
     

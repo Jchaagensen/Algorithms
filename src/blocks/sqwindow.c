@@ -9,18 +9,36 @@
 #include "sq_dsp.h"
 #include "sq_utils.h"
 
+char* usage_text[] = 
+{
+    "                                                                   ",
+    "NAME                                                               ",
+    "   sqwindow - applies a hann window with 50% overlap               ",
+    "SYNOPSIS                                                           ",
+    "   sqwindow [OPTIONS] ...                                       ",
+    "DESCRIPTION                                                        ",
+    "   -l number of samples to read in one go.                         "
+};
+
+
 unsigned int wndw_len = 0;
 
 int main(int argc, char **argv)
 {
     int opt;
-    while ((opt = getopt(argc, argv, "l:")) != -1)
+    while ((opt = getopt(argc, argv, "hl:")) != -1)
     {
         switch (opt)
         {
+            case 'h':
+                print_usage(usage_text);
+                exit(EXIT_FAILURE);
             case 'l':
                 sscanf(optarg, "%u", &wndw_len);
                 break;
+            default:
+                print_usage(usage_text);
+                exit(EXIT_FAILURE);
         }
     }
     

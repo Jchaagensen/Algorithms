@@ -32,13 +32,19 @@ unsigned int sblen = 0;
 int main(int argc, char *argv[])
 {
     int opt;
-    while ((opt = getopt(argc, argv, "l:")) != -1)
+    while ((opt = getopt(argc, argv, "hl:")) != -1)
     {
         switch (opt)
         {
+            case 'h':
+                print_usage(usage_text);
+                exit(EXIT_FAILURE);
             case 'l':
                 sscanf(optarg, "%u", &sblen);
                 break;
+            default:
+                print_usage(usage_text);
+                exit(EXIT_FAILURE);
         }
     }
 

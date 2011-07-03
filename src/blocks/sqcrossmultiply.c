@@ -11,20 +11,39 @@
 #include "sq_dsp.h"
 #include "sq_utils.h"
 
+char* usage_text[] = 
+{
+    "                                                                               ",
+    "NAME                                                                           ",
+    "   sqcrossmultiply - multiplies samples of one signal to the corresponding     ",
+    "                     samples of the other.                                     ",
+    "                     If the two signals are a1, a2, a3, ... and b1, b2, b3, ...",
+    "                     the result would be a1*b1, a2*b2, a3*b3, ...              ",
+    "SYNOPSIS                                                           ",
+    "   sqcrossmultiply [OPTIONS] file1 file2                           ",
+    "DESCRIPTION                                                        ",
+    "   -l number of samples to read in one go.                         "
+};
+
 unsigned int smpls_len = 100000;
 
 int main(int argc, char **argv)
 {
-
     int opt;
 
-    while ((opt = getopt(argc, argv, "l:")) != -1)
+    while ((opt = getopt(argc, argv, "hl:")) != -1)
     {
         switch (opt)
         {
+            case 'h':
+                print_usage(usage_text);
+                exit(EXIT_FAILURE);
             case 'l':
                 sscanf(optarg, "%u", &smpls_len);
                 break;
+            default:
+                print_usage(usage_text);
+                exit(EXIT_FAILURE);
         }
     }
 

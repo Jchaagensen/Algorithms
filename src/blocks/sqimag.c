@@ -21,10 +21,7 @@ char *usage_text[] =
     "SYNOPSIS                                                                ",
     "  sqreal [OPTIONS] ...                                                  ",
     "DESCRIPTION                                                             ",
-    "  -l  pos. integer (required),  length of sample buffer (number of      ",
-    "      real,imag coefficient pairs input with a block read at a time and ",
-    "      number of imag coefficients output with a block write at a time)  ",
-    "                                                                        "
+    "  -l  number of samples to process in one go.                           "
 };
 
 unsigned int sblen = 0;
@@ -36,9 +33,15 @@ int main(int argc, char *argv[])
     {
         switch (opt)
         {
+            case 'h':
+                print_usage(usage_text);
+                exit(EXIT_FAILURE);
             case 'l':
                 sscanf(optarg, "%u", &sblen);
                 break;
+            default:
+                print_usage(usage_text);
+                exit(EXIT_FAILURE);
         }
     }
 

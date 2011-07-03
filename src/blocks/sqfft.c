@@ -42,10 +42,14 @@ int main(int argc, char *argv[])
 {
     int opt;
 
-    while ((opt = getopt(argc, argv, "l:nmi")) != -1)
+    while ((opt = getopt(argc, argv, "hl:nmi")) != -1)
     {
         switch (opt)
         {
+            case 'h':
+                print_usage(usage_text);
+                exit(EXIT_SUCCESS);
+            break;
             case 'l':
                 sscanf(optarg, "%u", &fft_len);
                 break;
@@ -57,9 +61,13 @@ int main(int argc, char *argv[])
                 break;
             case 'i':
                 inverse = 1;
+                break;
+            default:
+                print_usage(usage_text);
+                exit(EXIT_SUCCESS);
         }
     }
-    
+
     int status = sq_fft(stdin, stdout, fft_len, is_inverted, is_measured, inverse);
     
     if(status < 0)
