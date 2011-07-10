@@ -22,6 +22,7 @@ set(PROGRAMS sqfft
              sqabs
              sqcrossmultiply
              sqbin
+             sqgetimgtfp
    )
 
 set(SCRIPTS sqautocorr
