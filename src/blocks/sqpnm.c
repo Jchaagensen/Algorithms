@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
         sq_error_handle(read_status);
         exit(EXIT_FAILURE);
     }
-fprintf(stderr, "Scaling image\n");
+    fprintf(stderr, "Scaling image\n");
 
     scale_fnctn(imgbfr, rows, cols);
     
