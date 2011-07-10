@@ -21,6 +21,7 @@ set(PROGRAMS sqfft
              sqedgechop
              sqabs
              sqcrossmultiply
+             sqbin
    )
 
 set(SCRIPTS sqautocorr
