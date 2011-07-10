@@ -144,9 +144,11 @@ int sq_sum(FILE* instream, FILE* outstream, unsigned int nsamples)
             sum_bfr[(smpli<<1)+0] += (smpls_bfr[(smpli<<1)+0] / (float) nsamples);
             sum_bfr[(smpli<<1)+1] += (smpls_bfr[(smpli<<1)+1] / (float) nsamples);
         }
-    }
 
     fwrite(sum_bfr, 8, nsamples, outstream);
+    }
+
+    //fwrite(sum_bfr, 8, nsamples, outstream);
 
     free(sum_bfr);
     free(smpls_bfr);
@@ -656,6 +658,47 @@ int sq_wola(FILE* instream, FILE* outstream, unsigned int fftlen, unsigned int f
     free(smplbfr);
     free(readbfr);
     free(wndwbfr);
+
+    return 0;
+}
+
+int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int out_length)
+{
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+        return ERR_ARG_BOUNDS;
+
+    float *input_bfr;
+    float *output_bfr;
+
+    input_bfr = malloc(in_length * sizeof(float) * 2);
+    if(input_bfr == NULL)
+        return ERR_MALLOC;
+    output_bfr = calloc(out_length,  sizeof(float) * 2);
+    if(output_bfr == NULL)
+        return ERR_MALLOC;
+    
+    unsigned int bin_size;
+    bin_size = in_length / out_length;
+
+    unsigned int in_i = 0, out_i, start, stop;
+    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    {
+        for (out_i = 0; out_i < out_length; out_i++)
+        {
+            start = out_i * bin_size;
+            stop = (out_i + 1) * bin_size;
+            for(in_i = start; in_i < stop; in_i++)
+            {
+                output_bfr[(out_i<<1) + REAL] += input_bfr[(in_i<<1) + REAL] / bin_size;
+                output_bfr[(out_i<<1) + IMAG] += input_bfr[(in_i<<1) + IMAG] / bin_size;
+            }
+        }
+
+        fwrite(output_bfr, sizeof(float) * 2, out_length , outstream);
+    }
+
+    free(input_bfr);
+    free(output_bfr);
 
     return 0;
 }
