@@ -683,6 +683,7 @@ int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
     unsigned int in_i = 0, out_i, start, stop;
     while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
     {
+        memset(output_bfr, 0, out_length * sizeof(float) * 2);
         for (out_i = 0; out_i < out_length; out_i++)
         {
             start = out_i * bin_size;
