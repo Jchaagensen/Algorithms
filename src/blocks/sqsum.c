@@ -7,8 +7,8 @@
 #include <unistd.h>
 #include <inttypes.h>
 
-#include "sq_dsp.h"
-#include "sq_utils.h"
+#include <sq_dsp.h>
+#include <sq_utils.h>
 
 unsigned int smpls_len = 100000;
 

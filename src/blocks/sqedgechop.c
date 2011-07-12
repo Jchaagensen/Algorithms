@@ -6,9 +6,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "sq_utils.h"
-#include "sq_imaging.h"
-#include "sq_constants.h"
+#include <sq_utils.h>
+#include <sq_imaging.h>
+#include <sq_constants.h>
 
 char *usage_text[] =
 {

@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "sq_dsp.h"
-#include "sq_utils.h"
+#include <sq_dsp.h>
+#include <sq_utils.h>
 
 char* usage_text[] = 
 {

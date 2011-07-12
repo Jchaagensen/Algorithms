@@ -6,9 +6,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "sq_utils.h"
-#include "sq_imaging.h"
-#include "sq_constants.h"
+#include <sq_utils.h>
+#include <sq_imaging.h>
+#include <sq_constants.h>
 
 //          1         2         3         4         5         6         7
 // 123456789012345678901234567890123456789012345678901234567890123456789012

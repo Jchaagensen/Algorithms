@@ -7,9 +7,9 @@
 #include <unistd.h>
 #include <math.h>
 
-#include "sq_constants.h"
-#include "sq_dsp.h"
-#include "sq_utils.h"
+#include <sq_constants.h>
+#include <sq_dsp.h>
+#include <sq_utils.h>
 
 char* usage_text[] = 
 {

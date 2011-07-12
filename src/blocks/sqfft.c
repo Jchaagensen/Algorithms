@@ -9,8 +9,8 @@
 
 #include <fftw3.h>
 
-#include "sq_dsp.h"
-#include "sq_utils.h"
+#include <sq_dsp.h>
+#include <sq_utils.h>
 
 //          1         2         3         4         5         6         7
 // 123456789012345678901234567890123456789012345678901234567890123456789012

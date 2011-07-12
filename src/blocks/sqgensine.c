@@ -8,8 +8,8 @@
 #include <inttypes.h>
 #include <math.h>
 
-#include "sq_signals.h"
-#include "sq_utils.h"
+#include <sq_signals.h>
+#include <sq_utils.h>
 
 char* usage_text[] = 
 {
