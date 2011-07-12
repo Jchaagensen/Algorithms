@@ -67,6 +67,14 @@ ENDIF(ALL_FOUND)
 # Done searching libraries. Start building SETIkit.
 MESSAGE("-- Ready to build SETIkit")
 
+########### Add uninstall target ###############
+CONFIGURE_FILE(
+  "${CMAKE_CURRENT_SOURCE_DIR}/CMake/cmake_uninstall.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/CMake/cmake_uninstall.cmake"
+  IMMEDIATE @ONLY)
+ADD_CUSTOM_TARGET(uninstall
+  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/CMake/cmake_uninstall.cmake")
+
 INCLUDE_DIRECTORIES(
   ${setikit_SOURCE_DIR}/src
   ${setikit_BINARY_DIR}/src
