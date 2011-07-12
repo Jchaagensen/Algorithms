@@ -13,9 +13,9 @@ mkfifo fft2
 
 length=4096
 
-cat $1 | ./sqsample -l $length | ./sqwindow -l $length | ./sqfft -l $length > fft1 &
-cat $2 | ./sqsample -l $length | ./sqwindow -l $length | ./sqfft -l $length > fft2 &
+cat $1 | sqsample -l $length | sqwindow -l $length | sqfft -l $length > fft1 &
+cat $2 | sqsample -l $length | sqwindow -l $length | sqfft -l $length > fft2 &
 
-./sqcrossmultiply fft1 fft2 -l $length | ./sqfft -l $length -i 
+sqcrossmultiply fft1 fft2 -l $length | sqfft -l $length -i
 
 rm fft1 fft2

@@ -38,9 +38,7 @@ foreach(program ${PROGRAMS})
 endforeach(program)
 
 foreach(script ${SCRIPTS})
-    file(COPY ${script}.sh DESTINATION ${EXECUTABLE_OUTPUT_PATH}) 
-    exec_program("chmod +x ${EXECUTABLE_OUTPUT_PATH}/${script}.sh")
-    install(FILES ${EXECUTABLE_OUTPUT_PATH}/${script}.sh DESTINATION bin)
+    install(PROGRAMS ${script}.sh DESTINATION bin)
 endforeach(script)
 
 

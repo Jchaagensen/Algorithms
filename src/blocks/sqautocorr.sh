@@ -9,5 +9,5 @@ do
     esac
 done
 
-cat | ./sqwindow -l $length | ./sqfft -l $length | ./sqpower -l $length | ./sqfft -l $length -i 
+cat | sqwindow -l $length | sqfft -l $length | sqpower -l $length | sqfft -l $length -i
 
