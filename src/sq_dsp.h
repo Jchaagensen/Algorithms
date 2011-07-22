@@ -13,8 +13,12 @@
  */
 int sq_power(FILE* instream, FILE* outstream, unsigned int nsamples);
 
-int sq_sum(FILE* instream, FILE* outstream, unsigned int nsamples);
-
+/**
+ * Windows the input signal with 50% overlap
+ * @param instream Input stream of float data
+ * @param outstream Output stream of float data
+ * @param window_length Length of window
+ */
 int sq_window(FILE* instream, FILE* outstream, unsigned int window_length);
 
 /**
@@ -112,19 +116,61 @@ int sq_scale(FILE* instream, FILE* outstream, unsigned int nsamples, float scale
  */
 int sq_rotate(FILE* instream, FILE* outstream, unsigned int nsamples, float radians);
 
+/**
+ * Heterodynes a chosen frequency of the signal to zero (center of the spectrum) -
+ * this routine is useful for shifting the signal to the left/right by a tunable amount.
+ * @param instream Input stream of float data
+ * @param outstream Output stream of float data
+ * @param radians Frequency to be centered
+ */
 int sq_mix(FILE* instream, FILE* outstream, unsigned int nsamples, float radians);
 
-int sq_zoom(FILE* instream, FILE* outstream, unsigned int zoom_length);
-
+/**
+ * Weighted Overlap-Add window
+ * @param instream Input stream of float data
+ * @param outstream Output stream of float data
+ * @param fftlen Length of FFT to be used
+ * @param folds Number of folds
+ * @param overlap Window overlap %
+ * @param is_window_dump If 1, writes the window itself to the output stream. If 0, proceeds to write the windowed data to the output stream.
+ */
 int sq_wola(FILE* instream, FILE* outstream,
             unsigned int fftlen,
             unsigned int folds,
             unsigned int overlap,
             unsigned char is_window_dump);
 
+/**
+ * Takes a stream of floats (alternating real, imaginary) as input signal
+ * and writes the absolute value of the signal to the output stream.
+ * These will be of the form real, 0, real, 0, ...
+ * @param instream Input stream of float data
+ * @param outstream Output stream of float data
+ * @param nsamples Number of samples to process at a time
+ * @return Code; negative if error.
+ */
 int sq_abs(FILE* instream, FILE* outstream, unsigned int nsamples);
 
+/**
+ * Cross-multiplies two input signals' samples and writes the resulting samples to the output stream.
+ * @param instream1 Input stream of float data of signal #1
+ * @param instream1 Input stream of float data of signal #2
+ * @param outstream Output stream of float data that is the product of signals #1 and #2
+ * @param nsamples Number of samples to process at a time
+ * @return Code; negative if error.
+ */
 int sq_crossmultiply(FILE* instream1, FILE* instream2, FILE* outstream, unsigned int nsamples);
 
+/**
+ * Bins the specified number of contiguous samples from the input stream into a new (smaller) specified number of samples
+ * @param instream Input stream of float data
+ * @param outstream Output stream of float data
+ * @param in_length Number of samples given as input to one binning iteration
+ * @param out_length Number of samples that are written out after one binning iteration
+ */
 int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int out_length);
+
+int sq_sum(FILE* instream, FILE* outstream, unsigned int nsamples);
+int sq_zoom(FILE* instream, FILE* outstream, unsigned int zoom_length);
+
 #endif
