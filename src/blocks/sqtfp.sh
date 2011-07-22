@@ -8,7 +8,8 @@ usage ()
 {
     echo "                                                                        " >&2
     echo "NAME                                                                    " >&2
-    echo "  sqtfp - create waterfall images for setiQuest observation             " >&2
+    echo "  sqtfp - creates time-frequency-power data file which can be made      " >&2
+    echo "        - into a waterfall      " >&2
     echo "SYNOPSIS                                                                " >&2
     echo "  sqtfp [OPTIONS] files...                                              " >&2
     echo "OPTIONS                                                                 " >&2
