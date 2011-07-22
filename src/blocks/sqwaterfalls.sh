@@ -60,7 +60,7 @@ do
     printf -v LFREQ "%.6f" $(echo "scale=10; $CFREQ + (($BW/$CHANNLS)*($CHAN+(($OFST-4)/8)));" | bc) 
     printf -v RFREQ "%.6f" $(echo "scale=10; $CFREQ + (($BW/$CHANNLS)*($CHAN+(($OFST-3)/8)));" | bc) 
     CMND="sqgetimgtfp -c $CHAN -o $OFST $FILE | sqpnm -c 256 -r 340 -x | convert - -depth 16 -type GrayScale -flip -gamma 1.2 -depth 8 -quality 90 $IMAGEDIR/${SUBDIR}/${SUBDIR}-${OFST}-${LFREQ}-${RFREQ}.png"
-    echo $CMND
+    echo $CMND >&2
     eval $CMND
   done
 done
