@@ -15,16 +15,12 @@ char *usage_text[] =
 {
     "                                                                        ",
     "NAME                                                                    ",
-    "  sqreal - inputs time-series of complex (real,imag) float coefficient  ",
-    "           pairs.  Outputs only the real coefficients and discards the  ",
-    "           imaginary coefficients: (r1,i1)(r2,i2)... --> r1, r2, ...    ",
+    "  sqbin -  bin samples to a smaller number of samples",
     "SYNOPSIS                                                                ",
-    "  sqreal [OPTIONS] ...                                                  ",
+    "  sqbin [OPTIONS] ...                                                  ",
     "DESCRIPTION                                                             ",
-    "  -l  pos. integer (required),  length of sample buffer (number of      ",
-    "      real,imag coefficient pairs input with a block read at a time and ",
-    "      number of real coefficients output with a block write at a time)  ",
-    "                                                                        "
+    "  -i  Input number of samples ",
+    "  -o  Number of samples in the output for the given input number"
 };
 
 unsigned int in_length = 4096;
