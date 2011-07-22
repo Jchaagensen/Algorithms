@@ -28,6 +28,7 @@ set(PROGRAMS sqfft
 set(SCRIPTS sqautocorr
             sqcrosscorr
             sqconvolution
+            sqtfp
    )
 
 
