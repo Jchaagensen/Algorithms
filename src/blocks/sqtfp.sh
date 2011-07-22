@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 FFTLEN=4194304
 
@@ -13,27 +13,20 @@ usage ()
     echo "SYNOPSIS                                                                " >&2
     echo "  sqtfp [OPTIONS] files...                                              " >&2
     echo "OPTIONS                                                                 " >&2
-    echo "  -c real (required), observation center frequency (MHz)                " >&2
     echo "  -l integer (optional), FFT length; default value is 4194304           " >&2
     echo "EXAMPLE                                                                 " >&2
     echo "  sqtfp -c 1420.0 2010-10-15-crab_1420_1-8bit-{01,02,03}.dat            " >&2
     echo "                                                                        " >&2
 }
 
-while getopts c:l: OPT
+while getopts l: OPT
     do
         case $OPT in
-        c) CFREQ=$OPTARG;;
         l) FFTLEN=$OPTARG;;
     esac
 done
 
 shift $(expr $OPTIND - 1)
-
-if [ ! "$CFREQ" ]; then
-    usage
-    exit 1
-fi
 
 FILES=$*
     
