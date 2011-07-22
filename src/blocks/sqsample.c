@@ -12,6 +12,7 @@
 #include <sq_utils.h>
 
 unsigned int samples_len = SMPLS_PER_READ;
+uint64_t filesize = 0;
 
 char* usage_text[] = 
 {
@@ -21,14 +22,16 @@ char* usage_text[] =
     "               in chunks of a given number of samples.                       ",
     "SYNOPSIS                                                                     ",
     "   sqsample [OPTIONS] ...                                                    ",
-    "   -l number of samples to read in one go.                                   "
+    "   -l number of samples to read in one go.                                   ",
+    "   -s (optional) size of input - if this is passed, the percentage progress  ",
+    "      will be printed.                                                       "
 };
 
 int main(int argc, char **argv)
 {
     int opt;
     
-    while ((opt = getopt(argc, argv, "hl:")) != -1)
+    while ((opt = getopt(argc, argv, "hl:s:")) != -1)
     {
         switch (opt)
         {
@@ -37,6 +40,9 @@ int main(int argc, char **argv)
                 exit(EXIT_SUCCESS);
             case 'l':
                 sscanf(optarg, "%u", &samples_len);
+                break; 
+            case 's':
+                sscanf(optarg, "%u", &filesize);
                 break;
             default:
                 print_usage(usage_text);
@@ -44,7 +50,7 @@ int main(int argc, char **argv)
         }
     }
     
-    int status = sq_sample(stdin, stdout, samples_len);
+    int status = sq_sample(stdin, stdout, samples_len, filesize);
     
     if(status < 0)
     {

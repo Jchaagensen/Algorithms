@@ -2,6 +2,7 @@
 #define SQ_UTILS_H
 
 #include <stdio.h>
+#include <inttypes.h>
 #include <math.h>
 #include <sys/types.h>
 #include <fftw3.h>
@@ -48,7 +49,7 @@ int sq_read_stream(FILE* instream, FILE* outstream, int ncolumns);
  * @param nsamples Number of samples to process at a time
  * @return Code; negative if error.
  */
-int sq_sample(FILE* instream, FILE* outstream, unsigned int nsamples);
+int sq_sample( FILE* instream, FILE* outstream, unsigned int nsamples, uint64_t filesize);
 
 /**
  * Swaps left and right halves of an array of complex numbers

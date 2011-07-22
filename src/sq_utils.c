@@ -112,12 +112,11 @@ int sq_read_stream(FILE* instream, FILE* outstream, int ncolumns)
 }
 
 
-int sq_sample(FILE* instream, FILE* outstream, unsigned int nsamples)
+int sq_sample( FILE* instream, FILE* outstream, unsigned int nsamples, uint64_t filesize)
 {
     if ((nsamples <= 0) || (nsamples > MAX_SMPLS_LEN))
         return ERR_ARG_BOUNDS;
     
-    uint64_t total_bytes_next_trigger = TOTAL_BYTES_TRIGGER_VAL;
     signed char *smpls_in;
     float *smpls_out;
     uint64_t total_bytes = 0;
@@ -133,18 +132,21 @@ int sq_sample(FILE* instream, FILE* outstream, unsigned int nsamples)
     
     while (fread(smpls_in, 2, nsamples, instream) == nsamples)
     {
+        // Sample
         for (smpli = 0; smpli < nsamples; smpli++)
         {
             smpls_out[(smpli<<1) + REAL] = (float) smpls_in[(smpli<<1) + REAL];
             smpls_out[(smpli<<1) + IMAG] = -(float) smpls_in[(smpli<<1) + IMAG];
         }
+        
+        // Write
         fwrite(smpls_out, 8, nsamples, outstream);
-        total_bytes += (nsamples * 2);
-        if (total_bytes >= total_bytes_next_trigger)
+        
+        // Print progress
+        if(filesize > 0)
         {
-            total_bytes_next_trigger += TOTAL_BYTES_TRIGGER_VAL;
-            //sprintf(msg, "total bytes processed %lu", total_bytes);
-            //      mylog(msg);
+            total_bytes += (nsamples * 2);
+            fprintf(stderr, "Percentage done = %f\n", (double)total_bytes*100/(double)filesize);
         }
     }
     
