@@ -1,6 +1,7 @@
 #!/bin/bash
 
 FFTLEN=4194304
+WINDOW="wola"
 
 #                1         2         3         4         5         6         7
 #       123456789012345678901234567890123456789012345678901234567890123456789012
@@ -14,15 +15,17 @@ usage ()
     echo "  sqtfp [OPTIONS] files...                                              " >&2
     echo "OPTIONS                                                                 " >&2
     echo "  -l integer (optional), FFT length; default value is 4194304           " >&2
+    echo "  -w window type [wola, hann]; default is wola                          " >&2
     echo "EXAMPLE                                                                 " >&2
     echo "  sqtfp -c 1420.0 2010-10-15-crab_1420_1-8bit-{01,02,03}.dat            " >&2
     echo "                                                                        " >&2
 }
 
-while getopts l: OPT
+while getopts l:w: OPT
     do
         case $OPT in
         l) FFTLEN=$OPTARG;;
+        w) WINDOW=$OPTARG;;
     esac
 done
 
@@ -36,6 +39,14 @@ if [ ! "$FILES" ]; then
 fi
 
 # Process data to a time-frequency-power file
-CMND="cat $FILES | sqsample -l $FFTLEN | sqwola -l $FFTLEN -f 9 -o 0 | sqfft -l $FFTLEN | sqpower -l $FFTLEN | sqreal -l $FFTLEN"
+if [ "$WINDOW" == "wola" ]; then
+    WINDOW_BLOCK="sqwola -f 9 -o 0"
+fi
 
+if [ "$WINDOW" == "hann" ]; then
+    WINDOW_BLOCK="sqwindow"
+fi
+
+cat $FILES | sqsample -l $FFTLEN | $WINDOW_BLOCK -l $FFTLEN | sqfft -l $FFTLEN | sqpower -l $FFTLEN | sqreal -l $FFTLEN
+echo $CMND >&2
 eval $CMND
