@@ -29,6 +29,7 @@ set(SCRIPTS sqautocorr
             sqcrosscorr
             sqconvolution
             sqtfp
+            sqwaterfalls
    )
 
 
