@@ -50,11 +50,29 @@ int sq_read_stream(FILE* instream, FILE* outstream, int ncolumns);
  */
 int sq_sample(FILE* instream, FILE* outstream, unsigned int nsamples);
 
+/**
+ * Swaps left and right halves of an array of complex numbers
+ * @param buffer A pointer to an fftwf_complex array
+ * @param length Length of input array
+ */
 void sq_channelswap(fftwf_complex* buffer, unsigned int length);
 
+/**
+ * Generates a random guassian number between 0 and 1
+ * @return A float value between 0 and 1
+ */
 float sq_randgaus();
 
+/**
+ * Print an error message to stderr
+ * @param message Message string
+ */
 void sq_error_print(char* message);
+
+/**
+ * Print the error message for the specified error code
+ * @param errcode Error code
+ */
 void sq_error_handle(int errcode);
 
 #endif
