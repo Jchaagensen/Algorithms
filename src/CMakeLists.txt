@@ -3,6 +3,7 @@ add_library(setikit ${LIB_TYPE}
                     sq_dsp.c
                     sq_imaging.c
                     sq_signals.c
+                    sq_windows.c
                     )
 
 set_target_properties(setikit PROPERTIES LINKER_LANGUAGE "C")
@@ -23,6 +24,7 @@ INSTALL(FILES
     sq_imaging.h
     sq_signals.h
     sq_utils.h
+    sq_windows.h
     DESTINATION include/${PROJECT_NAME}
 )
 add_subdirectory(blocks)
