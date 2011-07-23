@@ -60,6 +60,9 @@
 #define REAL 0
 #define IMAG 1
 
+// Macros
+#define SINC(x) sin(x)/(x)
+
 typedef float cmplx[2];
             
 #endif
