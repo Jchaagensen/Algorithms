@@ -200,12 +200,14 @@ void sq_error_handle(int errcode)
 {
     switch(errcode)
     {
-        case ERR_ARG_BOUNDS:    sq_error_print("Argument(s) out-of-bounds."); break;
-        case ERR_STREAM_OPEN:   sq_error_print("Could not open stream."); break;
-        case ERR_STREAM_CLOSE:  sq_error_print("Could not close stream."); break;
-        case ERR_STREAM_READ:   sq_error_print("Could not read from stream."); break;
-        case ERR_STREAM_WRITE:  sq_error_print("Could not write to stream."); break;
-        case ERR_MALLOC:        sq_error_print("Could not allocate memory."); break;
+        case ERR_ARG_BOUNDS:        sq_error_print("Argument(s) out-of-bounds."); break;
+        case ERR_STREAM_OPEN:       sq_error_print("Could not open stream."); break;
+        case ERR_STREAM_CLOSE:      sq_error_print("Could not close stream."); break;
+        case ERR_STREAM_READ:       sq_error_print("Could not read from stream."); break;
+        case ERR_STREAM_WRITE:      sq_error_print("Could not write to stream."); break;
+        case ERR_MALLOC:            sq_error_print("Could not allocate memory."); break;
+        case ERR_UNKNOWN_OPTION:    sq_error_print("Unknown option."); break;
+        case ERR_UNKNOWN_WINDOW:    sq_error_print("Unknown window."); break;
         default:
             if(errcode < 0)
                 sq_error_print("Unhandled error.");

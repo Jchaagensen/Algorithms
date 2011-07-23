@@ -41,6 +41,8 @@
 #define ERR_STREAM_READ -4
 #define ERR_STREAM_WRITE -5
 #define ERR_MALLOC -6
+#define ERR_UNKNOWN_OPTION -7
+#define ERR_UNKNOWN_WINDOW -8
 
 // Some constants
 #define MAX_SMPLS_LEN 134217728
