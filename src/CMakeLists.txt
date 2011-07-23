@@ -27,4 +27,6 @@ INSTALL(FILES
     sq_windows.h
     DESTINATION include/${PROJECT_NAME}
 )
+
 add_subdirectory(blocks)
+add_subdirectory(tests)
