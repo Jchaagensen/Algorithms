@@ -47,15 +47,19 @@ char* usage_text[] =
     "   sqwindow [OPTIONS] ...                                       ",
     "DESCRIPTION                                                        ",
     "   -l number of samples to read in one go.                         "
+    "   -w name of window:                                              ",
+    "      hann",
+    "      hamming"
 };
 
 
 unsigned int wndw_len = 0;
+char window_name[10];
 
 int main(int argc, char **argv)
 {
     int opt;
-    while ((opt = getopt(argc, argv, "hl:")) != -1)
+    while ((opt = getopt(argc, argv, "hl:w:")) != -1)
     {
         switch (opt)
         {
@@ -65,13 +69,16 @@ int main(int argc, char **argv)
             case 'l':
                 sscanf(optarg, "%u", &wndw_len);
                 break;
+            case 'w':
+                sscanf(optarg, "%s", window_name);
+                break;
             default:
                 print_usage(usage_text);
                 exit(EXIT_FAILURE);
         }
     }
     
-    int status = sq_window(stdin, stdout, wndw_len);
+    int status = sq_window(stdin, stdout, wndw_len, window_name);
     
     if(status < 0)
     {

@@ -41,10 +41,8 @@ fi
 # Process data to a time-frequency-power file
 if [ "$WINDOW" == "wola" ]; then
     WINDOW_BLOCK="sqwola -f 9 -o 0"
-fi
-
-if [ "$WINDOW" == "hann" ]; then
-    WINDOW_BLOCK="sqwindow"
+else
+    WINDOW_BLOCK="sqwindow -w $WINDOW"
 fi
 
 FILESIZE=0
