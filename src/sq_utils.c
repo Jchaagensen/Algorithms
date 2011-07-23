@@ -101,13 +101,12 @@ void alloc_float_2d(float** array, uint nrows, unsigned int ncolumns)
 }
 
 
-int sq_write_array(float inarray[], FILE* outstream, int ncolumns)
+int sq_write_array( FILE* outstream, float* inarray, unsigned int length, int ncolumns)
 {
     if (ncolumns <= 0)
         return ERR_ARG_BOUNDS;
 
     unsigned int coli;
-    unsigned long length = sizeof(inarray) / sizeof(float);
 
     for (coli = 0; coli < length; ++coli)
     {
