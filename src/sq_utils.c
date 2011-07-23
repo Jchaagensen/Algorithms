@@ -101,7 +101,7 @@ void alloc_float_2d(float** array, uint nrows, unsigned int ncolumns)
 }
 
 
-int sq_read_array(float inarray[], FILE* outstream, int ncolumns)
+int sq_write_array(float inarray[], FILE* outstream, int ncolumns)
 {
     if (ncolumns <= 0)
         return ERR_ARG_BOUNDS;

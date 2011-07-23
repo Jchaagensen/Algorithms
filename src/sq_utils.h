@@ -58,7 +58,7 @@ void alloc_float_2d(float** array, uint nrows, unsigned int ncolumns);
  * @param ncolumns Number of columns the samples are to be shown in.
  * @return If successful, the number of samples processed. Else, a negative error code.
  */
-int sq_read_array(float inarray[], FILE* outstream, int ncolumns);
+int sq_write_array(float inarray[], FILE* outstream, int ncolumns);
 
 /**
  * Reads a sequence of float values from an input stream, and writes them as text values to the output stream, in the specified number of columns.
