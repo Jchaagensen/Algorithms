@@ -26,6 +26,8 @@ int sq_make_window_from_name ( float* window_buffer, unsigned int length, char* 
         window_function = sq_window_lanczos;
     else if(!strcmp(window_name, "triangular"))
         window_function = sq_window_triangular;
+    else if(!strcmp(window_name, "gaussian"))
+        window_function = sq_window_gaussian;
     else
         return ERR_UNKNOWN_WINDOW;
     
@@ -58,3 +60,8 @@ float sq_window_triangular ( unsigned int n, unsigned int length )
     return ( 2.0/(double)(length) ) * ((double)length/2.0  - fabs((double)n - (double)(length-1)/2.0 ));
 }
 
+float sq_window_gaussian ( unsigned int n, unsigned int length )
+{
+    float sigma = 0.4;
+    return ( exp(   -0.5 * pow( (double)(n - 0.5*(length-1)) / (double)(sigma*0.5*(length-1) )  ,2)   )  );
+}

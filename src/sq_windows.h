@@ -9,5 +9,6 @@ float sq_window_hamming(unsigned int n, unsigned int length);
 float sq_window_cosine(unsigned int n, unsigned int length);
 float sq_window_lanczos(unsigned int n, unsigned int length);
 float sq_window_triangular(unsigned int n, unsigned int length);
+float sq_window_gaussian(unsigned int n, unsigned int length);
 
 #endif
