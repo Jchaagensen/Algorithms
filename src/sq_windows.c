@@ -4,14 +4,14 @@
 #include "sq_windows.h"
 #include "sq_constants.h"
 
-void make_window (float* window_buffer, unsigned int length, float (*window_function)(unsigned int, unsigned int))
+void sq_make_window (float* window_buffer, unsigned int length, float (*window_function)(unsigned int, unsigned int))
 {
     unsigned int n;
     for (n = 0; n < length; n++)
         window_buffer[n] = sq_window_hann(n, length);
 }
 
-int make_window_from_name ( float* window_buffer, unsigned int length, char* window_name )
+int sq_make_window_from_name ( float* window_buffer, unsigned int length, char* window_name )
 {
     float (*window_function)(unsigned int, unsigned int);
     
@@ -22,7 +22,7 @@ int make_window_from_name ( float* window_buffer, unsigned int length, char* win
     else
         return ERR_UNKNOWN_WINDOW;
     
-    make_window(window_buffer, length, window_function);
+    sq_make_window(window_buffer, length, window_function);
     return 0;
 }
 

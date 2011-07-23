@@ -207,7 +207,7 @@ int sq_window( FILE* instream, FILE* outstream, unsigned int wndw_len, char* win
         return ERR_MALLOC;
 
     // Make window buffer
-    int status = make_window_from_name(wndw_bfr, wndw_len, window_name);
+    int status = sq_make_window_from_name(wndw_bfr, wndw_len, window_name);
     if(status < 0)
         return status;
 
