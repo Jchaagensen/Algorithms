@@ -31,17 +31,17 @@ int sq_make_window_from_name ( float* window_buffer, unsigned int length, char* 
 
 float sq_window_hann (unsigned int n, unsigned int length)
 {
-    return 0.5 * (1 - cos( (double)(2.0*M_PI*n) / ((double)(length-1)) ));
+    return 0.5 * (1 - cos( (double)(2.0*M_PI*n) / (double)(length-1) ));
 }
 
 float sq_window_hamming ( unsigned int n, unsigned int length )
 {
-    return 0.54 - 0.46 * cos( (double)(2.0*M_PI*n) / ((double)(length-1)) );
+    return 0.54 - 0.46 * cos( (double)(2.0*M_PI*n) / (double)(length-1) );
 }
 
 float sq_window_cosine ( unsigned int n, unsigned int length )
 {
-    return sin( M_PI*n/(length-1) );
+    return sin( (double)(M_PI*n)/(double)(length-1) );
 }
 
 
