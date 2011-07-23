@@ -48,7 +48,7 @@ int sq_power(FILE* instream, FILE* outstream, unsigned int nsamples);
  * @param outstream Output stream of float data
  * @param window_length Length of window
  */
-int sq_window(FILE* instream, FILE* outstream, unsigned int window_length);
+int sq_window( FILE* instream, FILE* outstream, unsigned int wndw_len, char* window_name);
 
 /**
  * Takes a stream of sample floats as input signal and returns the 

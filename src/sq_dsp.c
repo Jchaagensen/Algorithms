@@ -37,6 +37,7 @@
 #include "sq_constants.h"
 #include "sq_dsp.h"
 #include "sq_utils.h"
+#include "sq_windows.h"
 
 int sq_abs(FILE* instream, FILE* outstream, unsigned int nsamples)
 {
@@ -186,7 +187,7 @@ int sq_sum(FILE* instream, FILE* outstream, unsigned int nsamples)
     return 0;
 }
 
-int sq_window(FILE* instream, FILE* outstream, unsigned int wndw_len)
+int sq_window( FILE* instream, FILE* outstream, unsigned int wndw_len, char* window_name)
 {
     float *wndw_bfr;
     float *in_bfr;
@@ -205,20 +206,15 @@ int sq_window(FILE* instream, FILE* outstream, unsigned int wndw_len)
     if(out_bfr == NULL)
         return ERR_MALLOC;
 
-    unsigned int wndwi, bfri;
-
-    //FILE* f = fopen("window.dat", "w");
-    for (wndwi = 0; wndwi < wndw_len; wndwi++)
-    {
-        wndw_bfr[wndwi] =
-            cos(((((float)wndwi) - ((wndw_len - 1.0) / 2.0)) / ((wndw_len - 1.0) / 2.0)) * (M_PI / 2.0));
-  //      fprintf(f, "%f\n", wndw_bfr[wndwi]);
-    }
-//    fclose(f);
+    // Make window buffer
+    int status = make_window_from_name(wndw_bfr, wndw_len, window_name);
+    if(status < 0)
+        return status;
 
     fread(&in_bfr[(wndw_len/2)*2], sizeof(float) * 2, wndw_len / 2, instream);
     memcpy(&in_bfr[0], &in_bfr[(wndw_len/2)*2], (wndw_len / 2)* sizeof(float) *2);
 
+    unsigned int bfri;
     while (fread(&in_bfr[(wndw_len/2)*2], sizeof(float) * 2, wndw_len / 2, instream) == (wndw_len / 2))
     {
         for (bfri = 0; bfri < wndw_len; bfri++)
