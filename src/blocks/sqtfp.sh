@@ -47,6 +47,12 @@ if [ "$WINDOW" == "hann" ]; then
     WINDOW_BLOCK="sqwindow"
 fi
 
-cat $FILES | sqsample -l $FFTLEN | $WINDOW_BLOCK -l $FFTLEN | sqfft -l $FFTLEN | sqpower -l $FFTLEN | sqreal -l $FFTLEN
-echo $CMND >&2
-eval $CMND
+FILESIZE=0
+for filename in $FILES
+do
+    FILESIZE=$(echo "$FILESIZE+$(stat -c%s "$filename")" | bc)
+done
+
+echo $FILESIZE >&2
+
+cat $FILES | sqsample -l $FFTLEN -s $FILESIZE 2>&2 | $WINDOW_BLOCK -l $FFTLEN | sqfft -l $FFTLEN | sqpower -l $FFTLEN | sqreal -l $FFTLEN

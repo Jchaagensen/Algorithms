@@ -111,7 +111,6 @@ int sq_read_stream(FILE* instream, FILE* outstream, int ncolumns)
     return coli;
 }
 
-
 int sq_sample( FILE* instream, FILE* outstream, unsigned int nsamples, uint64_t filesize)
 {
     if ((nsamples <= 0) || (nsamples > MAX_SMPLS_LEN))
