@@ -22,6 +22,10 @@ int sq_make_window_from_name ( float* window_buffer, unsigned int length, char* 
         window_function = sq_window_hamming;
     else if(!strcmp(window_name, "sine") || !strcmp(window_name, "cosine"))
         window_function = sq_window_cosine;
+    else if(!strcmp(window_name, "lanczos"))
+        window_function = sq_window_lanczos;
+    else if(!strcmp(window_name, "triangular"))
+        window_function = sq_window_triangular;
     else
         return ERR_UNKNOWN_WINDOW;
     
@@ -44,4 +48,13 @@ float sq_window_cosine ( unsigned int n, unsigned int length )
     return sin( (double)(M_PI*n)/(double)(length-1) );
 }
 
+float sq_window_lanczos(unsigned int n, unsigned int length)
+{
+    return SINC( ((double)2*n/(double)(length-1)) - 1 );
+}
+
+float sq_window_triangular ( unsigned int n, unsigned int length )
+{
+    return ( 2.0/(double)(length) ) * ((double)length/2.0  - fabs((double)n - (double)(length-1)/2.0 ));
+}
 
