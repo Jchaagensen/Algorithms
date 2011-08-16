@@ -729,3 +729,96 @@ int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
 
     return 0;
 }
+
+int sq_chop(FILE* instream, FILE* outstream, unsigned int in_length, float chop_fraction)
+{
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+        return ERR_ARG_BOUNDS;
+
+    float *input_bfr;
+    float *output_bfr;
+
+    int samples_to_discard = (int)((float)in_length * chop_fraction);
+    int out_length = in_length - 2 * samples_to_discard;
+
+    input_bfr = malloc(in_length * sizeof(float) * 2);
+    if(input_bfr == NULL)
+        return ERR_MALLOC;
+    output_bfr = input_bfr + 2 * sizeof(float) * samples_to_discard;
+  
+    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    {
+        fwrite(output_bfr, sizeof(float) * 2, out_length , outstream);
+    }
+
+    free(input_bfr);
+
+    return 0;
+}
+
+
+int sq_ascii(FILE* instream, FILE* outstream, unsigned int in_length)
+{
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+        return ERR_ARG_BOUNDS;
+
+    int i;
+    float *input_bfr;
+    float *output_bfr;
+
+    input_bfr = malloc(in_length * sizeof(float) * 2);
+    if(input_bfr == NULL)
+        return ERR_MALLOC;
+    
+    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    {
+	for (i = 0; i < in_length; ++i)
+	{
+	    fprintf(outstream, "%f, %f\n", 
+			    input_bfr[(i<<1) + 0], input_bfr[(i<<1) + 1]);
+	}
+    }
+
+    free(input_bfr);
+
+    return 0;
+}
+
+int sq_phase(FILE* instream, FILE* outstream, unsigned int in_length)
+{
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+        return ERR_ARG_BOUNDS;
+
+    int i;
+    float *input_bfr;
+    float val;
+
+    input_bfr = malloc(in_length * sizeof(float) * 2);
+    if(input_bfr == NULL)
+        return ERR_MALLOC;
+    
+    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    {
+	for (i = 0; i < in_length; ++i)
+	{
+	    // compute absolute value of complex sample
+	    val = input_bfr[(i<<1) + 0] * input_bfr[(i<<1) + 0] +
+		  input_bfr[(i<<1) + 1] * input_bfr[(i<<1) + 1];
+	    val = sqrt(val);
+
+	    // divide each sample by its absolute value
+	    // avoid divide by zero; phase is undefined if val = 0, just leave it
+	    if (val > 0)
+	    {
+	          input_bfr[(i<<1) + 0] /= val;
+		  input_bfr[(i<<1) + 1] /= val;
+	    }
+
+            fwrite(input_bfr, sizeof(float) * 2, in_length , outstream);
+	}
+    }
+
+    free(input_bfr);
+
+    return 0;
+}

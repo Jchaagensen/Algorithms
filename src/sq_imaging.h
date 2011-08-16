@@ -92,7 +92,7 @@ int sq_write_img(FILE* outstream, float* img_buf, int rows, int cols);
  * @param width_chop_fraction Fraction of width to discard
  * @param height_chop_fraction Fraction of height to discard
  */
-int sq_chop(float* img_in, float* img_out, int rows, int cols, float width_chop_fraction, float height_chop_fraction);
+int sq_imchop(float* img_in, float* img_out, int rows, int cols, float width_chop_fraction, float height_chop_fraction);
 
 /**
  * Write image data formatted as a PGM/PNM image to output buffer

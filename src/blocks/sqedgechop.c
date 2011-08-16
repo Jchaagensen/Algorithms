@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
     
-    int chop_status = sq_chop(imgbfr, imgbfr_chopped, rows, cols, width_chop_fraction, 0);
+    int chop_status = sq_imchop(imgbfr, imgbfr_chopped, rows, cols, width_chop_fraction, 0);
     if(chop_status < 0)
     {
         free(imgbfr);

@@ -199,7 +199,48 @@ int sq_crossmultiply(FILE* instream1, FILE* instream2, FILE* outstream, unsigned
  */
 int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int out_length);
 
+/** 
+ * Sum samples -- ?
+ * @param instream Input stream of float data
+ * @param outstream Output stream of float data
+ * nsamples 
+ */
 int sq_sum(FILE* instream, FILE* outstream, unsigned int nsamples);
-int sq_zoom(FILE* instream, FILE* outstream, unsigned int zoom_length);
+
+/**
+ * Zoom?
+ * @param instream Input stream of float data
+ * @param outstream Output stream of float data
+ * zoom_length 
+ */ 
+int sq_zoom(FILE* instream, FILE* outstream, unsigned int zoom_length); 
+
+
+/**
+ * Discard samples on left and right of spectrum
+ * @param instream Input stream of float data
+ * @param outstream Output stream of float data
+ * in_length Number of samples given as input to one chop iteration
+ * chop_fraction Fraction of spectrum to discard on both edges of spectrum
+ */
+int sq_chop(FILE* instream, FILE* outstream, unsigned int in_length, float chop_fraction);
+
+/**
+ * Convert the instream (binary floats) to an output stream in ascii format.
+ * @param instream Input stream of float data
+ * @param outstream Output stream of float data
+ * in_length Number of samples given as input to one iteration (actually makes no difF)
+ */
+int sq_ascii(FILE* instream, FILE* outstream, unsigned int in_length);
+
+/**
+ * Extract the phase-part of the data (divide each data point by its
+ * absolute value. Output real (cosine) and imaginary (sine) parts
+ * of phasor as floats.
+ * @param instream Input stream of float data
+ * @param outstream Output stream of float data
+ * in_length Number of samples given as input to one iteration (actually makes no difF)
+ */
+int sq_phase(FILE* instream, FILE* outstream, unsigned int in_length);
 
 #endif

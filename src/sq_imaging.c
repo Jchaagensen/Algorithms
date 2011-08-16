@@ -159,7 +159,7 @@ int sq_write_img(FILE* outstream, float* img_buf, int rows, int cols)
 }
 
 
-int sq_chop(float* img_in, float* img_out, int rows, int cols, float width_chop_fraction, float height_chop_fraction)
+int sq_imchop(float* img_in, float* img_out, int rows, int cols, float width_chop_fraction, float height_chop_fraction)
 {
     unsigned int rowi;
     unsigned int coli;

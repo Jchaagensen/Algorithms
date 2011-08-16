@@ -54,7 +54,7 @@ char* usage_text[] =
 
 
 unsigned int wndw_len = 0;
-char window_name[10];
+char window_name[10] = {"hann"};
 
 int main(int argc, char **argv)
 {

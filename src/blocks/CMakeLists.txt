@@ -2,27 +2,30 @@
 
 INCLUDE_DIRECTORIES(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/../) 
 
-set(PROGRAMS sqfft 
+set(PROGRAMS 
+             sqabs
+	     sqascii
+             sqbin
+	     sqchop
+             sqconjugate 
+             sqcrossmultiply
+             sqedgechop
+             sqgetimgtfp
+             sqimag 
+	     sqfft 
+             sqgensine
+             sqmix
+             sqoffset 
+             sqpnm
              sqpower 
              sqread 
              sqreal 
-             sqimag 
              sqsample 
+             sqscaleandrotate 
              sqsum 
              sqwindow 
-             sqoffset 
-             sqconjugate 
-             sqscaleandrotate 
-             sqmix
-             sqzoom
-             sqpnm
              sqwola
-             sqgensine
-             sqedgechop
-             sqabs
-             sqcrossmultiply
-             sqbin
-             sqgetimgtfp
+             sqzoom
    )
 
 set(SCRIPTS sqautocorr

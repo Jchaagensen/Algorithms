@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <sq_constants.h>
 #include <sq_dsp.h>
 #include <sq_utils.h>
 
@@ -48,24 +49,24 @@ char *usage_text[] =
     "SYNOPSIS                                                                ",
     "  sqbin [OPTIONS] ...                                                  ",
     "DESCRIPTION                                                             ",
-    "  -i  Input number of samples ",
+    "  -l  Input number of samples ",
     "  -o  Number of samples in the output for the given input number"
 };
 
-unsigned int in_length = 4096;
-unsigned int out_length = 4096;
+unsigned int in_length = SMPLS_PER_READ;
+unsigned int out_length = SMPLS_PER_READ;
 
 int main(int argc, char *argv[])
 {
     int opt;
-    while ((opt = getopt(argc, argv, "hi:o:")) != -1)
+    while ((opt = getopt(argc, argv, "hl:o:")) != -1)
     {
         switch (opt)
         {
             case 'h':
                 print_usage(usage_text);
                 exit(EXIT_FAILURE);
-            case 'i':
+            case 'l':
                 sscanf(optarg, "%u", &in_length);
                 break;
             case 'o':
