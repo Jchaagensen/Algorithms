@@ -805,6 +805,7 @@ int sq_phase(FILE* instream, FILE* outstream, unsigned int in_length)
 	    val = input_bfr[(i<<1) + 0] * input_bfr[(i<<1) + 0] +
 		  input_bfr[(i<<1) + 1] * input_bfr[(i<<1) + 1];
 	    val = sqrt(val);
+	    printf("Abs value = %f.", val);
 
 	    // divide each sample by its absolute value
 	    // avoid divide by zero; phase is undefined if val = 0, just leave it
