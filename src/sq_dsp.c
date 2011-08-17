@@ -744,7 +744,7 @@ int sq_chop(FILE* instream, FILE* outstream, unsigned int in_length, float chop_
     input_bfr = malloc(in_length * sizeof(float) * 2);
     if(input_bfr == NULL)
         return ERR_MALLOC;
-    output_bfr = input_bfr + 2 * sizeof(float) * samples_to_discard;
+    output_bfr = input_bfr + 2 * samples_to_discard; // factor of 2 for complex sampling
   
     while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
     {
