@@ -17,7 +17,7 @@ usage () {
   echo "  -n integer, number of channels - default value is 4096                " >&2
   echo "  -o output directory name                                              " >&2
   echo "EXAMPLE                                                                 " >&2
-  echo "  sqwaterfalls -c 1420.0 time-frequency-power.dat                       " >&2
+  echo "  sqwaterfalls -c 1420.0 -o images time-frequency-power.dat             " >&2
   echo "                                                                        " >&2
 }
 
