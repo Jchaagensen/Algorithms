@@ -49,7 +49,11 @@ if [ ! -d $IMAGEDIR ]; then
   mkdir $IMAGEDIR
 fi
 
-for CHAN in $(seq -1536 1 1535)
+printf -v USABLE_CHANS "%d" $(echo "$CHANNLS*3/4;" | bc)
+printf -v LCHAN "%d" $(echo "-1*$USABLE_CHANS/2;" | bc)
+printf -v RCHAN "%d" $(echo "-1*$LCHAN - 1;" | bc)
+
+for CHAN in $(seq $LCHAN 1 $RCHAN)
 do
   for OFST in $(seq 0 1 7)
   do
@@ -59,7 +63,7 @@ do
     fi
     printf -v LFREQ "%.6f" $(echo "scale=10; $CFREQ + (($BW/$CHANNLS)*($CHAN+(($OFST-4)/8)));" | bc) 
     printf -v RFREQ "%.6f" $(echo "scale=10; $CFREQ + (($BW/$CHANNLS)*($CHAN+(($OFST-3)/8)));" | bc) 
-    CMND="sqgetimgtfp -c $CHAN -o $OFST $FILE | sqpnm -c 256 -r 340 -x | convert - -depth 16 -type GrayScale -flip -gamma 1.2 -depth 8 -quality 90 $IMAGEDIR/${SUBDIR}/${SUBDIR}-${OFST}-${LFREQ}-${RFREQ}.png"
+    CMND="sqgetimgtfp -c $CHAN -o $OFST $FILE | sqpnm -c 640 -r 768 -x | convert - -depth 16 -type GrayScale -flip -gamma 1.2 -depth 8 -quality 90 $IMAGEDIR/${SUBDIR}/${SUBDIR}-${OFST}-${LFREQ}-${RFREQ}.png"
     echo $CMND >&2
     eval $CMND
   done
