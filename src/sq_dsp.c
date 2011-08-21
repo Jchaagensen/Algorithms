@@ -114,10 +114,10 @@ int sq_crossmultiply(FILE* instream1, FILE* instream2, FILE* outstream, unsigned
     if(bfr2 == NULL)
         return ERR_MALLOC;
 
-    while(
-          (fread(bfr1, sizeof(float) * 2, nsamples, instream1) == nsamples) &&
-          (fread(bfr2, sizeof(float) * 2, nsamples, instream2) == nsamples)
-         )
+    while( 
+		(fread(bfr1, sizeof(float) * 2, nsamples, instream1) == nsamples) &&
+          	(fread(bfr2, sizeof(float) * 2, nsamples, instream2) == nsamples)
+	 )
     {
         for(smpli = 0; smpli < nsamples; smpli++)
         {
@@ -143,7 +143,7 @@ int sq_crossmultiply(FILE* instream1, FILE* instream2, FILE* outstream, unsigned
     return 0;
 }
 
-int sq_sum(FILE* instream, FILE* outstream, unsigned int nsamples)
+int sq_sum(FILE* instream, FILE* outstream, unsigned int nsamples, unsigned int num_to_sum)
 {
 
     if (!((nsamples >= 2) && (nsamples <= MAX_SMPLS_LEN)))
@@ -151,35 +151,40 @@ int sq_sum(FILE* instream, FILE* outstream, unsigned int nsamples)
 
     float *smpls_bfr;
     float *sum_bfr;
-
-    smpls_bfr = malloc(nsamples * 4 * 2);
-    if(smpls_bfr == NULL)
-        return ERR_MALLOC;
-    
-    sum_bfr = malloc(nsamples * 4 * 2);
-    if(smpls_bfr == NULL)
-        return ERR_MALLOC;
-    
+    unsigned int raster_i;
     unsigned int smpli;
+    unsigned int raster_count;
 
-    for (smpli = 0; smpli < nsamples; smpli++)
-    {
-        sum_bfr[(smpli<<1)+0] = 0.0;
-        sum_bfr[(smpli<<1)+1] = 0.0;
-    }
+    smpls_bfr = malloc(nsamples * sizeof(float) * 2);
+    if(smpls_bfr == NULL)
+        return ERR_MALLOC;
+    
+    sum_bfr = malloc(nsamples * sizeof(float) * 2);
+    if(sum_bfr == NULL)
+        return ERR_MALLOC;
+    
 
-    while (fread(smpls_bfr, 8, nsamples, instream) == nsamples)
+    for (rasteri = 0; rasteri < num_to_sum; ++rasteri)
     {
-        for (smpli = 0; smpli < nsamples; smpli++)
-        {
-            sum_bfr[(smpli<<1)+0] += (smpls_bfr[(smpli<<1)+0] / (float) nsamples);
-            sum_bfr[(smpli<<1)+1] += (smpls_bfr[(smpli<<1)+1] / (float) nsamples);
+	raster_count = 0;
+	for (smpli = 0; smpli < nsamples; smpli++)
+    	{
+            sum_bfr[(smpli<<1)+0] = 0.0;
+            sum_bfr[(smpli<<1)+1] = 0.0;
         }
 
-    fwrite(sum_bfr, 8, nsamples, outstream);
-    }
+        while (fread(smpls_bfr, 2 * sizeof(float), nsamples, instream) == nsamples)
+        {
+	    ++raster_count;
+            for (smpli = 0; smpli < nsamples; smpli++)
+            {
+                sum_bfr[(smpli<<1)+0] += (smpls_bfr[(smpli<<1)+0];
+                sum_bfr[(smpli<<1)+1] += (smpls_bfr[(smpli<<1)+1];
+            }
+        }
 
-    //fwrite(sum_bfr, 8, nsamples, outstream);
+        fwrite(sum_bfr, 2 * sizeof(float), nsamples, outstream);
+    }
 
     free(sum_bfr);
     free(smpls_bfr);
@@ -247,6 +252,7 @@ int sq_component(FILE* instream, FILE* outstream, unsigned int nsamples, int com
     sbfr = malloc(nsamples * sizeof(cmplx));
     if(sbfr == NULL)
         return ERR_MALLOC;
+
     rbfr = malloc(nsamples * sizeof(float));
     if(rbfr == NULL)
         return ERR_MALLOC;
@@ -274,7 +280,9 @@ int sq_imag(FILE* instream, FILE* outstream, unsigned int nsamples)
     return sq_component(instream, outstream, nsamples, IMAG);
 }
 
-int sq_fft(FILE* instream, FILE* outstream, unsigned int fft_len, unsigned char is_inverted, unsigned char is_measured, unsigned char inverse)
+int sq_fft(FILE* instream, FILE* outstream, unsigned int fft_len, 
+		unsigned char is_inverted, unsigned char is_measured, 
+		unsigned char inverse)
 {
     if (fft_len <= 0)
         return ERR_ARG_BOUNDS;
@@ -677,9 +685,6 @@ int sq_chop(FILE* instream, FILE* outstream, unsigned int in_length, float chop_
     int out_length = in_length - 2 * samples_to_discard;
 
     input_bfr = malloc(in_length * sizeof(float) * 2);
-    if(input_bfr == NULL)
-        return ERR_MALLOC;
-    output_bfr = input_bfr + 2 * samples_to_discard; // factor of 2 for complex sampling
   
     while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
     {
@@ -687,6 +692,46 @@ int sq_chop(FILE* instream, FILE* outstream, unsigned int in_length, float chop_
     }
 
     free(input_bfr);
+
+    return 0;
+}
+
+int sq_overlap(FILE* instream, FILE* outstream, unsigned int in_length, float overlap_factor)
+{
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+        return ERR_ARG_BOUNDS;
+
+    float *input_bfr;
+    float *input_bfr_1;
+    float *input_bfr_2;
+    float *output_bfr;
+
+    if (overlap_factor != 2.0)
+    {
+	    fprintf(stderr, "Only overlap factor of 2 is supported (you supplied %f)\n", 
+			    overlap_factor);
+            return ERR_ARG_BOUNDS;
+    }
+    
+    input_bfr = malloc(in_length * sizeof(float) * 2);
+    if(input_bfr == NULL)
+        return ERR_MALLOC;
+    input_bfr_1 = input_bfr;
+    input_bfr_2 = input_bfr + in_length/2;
+    
+    output_bfr = malloc(in_length * sizeof(float) * 2);
+    if(output_bfr == NULL)
+        return ERR_MALLOC;
+    /** output_bfr = input_bfr + 2 * samples_to_discard; // factor of 2 for complex sampling
+  
+    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    {
+        fwrite(output_bfr, sizeof(float) * 2, out_length , outstream);
+    }
+
+    */
+    free(input_bfr);
+    free(output_bfr);
 
     return 0;
 }
