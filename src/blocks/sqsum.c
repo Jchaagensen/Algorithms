@@ -2,7 +2,7 @@
 
   File:    sqsum.c
   Project: SETIkit
-  Authors: Aditya Bhatt <aditya at adityabhatt dot org>
+  Authors: Aditya Bhatt <aditya at adityabhatt dot org>, Gerry Harp
 
   Copyright 2011 The SETI Institute
 
@@ -36,11 +36,10 @@
 #include <unistd.h>
 #include <inttypes.h>
 
+#include <sq_constants.h>
 #include <sq_dsp.h>
 #include <sq_utils.h>
 
-unsigned int smpls_len = 100000;
-unsigned int num_to_sum = 256;
 
 //          1         2         3         4         5         6         7
 // 123456789012345678901234567890123456789012345678901234567890123456789012
@@ -48,7 +47,7 @@ char *usage_text[] =
 {
     "                                                                        ",
     "NAME                                                                    ",
-    "  sum -  average each incoming N "raster lines" into one output raster  ",
+    "  sum -  average each incoming N raster lines into one output raster    ",
     "SYNOPSIS                                                                ",
     "  sqsum [OPTIONS] ...                                                   ",
     "DESCRIPTION                                                             ",
@@ -58,10 +57,12 @@ char *usage_text[] =
 };
 int main(int argc, char **argv)
 {
+    unsigned int nsamples = SMPLS_PER_READ;
+    unsigned int num_to_sum = 256;
 
     int opt;
 
-    while ((opt = getopt(argc, argv, "l:hn")) != -1)
+    while ((opt = getopt(argc, argv, "hl:n:")) != -1)
     {
         switch (opt)
         {
@@ -69,14 +70,16 @@ int main(int argc, char **argv)
                 print_usage(usage_text);
                 exit(EXIT_FAILURE);
             case 'l':
-                sscanf(optarg, "%u", &smpls_len);
+                sscanf(optarg, "%u", &nsamples);
                 break;
 	    case 'n':
 		sscanf(optarg, "%u", &num_to_sum);
+                break;
         }
     }
-    
-    int status = sq_sum(stdin, stdout, smpls_len, num_to_sum);
+
+    //fprintf(stderr, "nsamples, num_to_sum: %i %i\n", nsamples, num_to_sum);
+    int status = sq_sum(stdin, stdout, nsamples, num_to_sum);
     
     if(status < 0)
     {

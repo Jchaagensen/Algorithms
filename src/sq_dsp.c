@@ -151,9 +151,11 @@ int sq_sum(FILE* instream, FILE* outstream, unsigned int nsamples, unsigned int 
 
     float *smpls_bfr;
     float *sum_bfr;
-    unsigned int raster_i;
+    unsigned int rasteri;
     unsigned int smpli;
     unsigned int raster_count;
+    int first_time = 1;
+    int schedule_shutdown = 0;
 
     smpls_bfr = malloc(nsamples * sizeof(float) * 2);
     if(smpls_bfr == NULL)
@@ -162,28 +164,48 @@ int sq_sum(FILE* instream, FILE* outstream, unsigned int nsamples, unsigned int 
     sum_bfr = malloc(nsamples * sizeof(float) * 2);
     if(sum_bfr == NULL)
         return ERR_MALLOC;
-    
 
-    for (rasteri = 0; rasteri < num_to_sum; ++rasteri)
+    for (;;) // loop until break
     {
-	raster_count = 0;
-	for (smpli = 0; smpli < nsamples; smpli++)
+        raster_count = 0;
+
+	// zero the array containing sum
+	for (smpli = 0; smpli < nsamples; ++smpli)
     	{
             sum_bfr[(smpli<<1)+0] = 0.0;
             sum_bfr[(smpli<<1)+1] = 0.0;
         }
 
-        while (fread(smpls_bfr, 2 * sizeof(float), nsamples, instream) == nsamples)
+        for (rasteri = 0; rasteri < num_to_sum; ++rasteri)
         {
-	    ++raster_count;
-            for (smpli = 0; smpli < nsamples; smpli++)
-            {
-                sum_bfr[(smpli<<1)+0] += (smpls_bfr[(smpli<<1)+0];
-                sum_bfr[(smpli<<1)+1] += (smpls_bfr[(smpli<<1)+1];
+	    // read a new raster line of data
+            if (fread(smpls_bfr, 2 * sizeof(float), nsamples, instream) == nsamples)
+	    {
+	        ++raster_count;
+
+		// sum this raster with previous
+                for (smpli = 0; smpli < nsamples; smpli++)
+                {
+                    sum_bfr[(smpli<<1)+0] += smpls_bfr[(smpli<<1)+0];
+                    sum_bfr[(smpli<<1)+1] += smpls_bfr[(smpli<<1)+1];
+                }
             }
+	    else
+	    {
+		// we are out of data, get ready to shut down
+	        schedule_shutdown = 1;
+	    }
         }
 
-        fwrite(sum_bfr, 2 * sizeof(float), nsamples, outstream);
+	// if there is only one output raster, send it no matter what
+	// if there have been other output rasters before, don't send unless 
+	// this one is complete
+	if (first_time || raster_count == num_to_sum) 
+	    fwrite(sum_bfr, 2 * sizeof(float), nsamples, outstream);
+	first_time = 0;
+
+	// if we are out of data, then break
+	if(schedule_shutdown) break;
     }
 
     free(sum_bfr);
