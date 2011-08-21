@@ -631,15 +631,15 @@ int sq_wola(FILE* instream, FILE* outstream, unsigned int fftlen, unsigned int f
     return 0;
 }
 
-int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int out_length)
+int sq_bin(FILE* instream, FILE* outstream, unsigned int nsamples, unsigned int out_length)
 {
-    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+    if (!((nsamples >= 2) && (nsamples <= MAX_SMPLS_LEN)))
         return ERR_ARG_BOUNDS;
 
     float *input_bfr;
     float *output_bfr;
 
-    input_bfr = malloc(in_length * sizeof(float) * 2);
+    input_bfr = malloc(nsamples * sizeof(float) * 2);
     if(input_bfr == NULL)
         return ERR_MALLOC;
     output_bfr = calloc(out_length,  sizeof(float) * 2);
@@ -647,10 +647,10 @@ int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
         return ERR_MALLOC;
     
     unsigned int bin_size;
-    bin_size = in_length / out_length;
+    bin_size = nsamples / out_length;
 
     unsigned int in_i = 0, out_i, start, stop;
-    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    while (fread(input_bfr, sizeof(float) * 2, nsamples, instream) == nsamples)
     {
         memset(output_bfr, 0, out_length * sizeof(float) * 2);
         for (out_i = 0; out_i < out_length; out_i++)
@@ -673,20 +673,20 @@ int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
     return 0;
 }
 
-int sq_chop(FILE* instream, FILE* outstream, unsigned int in_length, float chop_fraction)
+int sq_chop(FILE* instream, FILE* outstream, unsigned int nsamples, float chop_fraction)
 {
-    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+    if (!((nsamples >= 2) && (nsamples <= MAX_SMPLS_LEN)))
         return ERR_ARG_BOUNDS;
 
     float *input_bfr;
     float *output_bfr;
 
-    int samples_to_discard = (int)((float)in_length * chop_fraction);
-    int out_length = in_length - 2 * samples_to_discard;
+    int samples_to_discard = (int)((float)nsamples * chop_fraction);
+    int out_length = nsamples - 2 * samples_to_discard;
 
-    input_bfr = malloc(in_length * sizeof(float) * 2);
+    input_bfr = malloc(nsamples * sizeof(float) * 2);
   
-    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    while (fread(input_bfr, sizeof(float) * 2, nsamples, instream) == nsamples)
     {
         fwrite(output_bfr, sizeof(float) * 2, out_length , outstream);
     }
@@ -696,9 +696,9 @@ int sq_chop(FILE* instream, FILE* outstream, unsigned int in_length, float chop_
     return 0;
 }
 
-int sq_overlap(FILE* instream, FILE* outstream, unsigned int in_length, float overlap_factor)
+int sq_overlap(FILE* instream, FILE* outstream, unsigned int nsamples, float overlap_factor)
 {
-    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+    if (!((nsamples >= 2) && (nsamples <= MAX_SMPLS_LEN)))
         return ERR_ARG_BOUNDS;
 
     float *input_bfr;
@@ -713,18 +713,18 @@ int sq_overlap(FILE* instream, FILE* outstream, unsigned int in_length, float ov
             return ERR_ARG_BOUNDS;
     }
     
-    input_bfr = malloc(in_length * sizeof(float) * 2);
+    input_bfr = malloc(nsamples * sizeof(float) * 2);
     if(input_bfr == NULL)
         return ERR_MALLOC;
     input_bfr_1 = input_bfr;
-    input_bfr_2 = input_bfr + in_length/2;
+    input_bfr_2 = input_bfr + nsamples/2;
     
-    output_bfr = malloc(in_length * sizeof(float) * 2);
+    output_bfr = malloc(nsamples * sizeof(float) * 2);
     if(output_bfr == NULL)
         return ERR_MALLOC;
     /** output_bfr = input_bfr + 2 * samples_to_discard; // factor of 2 for complex sampling
   
-    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    while (fread(input_bfr, sizeof(float) * 2, nsamples, instream) == nsamples)
     {
         fwrite(output_bfr, sizeof(float) * 2, out_length , outstream);
     }
@@ -737,22 +737,22 @@ int sq_overlap(FILE* instream, FILE* outstream, unsigned int in_length, float ov
 }
 
 
-int sq_ascii(FILE* instream, FILE* outstream, unsigned int in_length)
+int sq_ascii(FILE* instream, FILE* outstream, unsigned int nsamples)
 {
-    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+    if (!((nsamples >= 2) && (nsamples <= MAX_SMPLS_LEN)))
         return ERR_ARG_BOUNDS;
 
     int i;
     float *input_bfr;
     float *output_bfr;
 
-    input_bfr = malloc(in_length * sizeof(float) * 2);
+    input_bfr = malloc(nsamples * sizeof(float) * 2);
     if(input_bfr == NULL)
         return ERR_MALLOC;
     
-    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    while (fread(input_bfr, sizeof(float) * 2, nsamples, instream) == nsamples)
     {
-	for (i = 0; i < in_length; ++i)
+	for (i = 0; i < nsamples; ++i)
 	{
 	    fprintf(outstream, "%f, %f\n", 
 			    input_bfr[(i<<1) + 0], input_bfr[(i<<1) + 1]);
@@ -764,22 +764,22 @@ int sq_ascii(FILE* instream, FILE* outstream, unsigned int in_length)
     return 0;
 }
 
-int sq_phase(FILE* instream, FILE* outstream, unsigned int in_length)
+int sq_phase(FILE* instream, FILE* outstream, unsigned int nsamples)
 {
-    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+    if (!((nsamples >= 2) && (nsamples <= MAX_SMPLS_LEN)))
         return ERR_ARG_BOUNDS;
 
     int i;
     float *input_bfr;
     float val;
 
-    input_bfr = malloc(in_length * sizeof(float) * 2);
+    input_bfr = malloc(nsamples * sizeof(float) * 2);
     if(input_bfr == NULL)
         return ERR_MALLOC;
     
-    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    while (fread(input_bfr, sizeof(float) * 2, nsamples, instream) == nsamples)
     {
-	for (i = 0; i < in_length; ++i)
+	for (i = 0; i < nsamples; ++i)
 	{
 	    // compute absolute value of complex sample
 	    val = input_bfr[(i<<1) + 0] * input_bfr[(i<<1) + 0] +
@@ -796,7 +796,7 @@ int sq_phase(FILE* instream, FILE* outstream, unsigned int in_length)
 	    }
 	}
 
-        fwrite(input_bfr, sizeof(float) * 2, in_length , outstream);
+        fwrite(input_bfr, sizeof(float) * 2, nsamples , outstream);
     }
 
     free(input_bfr);
