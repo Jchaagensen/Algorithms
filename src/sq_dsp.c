@@ -3,7 +3,8 @@
   File:    sq_dsp.c
   Project: SETIkit
   Authors: Aditya Bhatt <aditya at adityabhatt dot org>
-           Rob Ackermann <ackermann at seti dot org>
+           Rob Ackermann 
+	   Gerry Harp <gharp @ seti dot org>
 
   Copyright 2011 The SETI Institute
 
