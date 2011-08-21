@@ -40,23 +40,43 @@
 #include <sq_utils.h>
 
 unsigned int smpls_len = 100000;
+unsigned int num_to_sum = 256;
 
+//          1         2         3         4         5         6         7
+// 123456789012345678901234567890123456789012345678901234567890123456789012
+char *usage_text[] = 
+{
+    "                                                                        ",
+    "NAME                                                                    ",
+    "  sum -  average each incoming N "raster lines" into one output raster  ",
+    "SYNOPSIS                                                                ",
+    "  sqsum [OPTIONS] ...                                                   ",
+    "DESCRIPTION                                                             ",
+    "  -l  Input number of samples                                           ",
+    "  -n  Number of input lines to sum before generating output line        ",
+    "  -h Print usage                                                        "
+};
 int main(int argc, char **argv)
 {
 
     int opt;
 
-    while ((opt = getopt(argc, argv, "l:")) != -1)
+    while ((opt = getopt(argc, argv, "l:hn")) != -1)
     {
         switch (opt)
         {
+            case 'h':
+                print_usage(usage_text);
+                exit(EXIT_FAILURE);
             case 'l':
                 sscanf(optarg, "%u", &smpls_len);
                 break;
+	    case 'n':
+		sscanf(optarg, "%u", &num_to_sum);
         }
     }
     
-    int status = sq_sum(stdin, stdout, smpls_len);
+    int status = sq_sum(stdin, stdout, smpls_len, num_to_sum);
     
     if(status < 0)
     {
