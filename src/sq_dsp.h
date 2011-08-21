@@ -200,12 +200,15 @@ int sq_crossmultiply(FILE* instream1, FILE* instream2, FILE* outstream, unsigned
 int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int out_length);
 
 /** 
- * Sum samples -- ?
+ * Sum N raster lines into one. This function reduces the number
+ * of rasters produced by a factor of N. Note that this does a
+ * sum and not an average.
  * @param instream Input stream of float data
  * @param outstream Output stream of float data
- * nsamples 
+ * @param nsamples the usual in_length, length of one raster line
+ * @param num_to_sum the N mentioned above, number of rasters to combine into one
  */
-int sq_sum(FILE* instream, FILE* outstream, unsigned int nsamples);
+int sq_sum(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int num_to_sum);
 
 /**
  * Zoom?
@@ -242,5 +245,13 @@ int sq_ascii(FILE* instream, FILE* outstream, unsigned int in_length);
  * in_length Number of samples given as input to one iteration (actually makes no difF)
  */
 int sq_phase(FILE* instream, FILE* outstream, unsigned int in_length);
+
+/**
+ * To be used before a (Hann) window function, this utility introduces X% overlaps between
+ * adjaent chunks of data. Supossing your overlap is 50%, then for input data length N,
+ * the output of this function will be 2N in length. Each output chunk is the concatenation
+ * of two reads length L/2 each (where L is -l input size option).
+ */
+int sq_overlap(FILE* instream, FILE* outstream, unsigned int in_length, float overlap_factor);
 
 #endif
