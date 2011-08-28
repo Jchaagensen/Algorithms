@@ -52,11 +52,7 @@ int sq_abs(FILE* instream, FILE* outstream, unsigned int in_length)
     }
 
     smpls_bfr = malloc(in_length * sizeof(float) * 2);
-    if(smpls_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(smpls_bfr == NULL) return ERR_MALLOC;
     
     while (fread(smpls_bfr, sizeof(float) * 2, in_length, instream) == in_length)
     {
@@ -88,11 +84,7 @@ int sq_power(FILE* instream, FILE* outstream, unsigned int in_length)
     }
 
     smpls_bfr = malloc(in_length * sizeof(float) * 2);
-    if(smpls_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(smpls_bfr == NULL) return ERR_MALLOC;
     
     while (fread(smpls_bfr, sizeof(float) * 2, in_length, instream) == in_length)
     {
@@ -125,18 +117,10 @@ int sq_crossmultiply(FILE* instream1, FILE* instream2, FILE* outstream, unsigned
     }
 
     bfr1 = malloc(in_length * sizeof(float) * 2);
-    if(bfr1 == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(bfr1 == NULL) return ERR_MALLOC;
 
     bfr2 = malloc(in_length * sizeof(float) * 2);
-    if(bfr2 == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(bfr2 == NULL) return ERR_MALLOC;
 
     while( 
 		(fread(bfr1, sizeof(float) * 2, in_length, instream1) == in_length) &&
@@ -188,18 +172,10 @@ int sq_sum(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
     int schedule_shutdown = 0;
 
     smpls_bfr = malloc(in_length * sizeof(float) * 2);
-    if(smpls_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(smpls_bfr == NULL) return ERR_MALLOC;
     
     sum_bfr = malloc(in_length * sizeof(float) * 2);
-    if(sum_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(sum_bfr == NULL) return ERR_MALLOC;
 
     for (;;) // loop until break
     {
@@ -263,23 +239,13 @@ int sq_window( FILE* instream, FILE* outstream, unsigned int in_length, char* wi
     }
 
     wndw_bfr = malloc(in_length * sizeof(float));
-    if(wndw_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(wndw_bfr == NULL) return ERR_MALLOC;
+
     in_bfr = malloc(in_length * sizeof(float) * 2);
-    if(in_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(in_bfr == NULL) return ERR_MALLOC;
+
     out_bfr = malloc(in_length * sizeof(float) * 2);
-    if(out_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(out_bfr == NULL) return ERR_MALLOC;
 
     // Make window buffer
     int status = sq_make_window_from_name(wndw_bfr, in_length, window_name);
@@ -326,18 +292,10 @@ int sq_component(FILE* instream, FILE* outstream, unsigned int in_length, int co
     float *rbfr;
 
     sbfr = malloc(in_length * sizeof(cmplx));
-    if(sbfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(sbfr == NULL) return ERR_MALLOC;
 
     rbfr = malloc(in_length * sizeof(float));
-    if(rbfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(rbfr == NULL) return ERR_MALLOC;
 
     while (fread(sbfr, sizeof(cmplx), in_length, instream) == in_length)
     {
@@ -438,11 +396,7 @@ int sq_offset(FILE* instream, FILE* outstream, unsigned int in_length, float rea
     float *smpls_bfr;
 
     smpls_bfr = malloc(in_length * 4 * 2);
-    if(smpls_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(smpls_bfr == NULL) return ERR_MALLOC;
     
     while (fread(smpls_bfr, 8, in_length, instream) == in_length)
     {
@@ -473,11 +427,7 @@ int sq_conjugate(FILE* instream, FILE* outstream, unsigned int in_length)
     unsigned int datai;
 
     data_bfr = malloc(in_length * sizeof(float) * 2);
-    if(data_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(data_bfr == NULL) return ERR_MALLOC;
 
     while (fread(data_bfr, 8, in_length, instream) == in_length)
     {
@@ -504,11 +454,7 @@ int sq_scaleandrotate(FILE* instream, FILE* outstream, unsigned int in_length, f
     float *smpls_bfr;
 
     smpls_bfr = malloc(in_length * 4 * 2);
-    if(smpls_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(smpls_bfr == NULL) return ERR_MALLOC;
 
     float re, im;
     while (fread(smpls_bfr, 8, in_length, instream) == in_length)
@@ -560,11 +506,7 @@ int sq_mix(FILE* instream, FILE* outstream, unsigned int in_length, float radian
     radians = radians * -1.0;
 
     smpls_bfr = malloc(in_length * 4 * 2);
-    if(smpls_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(smpls_bfr == NULL) return ERR_MALLOC;
 
     float re, im;
     while (fread(smpls_bfr, 8, in_length, instream) == in_length)
@@ -607,18 +549,10 @@ int sq_zoom(FILE* instream, FILE* outstream, unsigned int in_length)
     outbfri = 0;
 
     input_bfr = malloc(in_length * sizeof(float) * 2);
-    if(input_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(input_bfr == NULL) return ERR_MALLOC;
 
     output_bfr = malloc(ZOOM_OUTPUT_BFR_LEN * sizeof(float) * 2);
-    if(output_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(output_bfr == NULL) return ERR_MALLOC;
 
     while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
     {
@@ -698,11 +632,7 @@ int sq_wola(FILE* instream, FILE* outstream, unsigned int in_length, unsigned in
 
     wndwlen = folds * in_length;
     wndwbfr = malloc(wndwlen * sizeof(float));
-    if(wndwbfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(wndwbfr == NULL) return ERR_MALLOC;
 
     init_window(wndwbfr, wndwlen, folds);
 
@@ -722,25 +652,13 @@ int sq_wola(FILE* instream, FILE* outstream, unsigned int in_length, unsigned in
         readlen = (in_length * 2) / 4;
 
     readbfr = malloc(readlen * sizeof(cmplx));
-    if(readbfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(readbfr == NULL) return ERR_MALLOC;
 
     smplbfr = malloc(wndwlen * sizeof(cmplx));
-    if(smplbfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(smplbfr == NULL) return ERR_MALLOC;
 
     fftbfr = malloc(in_length * sizeof(cmplx));
-    if(fftbfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(fftbfr == NULL) return ERR_MALLOC;
 
     // initially fill the sample buffer to satisfy the first weight,
     // overlap, and add
@@ -807,17 +725,10 @@ int sq_pad(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
     float *output_bfr;
 
     input_bfr = malloc(in_length * sizeof(float) * 2);
-    if(input_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(input_bfr == NULL) return ERR_MALLOC;
+
     output_bfr = calloc(out_length,  sizeof(float) * 2);
-    if(output_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(output_bfr == NULL) return ERR_MALLOC;
     
     unsigned int bin_size;
     bin_size = in_length / out_length;
@@ -864,17 +775,10 @@ int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
     float *output_bfr;
 
     input_bfr = malloc(in_length * sizeof(float) * 2);
-    if(input_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(input_bfr == NULL) return ERR_MALLOC;
+
     output_bfr = calloc(out_length,  sizeof(float) * 2);
-    if(output_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(output_bfr == NULL) return ERR_MALLOC;
     
     unsigned int bin_size;
     bin_size = in_length / out_length;
@@ -960,20 +864,14 @@ int sq_overlap(FILE* instream, FILE* outstream, unsigned int in_length, float ov
     }
     
     input_bfr = malloc(in_length * sizeof(float) * 2);
-    if(input_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(input_bfr == NULL) return ERR_MALLOC;
+
     input_bfr_1 = input_bfr;
     input_bfr_2 = input_bfr + in_length/2;
     
     output_bfr = malloc(in_length * sizeof(float) * 2);
-    if(output_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(output_bfr == NULL) return ERR_MALLOC;
+
     /** output_bfr = input_bfr + 2 * samples_to_discard; // factor of 2 for complex sampling
   
     while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
@@ -1002,11 +900,7 @@ int sq_ascii(FILE* instream, FILE* outstream, unsigned int in_length)
     float *output_bfr;
 
     input_bfr = malloc(in_length * sizeof(float) * 2);
-    if(input_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(input_bfr == NULL) return ERR_MALLOC;
     
     while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
     {
@@ -1035,11 +929,7 @@ int sq_phase(FILE* instream, FILE* outstream, unsigned int in_length)
     float val;
 
     input_bfr = malloc(in_length * sizeof(float) * 2);
-    if(input_bfr == NULL)
-    {
-        sq_error_handle(ERR_MALLOC);
-	exit(EXIT_FAILURE);
-    }
+    if(input_bfr == NULL) return ERR_MALLOC;
     
     while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
     {
