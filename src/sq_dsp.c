@@ -51,10 +51,10 @@ int sq_abs(FILE* instream, FILE* outstream, unsigned int in_length)
         return ERR_ARG_BOUNDS;
     }
 
-    smpls_bfr = malloc(in_length * sizeof(float) * 2);
+    smpls_bfr = malloc(in_length * sizeof(cmplx));
     if(smpls_bfr == NULL) return ERR_MALLOC;
     
-    while (fread(smpls_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    while (fread(smpls_bfr, sizeof(cmplx), in_length, instream) == in_length)
     {
         for (smpli = 0; smpli < in_length ; smpli++)
         {
@@ -64,7 +64,7 @@ int sq_abs(FILE* instream, FILE* outstream, unsigned int in_length)
             smpls_bfr[(smpli<<1)+1] = 0.0;
         }
 
-        fwrite(smpls_bfr, sizeof(float) * 2, in_length, outstream);
+        fwrite(smpls_bfr, sizeof(cmplx), in_length, outstream);
     }
 
     free(smpls_bfr);
@@ -83,10 +83,10 @@ int sq_power(FILE* instream, FILE* outstream, unsigned int in_length)
         return ERR_ARG_BOUNDS;
     }
 
-    smpls_bfr = malloc(in_length * sizeof(float) * 2);
+    smpls_bfr = malloc(in_length * sizeof(cmplx));
     if(smpls_bfr == NULL) return ERR_MALLOC;
     
-    while (fread(smpls_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    while (fread(smpls_bfr, sizeof(cmplx), in_length, instream) == in_length)
     {
         for (smpli = 0; smpli < in_length ; smpli++)
         {
@@ -96,7 +96,7 @@ int sq_power(FILE* instream, FILE* outstream, unsigned int in_length)
             smpls_bfr[(smpli<<1)+1] = 0.0;
         }
 
-        fwrite(smpls_bfr, sizeof(float) * 2, in_length, outstream);
+        fwrite(smpls_bfr, sizeof(cmplx), in_length, outstream);
     }
 
     free(smpls_bfr);
@@ -116,15 +116,15 @@ int sq_crossmultiply(FILE* instream1, FILE* instream2, FILE* outstream, unsigned
         return ERR_ARG_BOUNDS;
     }
 
-    bfr1 = malloc(in_length * sizeof(float) * 2);
+    bfr1 = malloc(in_length * sizeof(cmplx));
     if(bfr1 == NULL) return ERR_MALLOC;
 
-    bfr2 = malloc(in_length * sizeof(float) * 2);
+    bfr2 = malloc(in_length * sizeof(cmplx));
     if(bfr2 == NULL) return ERR_MALLOC;
 
     while( 
-		(fread(bfr1, sizeof(float) * 2, in_length, instream1) == in_length) &&
-          	(fread(bfr2, sizeof(float) * 2, in_length, instream2) == in_length)
+		(fread(bfr1, sizeof(cmplx), in_length, instream1) == in_length) &&
+          	(fread(bfr2, sizeof(cmplx), in_length, instream2) == in_length)
 	 )
     {
 	++buf_count;
@@ -144,7 +144,7 @@ int sq_crossmultiply(FILE* instream1, FILE* instream2, FILE* outstream, unsigned
             bfr1[(smpli<<1)+1] = imag;
         }
         
-        fwrite(bfr1, sizeof(float) * 2, in_length, outstream);
+        fwrite(bfr1, sizeof(cmplx), in_length, outstream);
 
 	if (buf_count%100 == 1) fprintf(stderr, "Completed cycle %i\n", buf_count);
     }
@@ -171,10 +171,10 @@ int sq_sum(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
     int first_time = 1;
     int schedule_shutdown = 0;
 
-    smpls_bfr = malloc(in_length * sizeof(float) * 2);
+    smpls_bfr = malloc(in_length * sizeof(cmplx));
     if(smpls_bfr == NULL) return ERR_MALLOC;
     
-    sum_bfr = malloc(in_length * sizeof(float) * 2);
+    sum_bfr = malloc(in_length * sizeof(cmplx));
     if(sum_bfr == NULL) return ERR_MALLOC;
 
     for (;;) // loop until break
@@ -191,7 +191,7 @@ int sq_sum(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
         for (rasteri = 0; rasteri < num_to_sum; ++rasteri)
         {
 	    // read a new raster line of data
-            if (fread(smpls_bfr, 2 * sizeof(float), in_length, instream) == in_length)
+            if (fread(smpls_bfr, sizeof(cmplx), in_length, instream) == in_length)
 	    {
 	        ++raster_count;
 
@@ -213,7 +213,7 @@ int sq_sum(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
 	// if there have been other output rasters before, don't send unless 
 	// this one is complete
 	if (first_time || raster_count == num_to_sum) 
-	    fwrite(sum_bfr, 2 * sizeof(float), in_length, outstream);
+	    fwrite(sum_bfr, sizeof(cmplx), in_length, outstream);
 	first_time = 0;
 
 	// if we are out of data, then break
@@ -241,10 +241,10 @@ int sq_window( FILE* instream, FILE* outstream, unsigned int in_length, char* wi
     wndw_bfr = malloc(in_length * sizeof(float));
     if(wndw_bfr == NULL) return ERR_MALLOC;
 
-    in_bfr = malloc(in_length * sizeof(float) * 2);
+    in_bfr = malloc(in_length * sizeof(cmplx));
     if(in_bfr == NULL) return ERR_MALLOC;
 
-    out_bfr = malloc(in_length * sizeof(float) * 2);
+    out_bfr = malloc(in_length * sizeof(cmplx));
     if(out_bfr == NULL) return ERR_MALLOC;
 
     // Make window buffer
@@ -252,19 +252,19 @@ int sq_window( FILE* instream, FILE* outstream, unsigned int in_length, char* wi
     if(status < 0)
         return status;
 
-    fread(&in_bfr[(in_length/2)*2], sizeof(float) * 2, in_length / 2, instream);
-    memcpy(&in_bfr[0], &in_bfr[(in_length/2)*2], (in_length / 2)* sizeof(float) *2);
+    fread(&in_bfr[(in_length/2)*2], sizeof(cmplx), in_length / 2, instream);
+    memcpy(&in_bfr[0], &in_bfr[(in_length/2)*2], (in_length / 2)* sizeof(cmplx));
 
     unsigned int bfri;
-    while (fread(&in_bfr[(in_length/2)*2], sizeof(float) * 2, in_length / 2, instream) == (in_length / 2))
+    while (fread(&in_bfr[(in_length/2)*2], sizeof(cmplx), in_length / 2, instream) == (in_length / 2))
     {
         for (bfri = 0; bfri < in_length; bfri++)
         {
             out_bfr[(bfri<<1)+0] = in_bfr[(bfri<<1)+0] * wndw_bfr[bfri];
             out_bfr[(bfri<<1)+1] = in_bfr[(bfri<<1)+1] * wndw_bfr[bfri];
         }
-        fwrite(out_bfr, sizeof(float) * 2, in_length, outstream);
-        memcpy(&in_bfr[0], &in_bfr[(in_length/2)*2], (in_length / 2)*sizeof(float)*2);
+        fwrite(out_bfr, sizeof(cmplx), in_length, outstream);
+        memcpy(&in_bfr[0], &in_bfr[(in_length/2)*2], (in_length / 2)*sizeof(cmplx));
     }
 
     free(wndw_bfr);
@@ -395,7 +395,7 @@ int sq_offset(FILE* instream, FILE* outstream, unsigned int in_length, float rea
     unsigned int smpli;
     float *smpls_bfr;
 
-    smpls_bfr = malloc(in_length * sizeof(float) * 2);
+    smpls_bfr = malloc(in_length * sizeof(cmplx));
     if(smpls_bfr == NULL) return ERR_MALLOC;
     
     while (fread(smpls_bfr, 8, in_length, instream) == in_length)
@@ -426,7 +426,7 @@ int sq_conjugate(FILE* instream, FILE* outstream, unsigned int in_length)
     float *data_bfr;
     unsigned int datai;
 
-    data_bfr = malloc(in_length * sizeof(float) * 2);
+    data_bfr = malloc(in_length * sizeof(cmplx));
     if(data_bfr == NULL) return ERR_MALLOC;
 
     while (fread(data_bfr, 8, in_length, instream) == in_length)
@@ -434,7 +434,7 @@ int sq_conjugate(FILE* instream, FILE* outstream, unsigned int in_length)
         for (datai = 0; datai < in_length; datai += 1)
             data_bfr[(datai<<1)+1] *= -1.0;
 
-        fwrite(data_bfr, sizeof(float) * 2, in_length, outstream);
+        fwrite(data_bfr, sizeof(cmplx), in_length, outstream);
     }
 
     free(data_bfr);
@@ -453,7 +453,7 @@ int sq_scaleandrotate(FILE* instream, FILE* outstream, unsigned int in_length, f
     unsigned int smpli;
     float *smpls_bfr;
 
-    smpls_bfr = malloc(in_length * sizeof(float) * 2);
+    smpls_bfr = malloc(in_length * sizeof(cmplx));
     if(smpls_bfr == NULL) return ERR_MALLOC;
 
     float re, im;
@@ -505,7 +505,7 @@ int sq_mix(FILE* instream, FILE* outstream, unsigned int in_length, float radian
 
     radians = radians * -1.0;
 
-    smpls_bfr = malloc(in_length * sizeof(float) * 2);
+    smpls_bfr = malloc(in_length * sizeof(cmplx));
     if(smpls_bfr == NULL) return ERR_MALLOC;
 
     float re, im;
@@ -548,13 +548,13 @@ int sq_zoom(FILE* instream, FILE* outstream, unsigned int in_length)
 
     outbfri = 0;
 
-    input_bfr = malloc(in_length * sizeof(float) * 2);
+    input_bfr = malloc(in_length * sizeof(cmplx));
     if(input_bfr == NULL) return ERR_MALLOC;
 
-    output_bfr = malloc(ZOOM_OUTPUT_BFR_LEN * sizeof(float) * 2);
+    output_bfr = malloc(ZOOM_OUTPUT_BFR_LEN * sizeof(cmplx));
     if(output_bfr == NULL) return ERR_MALLOC;
 
-    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    while (fread(input_bfr, sizeof(cmplx), in_length, instream) == in_length)
     {
         sum_r = 0.0;
         sum_i = 0.0;
@@ -569,7 +569,7 @@ int sq_zoom(FILE* instream, FILE* outstream, unsigned int in_length)
 
         if (!(outbfri < ZOOM_OUTPUT_BFR_LEN))
         {
-            fwrite(output_bfr, sizeof(float) * 2, ZOOM_OUTPUT_BFR_LEN, outstream);
+            fwrite(output_bfr, sizeof(cmplx), ZOOM_OUTPUT_BFR_LEN, outstream);
             outbfri = 0;
         }
     }
@@ -724,31 +724,22 @@ int sq_pad(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
     float *input_bfr;
     float *output_bfr;
 
-    input_bfr = malloc(in_length * sizeof(float) * 2);
+    input_bfr = malloc(in_length * sizeof(cmplx));
     if(input_bfr == NULL) return ERR_MALLOC;
 
-    output_bfr = calloc(out_length,  sizeof(float) * 2);
+    output_bfr = calloc(out_length, sizeof(cmplx));
     if(output_bfr == NULL) return ERR_MALLOC;
+
+    size_t pad_samples = (out_length - in_length) / 2;
     
-    unsigned int bin_size;
-    bin_size = in_length / out_length;
 
-    unsigned int in_i = 0, out_i, start, stop;
-    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    while (fread(input_bfr, sizeof(cmplx), in_length, instream) == in_length)
     {
-        memset(output_bfr, 0, out_length * sizeof(float) * 2);
-        for (out_i = 0; out_i < out_length; out_i++)
-        {
-            start = out_i * bin_size;
-            stop = (out_i + 1) * bin_size;
-            for(in_i = start; in_i < stop; in_i++)
-            {
-                output_bfr[(out_i<<1) + REAL] += input_bfr[(in_i<<1) + REAL] / bin_size;
-                output_bfr[(out_i<<1) + IMAG] += input_bfr[(in_i<<1) + IMAG] / bin_size;
-            }
-        }
+	// output buffer contains zero on edges already
+	// copy input buffer to middle of output buffer
+	memcpy(output_bfr + pad_samples, input_bfr, in_length);
 
-        fwrite(output_bfr, sizeof(float) * 2, out_length , outstream);
+        fwrite(output_bfr, sizeof(cmplx), out_length , outstream);
     }
 
     free(input_bfr);
@@ -774,19 +765,21 @@ int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
     float *input_bfr;
     float *output_bfr;
 
-    input_bfr = malloc(in_length * sizeof(float) * 2);
+    input_bfr = malloc(in_length * sizeof(cmplx));
     if(input_bfr == NULL) return ERR_MALLOC;
 
-    output_bfr = calloc(out_length,  sizeof(float) * 2);
+    output_bfr = malloc(out_length * sizeof(cmplx));
     if(output_bfr == NULL) return ERR_MALLOC;
     
     unsigned int bin_size;
     bin_size = in_length / out_length;
 
     unsigned int in_i = 0, out_i, start, stop;
-    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    while (fread(input_bfr, sizeof(cmplx), in_length, instream) == in_length)
     {
-        memset(output_bfr, 0, out_length * sizeof(float) * 2);
+	// reinitialize output buffer to zero each iteration
+        memset(output_bfr, 0, out_length * sizeof(cmplx));
+
         for (out_i = 0; out_i < out_length; out_i++)
         {
             start = out_i * bin_size;
@@ -798,7 +791,7 @@ int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
             }
         }
 
-        fwrite(output_bfr, sizeof(float) * 2, out_length , outstream);
+        fwrite(output_bfr, sizeof(cmplx), out_length , outstream);
     }
 
     free(input_bfr);
@@ -826,11 +819,11 @@ int sq_chop(FILE* instream, FILE* outstream, unsigned int in_length, float chop_
     int samples_to_discard = (int)((float)in_length * chop_fraction);
     int out_length = in_length - 2 * samples_to_discard;
 
-    input_bfr = malloc(in_length * sizeof(float) * 2);
+    input_bfr = malloc(in_length * sizeof(cmplx));
   
-    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    while (fread(input_bfr, sizeof(cmplx), in_length, instream) == in_length)
     {
-        fwrite(output_bfr, sizeof(float) * 2, out_length , outstream);
+        fwrite(output_bfr, sizeof(cmplx), out_length , outstream);
     }
 
     free(input_bfr);
@@ -863,20 +856,20 @@ int sq_overlap(FILE* instream, FILE* outstream, unsigned int in_length, float ov
             return ERR_ARG_BOUNDS;
     }
     
-    input_bfr = malloc(in_length * sizeof(float) * 2);
+    input_bfr = malloc(in_length * sizeof(cmplx));
     if(input_bfr == NULL) return ERR_MALLOC;
 
     input_bfr_1 = input_bfr;
     input_bfr_2 = input_bfr + in_length/2;
     
-    output_bfr = malloc(in_length * sizeof(float) * 2);
+    output_bfr = malloc(in_length * sizeof(cmplx));
     if(output_bfr == NULL) return ERR_MALLOC;
 
     /** output_bfr = input_bfr + 2 * samples_to_discard; // factor of 2 for complex sampling
   
-    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    while (fread(input_bfr, sizeof(cmplx), in_length, instream) == in_length)
     {
-        fwrite(output_bfr, sizeof(float) * 2, out_length , outstream);
+        fwrite(output_bfr, sizeof(cmplx), out_length , outstream);
     }
 
     */
@@ -899,10 +892,10 @@ int sq_ascii(FILE* instream, FILE* outstream, unsigned int in_length)
     float *input_bfr;
     float *output_bfr;
 
-    input_bfr = malloc(in_length * sizeof(float) * 2);
+    input_bfr = malloc(in_length * sizeof(cmplx));
     if(input_bfr == NULL) return ERR_MALLOC;
     
-    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    while (fread(input_bfr, sizeof(cmplx), in_length, instream) == in_length)
     {
 	for (i = 0; i < in_length; ++i)
 	{
@@ -928,10 +921,10 @@ int sq_phase(FILE* instream, FILE* outstream, unsigned int in_length)
     float *input_bfr;
     float val;
 
-    input_bfr = malloc(in_length * sizeof(float) * 2);
+    input_bfr = malloc(in_length * sizeof(cmplx));
     if(input_bfr == NULL) return ERR_MALLOC;
     
-    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    while (fread(input_bfr, sizeof(cmplx), in_length, instream) == in_length)
     {
 	for (i = 0; i < in_length; ++i)
 	{
@@ -950,7 +943,7 @@ int sq_phase(FILE* instream, FILE* outstream, unsigned int in_length)
 	    }
 	}
 
-        fwrite(input_bfr, sizeof(float) * 2, in_length , outstream);
+        fwrite(input_bfr, sizeof(cmplx), in_length , outstream);
     }
 
     free(input_bfr);

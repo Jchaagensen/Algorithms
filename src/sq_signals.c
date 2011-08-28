@@ -58,7 +58,7 @@ int sq_gen_sine(FILE* outstream, unsigned int nsamples, unsigned int length, uns
     Cos = malloc(sin_arr_length * sizeof(float));
     if(Cos == NULL)
         return ERR_MALLOC;
-    smpls_out = malloc(nsamples* 2 * sizeof(float));
+    smpls_out = malloc(nsamples* sizeof(cmplx));
     if(smpls_out == NULL)
         return ERR_MALLOC;
     
