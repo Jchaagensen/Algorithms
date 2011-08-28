@@ -148,7 +148,7 @@ int sq_sample( FILE* instream, FILE* outstream, unsigned int nsamples, uint64_t 
     float *smpls_out;
     uint64_t total_bytes = 0;
     
-    unsigned int smpli;
+    unsigned int smpli, smplj;
     
     smpls_in = malloc(nsamples * sizeof(char) * 2);
     if(smpls_in == NULL)
@@ -162,7 +162,7 @@ int sq_sample( FILE* instream, FILE* outstream, unsigned int nsamples, uint64_t 
         // Sample
         for (smpli = 0; smpli < nsamples; smpli++)
         {
-            smpls_out[(smpli<<1) + REAL] = (float) smpls_in[(smpli<<1) + REAL];
+            smpls_out[(smpli<<1) + REAL] =  (float) smpls_in[(smpli<<1) + REAL];
             smpls_out[(smpli<<1) + IMAG] = -(float) smpls_in[(smpli<<1) + IMAG];
         }
         
@@ -192,7 +192,7 @@ float sq_randgaus()
 
 void sq_error_print(char* message)
 {
-    fprintf(stderr, "%s", message);
+    fprintf(stderr, message);
 }
 
 void sq_error_handle(int errcode)

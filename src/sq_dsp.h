@@ -229,6 +229,15 @@ int sq_zoom(FILE* instream, FILE* outstream, unsigned int zoom_length);
 int sq_chop(FILE* instream, FILE* outstream, unsigned int in_length, float chop_fraction);
 
 /**
+ * Pad left and right of spectrum (raster) with zeros
+ * @param instream Input stream of float data
+ * @param outstream Output stream of float data
+ * in_length Number of samples given as input to one chop iteration
+ * out_length Number of samples to be written in one block, must be > in_length
+ */
+int sq_pad(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int out_length);
+
+/**
  * Convert the instream (binary floats) to an output stream in ascii format.
  * @param instream Input stream of float data
  * @param outstream Output stream of float data

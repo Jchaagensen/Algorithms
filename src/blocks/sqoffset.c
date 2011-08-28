@@ -45,7 +45,7 @@ char* usage_text[] =
     "NAME                                                               ",
     "   sqoffset - adds a complex DC offset to the signal               ",
     "SYNOPSIS                                                           ",
-    "   sqconjugate [OPTIONS] ...                                       ",
+    "   sqoffset [OPTIONS] ...                                          ",
     "DESCRIPTION                                                        ",
     "   -l number of samples to read in one go.                         ",
     "   -r real offset                                                  ",

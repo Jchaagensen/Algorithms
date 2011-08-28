@@ -40,21 +40,27 @@
 #include "sq_utils.h"
 #include "sq_windows.h"
 
-int sq_abs(FILE* instream, FILE* outstream, unsigned int nsamples)
+int sq_abs(FILE* instream, FILE* outstream, unsigned int in_length)
 {
     float *smpls_bfr;
     unsigned int smpli;
 
-    if ((nsamples < 2) || (nsamples >= MAX_SMPLS_LEN))
-        return ERR_ARG_BOUNDS;
-
-    smpls_bfr = malloc(nsamples * sizeof(float) * 2);
-    if(smpls_bfr == NULL)
-        return ERR_MALLOC;
-    
-    while (fread(smpls_bfr, sizeof(float) * 2, nsamples, instream) == nsamples)
+    if ((in_length < 2) || (in_length >= MAX_SMPLS_LEN))
     {
-        for (smpli = 0; smpli < nsamples ; smpli++)
+        fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
+        return ERR_ARG_BOUNDS;
+    }
+
+    smpls_bfr = malloc(in_length * sizeof(float) * 2);
+    if(smpls_bfr == NULL)
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
+    
+    while (fread(smpls_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    {
+        for (smpli = 0; smpli < in_length ; smpli++)
         {
             smpls_bfr[(smpli<<1)+0] =
               sqrt(  (smpls_bfr[(smpli<<1)+0] * smpls_bfr[(smpli<<1)+0]) +
@@ -62,7 +68,7 @@ int sq_abs(FILE* instream, FILE* outstream, unsigned int nsamples)
             smpls_bfr[(smpli<<1)+1] = 0.0;
         }
 
-        fwrite(smpls_bfr, sizeof(float) * 2, nsamples, outstream);
+        fwrite(smpls_bfr, sizeof(float) * 2, in_length, outstream);
     }
 
     free(smpls_bfr);
@@ -70,21 +76,27 @@ int sq_abs(FILE* instream, FILE* outstream, unsigned int nsamples)
     return 0;
 }
 
-int sq_power(FILE* instream, FILE* outstream, unsigned int nsamples)
+int sq_power(FILE* instream, FILE* outstream, unsigned int in_length)
 {
     float *smpls_bfr;
     unsigned int smpli;
 
-    if ((nsamples < 2) || (nsamples >= MAX_SMPLS_LEN))
-        return ERR_ARG_BOUNDS;
-
-    smpls_bfr = malloc(nsamples * sizeof(float) * 2);
-    if(smpls_bfr == NULL)
-        return ERR_MALLOC;
-    
-    while (fread(smpls_bfr, sizeof(float) * 2, nsamples, instream) == nsamples)
+    if ((in_length < 2) || (in_length >= MAX_SMPLS_LEN))
     {
-        for (smpli = 0; smpli < nsamples ; smpli++)
+        fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
+        return ERR_ARG_BOUNDS;
+    }
+
+    smpls_bfr = malloc(in_length * sizeof(float) * 2);
+    if(smpls_bfr == NULL)
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
+    
+    while (fread(smpls_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    {
+        for (smpli = 0; smpli < in_length ; smpli++)
         {
             smpls_bfr[(smpli<<1)+0] =
                 (smpls_bfr[(smpli<<1)+0] * smpls_bfr[(smpli<<1)+0]) +
@@ -92,7 +104,7 @@ int sq_power(FILE* instream, FILE* outstream, unsigned int nsamples)
             smpls_bfr[(smpli<<1)+1] = 0.0;
         }
 
-        fwrite(smpls_bfr, sizeof(float) * 2, nsamples, outstream);
+        fwrite(smpls_bfr, sizeof(float) * 2, in_length, outstream);
     }
 
     free(smpls_bfr);
@@ -100,27 +112,40 @@ int sq_power(FILE* instream, FILE* outstream, unsigned int nsamples)
     return 0;
 }
 
-int sq_crossmultiply(FILE* instream1, FILE* instream2, FILE* outstream, unsigned int nsamples){
+int sq_crossmultiply(FILE* instream1, FILE* instream2, FILE* outstream, unsigned int in_length){
     float *bfr1, *bfr2;
     float real = 0, imag = 0;
     unsigned int smpli;
+    unsigned int buf_count = 0;
 
-    if((nsamples < 2) || (nsamples >= MAX_SMPLS_LEN))
+    if((in_length < 2) || (in_length >= MAX_SMPLS_LEN))
+    {
+        fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
         return ERR_ARG_BOUNDS;
+    }
 
-    bfr1 = malloc(nsamples * sizeof(float) * 2);
+    bfr1 = malloc(in_length * sizeof(float) * 2);
     if(bfr1 == NULL)
-        return ERR_MALLOC;
-    bfr2 = malloc(nsamples * sizeof(float) * 2);
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
+
+    bfr2 = malloc(in_length * sizeof(float) * 2);
     if(bfr2 == NULL)
-        return ERR_MALLOC;
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
 
     while( 
-		(fread(bfr1, sizeof(float) * 2, nsamples, instream1) == nsamples) &&
-          	(fread(bfr2, sizeof(float) * 2, nsamples, instream2) == nsamples)
+		(fread(bfr1, sizeof(float) * 2, in_length, instream1) == in_length) &&
+          	(fread(bfr2, sizeof(float) * 2, in_length, instream2) == in_length)
 	 )
     {
-        for(smpli = 0; smpli < nsamples; smpli++)
+	++buf_count;
+
+        for(smpli = 0; smpli < in_length; smpli++)
         {
             real = 
                 (bfr1[(smpli<<1)+0]*bfr2[(smpli<<1)+0]) -
@@ -135,7 +160,9 @@ int sq_crossmultiply(FILE* instream1, FILE* instream2, FILE* outstream, unsigned
             bfr1[(smpli<<1)+1] = imag;
         }
         
-        fwrite(bfr1, sizeof(float) * 2, nsamples, outstream);
+        fwrite(bfr1, sizeof(float) * 2, in_length, outstream);
+
+	if (buf_count%100 == 1) fprintf(stderr, "Completed cycle %i\n", buf_count);
     }
     
     free(bfr1);
@@ -144,11 +171,13 @@ int sq_crossmultiply(FILE* instream1, FILE* instream2, FILE* outstream, unsigned
     return 0;
 }
 
-int sq_sum(FILE* instream, FILE* outstream, unsigned int nsamples, unsigned int num_to_sum)
+int sq_sum(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int num_to_sum)
 {
-
-    if (!((nsamples >= 2) && (nsamples <= MAX_SMPLS_LEN)))
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+    {
+        fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
         return ERR_ARG_BOUNDS;
+    }
 
     float *smpls_bfr;
     float *sum_bfr;
@@ -158,20 +187,26 @@ int sq_sum(FILE* instream, FILE* outstream, unsigned int nsamples, unsigned int 
     int first_time = 1;
     int schedule_shutdown = 0;
 
-    smpls_bfr = malloc(nsamples * sizeof(float) * 2);
+    smpls_bfr = malloc(in_length * sizeof(float) * 2);
     if(smpls_bfr == NULL)
-        return ERR_MALLOC;
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
     
-    sum_bfr = malloc(nsamples * sizeof(float) * 2);
+    sum_bfr = malloc(in_length * sizeof(float) * 2);
     if(sum_bfr == NULL)
-        return ERR_MALLOC;
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
 
     for (;;) // loop until break
     {
         raster_count = 0;
 
 	// zero the array containing sum
-	for (smpli = 0; smpli < nsamples; ++smpli)
+	for (smpli = 0; smpli < in_length; ++smpli)
     	{
             sum_bfr[(smpli<<1)+0] = 0.0;
             sum_bfr[(smpli<<1)+1] = 0.0;
@@ -180,12 +215,12 @@ int sq_sum(FILE* instream, FILE* outstream, unsigned int nsamples, unsigned int 
         for (rasteri = 0; rasteri < num_to_sum; ++rasteri)
         {
 	    // read a new raster line of data
-            if (fread(smpls_bfr, 2 * sizeof(float), nsamples, instream) == nsamples)
+            if (fread(smpls_bfr, 2 * sizeof(float), in_length, instream) == in_length)
 	    {
 	        ++raster_count;
 
 		// sum this raster with previous
-                for (smpli = 0; smpli < nsamples; smpli++)
+                for (smpli = 0; smpli < in_length; smpli++)
                 {
                     sum_bfr[(smpli<<1)+0] += smpls_bfr[(smpli<<1)+0];
                     sum_bfr[(smpli<<1)+1] += smpls_bfr[(smpli<<1)+1];
@@ -202,7 +237,7 @@ int sq_sum(FILE* instream, FILE* outstream, unsigned int nsamples, unsigned int 
 	// if there have been other output rasters before, don't send unless 
 	// this one is complete
 	if (first_time || raster_count == num_to_sum) 
-	    fwrite(sum_bfr, 2 * sizeof(float), nsamples, outstream);
+	    fwrite(sum_bfr, 2 * sizeof(float), in_length, outstream);
 	first_time = 0;
 
 	// if we are out of data, then break
@@ -215,43 +250,55 @@ int sq_sum(FILE* instream, FILE* outstream, unsigned int nsamples, unsigned int 
     return 0;
 }
 
-int sq_window( FILE* instream, FILE* outstream, unsigned int wndw_len, char* window_name)
+int sq_window( FILE* instream, FILE* outstream, unsigned int in_length, char* window_name)
 {
     float *wndw_bfr;
     float *in_bfr;
     float *out_bfr;
 
-    if (!((wndw_len >= 2) && (wndw_len <= MAX_WNDW_LEN)))
+    if (!((in_length >= 2) && (in_length <= MAX_WNDW_LEN)))
+    {
+        fprintf(stderr, "Window lengths must be between 2 and %u\n", MAX_WNDW_LEN);
         return ERR_ARG_BOUNDS;
+    }
 
-    wndw_bfr = malloc(wndw_len * sizeof(float));
+    wndw_bfr = malloc(in_length * sizeof(float));
     if(wndw_bfr == NULL)
-        return ERR_MALLOC;
-    in_bfr = malloc(wndw_len * sizeof(float) * 2);
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
+    in_bfr = malloc(in_length * sizeof(float) * 2);
     if(in_bfr == NULL)
-        return ERR_MALLOC;
-    out_bfr = malloc(wndw_len * sizeof(float) * 2);
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
+    out_bfr = malloc(in_length * sizeof(float) * 2);
     if(out_bfr == NULL)
-        return ERR_MALLOC;
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
 
     // Make window buffer
-    int status = sq_make_window_from_name(wndw_bfr, wndw_len, window_name);
+    int status = sq_make_window_from_name(wndw_bfr, in_length, window_name);
     if(status < 0)
         return status;
 
-    fread(&in_bfr[(wndw_len/2)*2], sizeof(float) * 2, wndw_len / 2, instream);
-    memcpy(&in_bfr[0], &in_bfr[(wndw_len/2)*2], (wndw_len / 2)* sizeof(float) *2);
+    fread(&in_bfr[(in_length/2)*2], sizeof(float) * 2, in_length / 2, instream);
+    memcpy(&in_bfr[0], &in_bfr[(in_length/2)*2], (in_length / 2)* sizeof(float) *2);
 
     unsigned int bfri;
-    while (fread(&in_bfr[(wndw_len/2)*2], sizeof(float) * 2, wndw_len / 2, instream) == (wndw_len / 2))
+    while (fread(&in_bfr[(in_length/2)*2], sizeof(float) * 2, in_length / 2, instream) == (in_length / 2))
     {
-        for (bfri = 0; bfri < wndw_len; bfri++)
+        for (bfri = 0; bfri < in_length; bfri++)
         {
             out_bfr[(bfri<<1)+0] = in_bfr[(bfri<<1)+0] * wndw_bfr[bfri];
             out_bfr[(bfri<<1)+1] = in_bfr[(bfri<<1)+1] * wndw_bfr[bfri];
         }
-        fwrite(out_bfr, sizeof(float) * 2, wndw_len, outstream);
-        memcpy(&in_bfr[0], &in_bfr[(wndw_len/2)*2], (wndw_len / 2)*4*2);
+        fwrite(out_bfr, sizeof(float) * 2, in_length, outstream);
+        memcpy(&in_bfr[0], &in_bfr[(in_length/2)*2], (in_length / 2)*4*2);
     }
 
     free(wndw_bfr);
@@ -261,30 +308,42 @@ int sq_window( FILE* instream, FILE* outstream, unsigned int wndw_len, char* win
     return 0;
 }
 
-int sq_component(FILE* instream, FILE* outstream, unsigned int nsamples, int component)
+int sq_component(FILE* instream, FILE* outstream, unsigned int in_length, int component)
 {
-    if (nsamples <= 0)
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+    {
+        fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
         return ERR_ARG_BOUNDS;
+    }
     if ((component != 0) && (component != 1))
+    {
+        fprintf(stderr, "Component must be 0 (real) or 1 (imag).\n", MAX_SMPLS_LEN);
         return ERR_ARG_BOUNDS;
+    }
 
     int i;
     cmplx *sbfr;
     float *rbfr;
 
-    sbfr = malloc(nsamples * sizeof(cmplx));
+    sbfr = malloc(in_length * sizeof(cmplx));
     if(sbfr == NULL)
-        return ERR_MALLOC;
-
-    rbfr = malloc(nsamples * sizeof(float));
-    if(rbfr == NULL)
-        return ERR_MALLOC;
-
-    while (fread(sbfr, sizeof(cmplx), nsamples, instream) == nsamples)
     {
-        for (i = 0; i < nsamples; i++)
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
+
+    rbfr = malloc(in_length * sizeof(float));
+    if(rbfr == NULL)
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
+
+    while (fread(sbfr, sizeof(cmplx), in_length, instream) == in_length)
+    {
+        for (i = 0; i < in_length; i++)
             rbfr[i] = sbfr[i][component];
-        fwrite(rbfr, sizeof(float), nsamples, outstream);
+        fwrite(rbfr, sizeof(float), in_length, outstream);
     }
 
     free(rbfr);
@@ -293,64 +352,71 @@ int sq_component(FILE* instream, FILE* outstream, unsigned int nsamples, int com
     return 0;
 }
 
-int sq_real(FILE* instream, FILE* outstream, unsigned int nsamples)
+int sq_real(FILE* instream, FILE* outstream, unsigned int in_length)
 {
-    return sq_component(instream, outstream, nsamples, REAL);
+    return sq_component(instream, outstream, in_length, REAL);
 }
 
-int sq_imag(FILE* instream, FILE* outstream, unsigned int nsamples)
+int sq_imag(FILE* instream, FILE* outstream, unsigned int in_length)
 {
-    return sq_component(instream, outstream, nsamples, IMAG);
+    return sq_component(instream, outstream, in_length, IMAG);
 }
 
-int sq_fft(FILE* instream, FILE* outstream, unsigned int fft_len, 
-		unsigned char is_inverted, unsigned char is_measured, 
+int sq_fft(FILE* instream, FILE* outstream, unsigned int in_length, 
+		unsigned char is_conjugated, unsigned char is_measured, 
 		unsigned char inverse)
 {
-    if (fft_len <= 0)
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+    {
+        fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
         return ERR_ARG_BOUNDS;
+    }
     
     fftwf_complex *fft_bfr;
     fftwf_plan plan;
     
     int i;
     
-    fft_bfr = (fftwf_complex*) fftwf_malloc(sizeof(fftwf_complex) * fft_len);
+    fft_bfr = (fftwf_complex*) fftwf_malloc(sizeof(fftwf_complex) * in_length);
     
-    plan = fftwf_plan_dft_1d(fft_len, 
+    plan = fftwf_plan_dft_1d(in_length, 
                              (fft_bfr), 
                              (fft_bfr),
                              (inverse ? FFTW_BACKWARD : FFTW_FORWARD),
                              (is_measured ? FFTW_MEASURE : FFTW_ESTIMATE));
     
-    while (fread(fft_bfr, sizeof(fftwf_complex), fft_len, instream) == fft_len)
+    while (fread(fft_bfr, sizeof(fftwf_complex), in_length, instream) == in_length)
     {
-        if (is_inverted)
-            for (i = 0; i < fft_len; i++)
+        if (is_conjugated)
+            for (i = 0; i < in_length; i++)
                 fft_bfr[i][1] = -fft_bfr[i][1];  // conjugate
             
-            if(inverse)
-            {
-                // move channels back to their original positions before the fft, so  that ifft gets what it expects
-                sq_channelswap(fft_bfr, fft_len);
-                // perform ifft
-                fftwf_execute(plan);
-                
-                for(i = 0; i < fft_len; i++)
-                {
-                    fft_bfr[i][0] = fft_bfr[i][0] / fft_len;
-                    fft_bfr[i][1] = fft_bfr[i][1] / fft_len;
-                }
-            }
-            else
-            {
-                // perform fft
-                fftwf_execute(plan);
-                // write negative channels on the left, and then positive channels on the right
-                sq_channelswap(fft_bfr, fft_len);
-            }
+        if(inverse)
+        {
+            // move channels back to their original positions before the fft, so  that ifft gets what it expects
+            sq_channelswap(fft_bfr, in_length);
 
-            fwrite(&fft_bfr[0], sizeof(fftwf_complex), fft_len , outstream);
+            // perform ifft
+            fftwf_execute(plan);
+
+	    // inverse fft (effectively) multiples output by N, so take this out
+	    float norm = 1.0f / in_length; // multiplies are faster than divides
+            for(i = 0; i < in_length; i++)
+            {
+                fft_bfr[i][0] = fft_bfr[i][0] * norm;
+                fft_bfr[i][1] = fft_bfr[i][1] * norm;
+	    }
+        }
+        else
+        {
+            // perform fft
+            fftwf_execute(plan);
+
+            // write negative channels on the left, and then positive channels on the right
+            sq_channelswap(fft_bfr, in_length);
+        }
+
+            fwrite(&fft_bfr[0], sizeof(fftwf_complex), in_length , outstream);
     }
     
     fftwf_destroy_plan(plan);
@@ -360,27 +426,33 @@ int sq_fft(FILE* instream, FILE* outstream, unsigned int fft_len,
     return 0;
 }
 
-int sq_offset(FILE* instream, FILE* outstream, unsigned int nsamples, float real_delta, float imag_delta)
+int sq_offset(FILE* instream, FILE* outstream, unsigned int in_length, float real_delta, float imag_delta)
 {
-    if (nsamples <= 0)
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+    {
+        fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
         return ERR_ARG_BOUNDS;
+    }
 
     unsigned int smpli;
     float *smpls_bfr;
 
-    smpls_bfr = malloc(nsamples * 4 * 2);
+    smpls_bfr = malloc(in_length * 4 * 2);
     if(smpls_bfr == NULL)
-        return ERR_MALLOC;
-    
-    while (fread(smpls_bfr, 8, nsamples, instream) == nsamples)
     {
-        for (smpli = 0; smpli < nsamples; smpli++)
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
+    
+    while (fread(smpls_bfr, 8, in_length, instream) == in_length)
+    {
+        for (smpli = 0; smpli < in_length; smpli++)
         {
             smpls_bfr[(smpli<<1)+0] += real_delta;
             smpls_bfr[(smpli<<1)+1] += imag_delta;
         }
 
-        fwrite(smpls_bfr, 8, nsamples, outstream);
+        fwrite(smpls_bfr, 8, in_length, outstream);
     }
 
     free(smpls_bfr);
@@ -389,24 +461,30 @@ int sq_offset(FILE* instream, FILE* outstream, unsigned int nsamples, float real
 }
 
 
-int sq_conjugate(FILE* instream, FILE* outstream, unsigned int nsamples)
+int sq_conjugate(FILE* instream, FILE* outstream, unsigned int in_length)
 {
-    if (!((nsamples >= 2) && (nsamples <= MAX_SMPLS_LEN)))
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+    {
+        fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
         return ERR_ARG_BOUNDS;
+    }
 
     float *data_bfr;
     unsigned int datai;
 
-    data_bfr = malloc(nsamples * sizeof(float) * 2);
+    data_bfr = malloc(in_length * sizeof(float) * 2);
     if(data_bfr == NULL)
-        return ERR_MALLOC;
-
-    while (fread(data_bfr, 8, nsamples, instream) == nsamples)
     {
-        for (datai = 0; datai < nsamples; datai += 1)
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
+
+    while (fread(data_bfr, 8, in_length, instream) == in_length)
+    {
+        for (datai = 0; datai < in_length; datai += 1)
             data_bfr[(datai<<1)+1] *= -1.0;
 
-        fwrite(data_bfr, sizeof(float) * 2, nsamples, outstream);
+        fwrite(data_bfr, sizeof(float) * 2, in_length, outstream);
     }
 
     free(data_bfr);
@@ -414,22 +492,28 @@ int sq_conjugate(FILE* instream, FILE* outstream, unsigned int nsamples)
     return 0;
 }
 
-int sq_scaleandrotate(FILE* instream, FILE* outstream, unsigned int nsamples, float scale_factor, float radians)
+int sq_scaleandrotate(FILE* instream, FILE* outstream, unsigned int in_length, float scale_factor, float radians)
 {
-    if (nsamples <= 0)
+    if (in_length <= 0)
+    {
+        fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
         return ERR_ARG_BOUNDS;
+    }
 
     unsigned int smpli;
     float *smpls_bfr;
 
-    smpls_bfr = malloc(nsamples * 4 * 2);
+    smpls_bfr = malloc(in_length * 4 * 2);
     if(smpls_bfr == NULL)
-        return ERR_MALLOC;
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
 
     float re, im;
-    while (fread(smpls_bfr, 8, nsamples, instream) == nsamples)
+    while (fread(smpls_bfr, 8, in_length, instream) == in_length)
     {
-        for (smpli = 0; smpli < nsamples; smpli++)
+        for (smpli = 0; smpli < in_length; smpli++)
         {
             re = smpls_bfr[(smpli<<1)+0];
             im = smpls_bfr[(smpli<<1)+1];
@@ -437,7 +521,7 @@ int sq_scaleandrotate(FILE* instream, FILE* outstream, unsigned int nsamples, fl
             smpls_bfr[(smpli<<1)+1] = scale_factor * (im * cos(radians) + re * sin(radians));
         }
 
-        fwrite(smpls_bfr, 8, nsamples, outstream);
+        fwrite(smpls_bfr, 8, in_length, outstream);
     }
 
     free(smpls_bfr);
@@ -445,20 +529,27 @@ int sq_scaleandrotate(FILE* instream, FILE* outstream, unsigned int nsamples, fl
     return 0;
 }
 
-int sq_scale(FILE* instream, FILE* outstream, unsigned int nsamples, float scale_factor)
+int sq_scale(FILE* instream, FILE* outstream, unsigned int in_length, float scale_factor)
 {
-    return sq_scaleandrotate(instream, outstream, nsamples, scale_factor, 0.0);
+    return sq_scaleandrotate(instream, outstream, in_length, scale_factor, 0.0);
 }
 
-int sq_rotate(FILE* instream, FILE* outstream, unsigned int nsamples, float radians)
+int sq_rotate(FILE* instream, FILE* outstream, unsigned int in_length, float radians)
 {
-    return sq_scaleandrotate(instream, outstream, nsamples, 1.0, radians);
+    return sq_scaleandrotate(instream, outstream, in_length, 1.0, radians);
 }
 
-int sq_mix(FILE* instream, FILE* outstream, unsigned int nsamples, float radians)
+int sq_mix(FILE* instream, FILE* outstream, unsigned int in_length, float radians)
 {
-    if (nsamples <= 0)
+    if (in_length <= 0)
+    {
+        fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
         return ERR_ARG_BOUNDS;
+    }
+    if (abs(radians) > 2.0 * M_PI)
+    {
+        sq_error_print("Warning: |Radians| > 2*PI, aliasing will occur.\n");
+    }
 
     unsigned int smpli;
     float *smpls_bfr;
@@ -468,14 +559,17 @@ int sq_mix(FILE* instream, FILE* outstream, unsigned int nsamples, float radians
 
     radians = radians * -1.0;
 
-    smpls_bfr = malloc(nsamples * 4 * 2);
+    smpls_bfr = malloc(in_length * 4 * 2);
     if(smpls_bfr == NULL)
-        return ERR_MALLOC;
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
 
     float re, im;
-    while (fread(smpls_bfr, 8, nsamples, instream) == nsamples)
+    while (fread(smpls_bfr, 8, in_length, instream) == in_length)
     {
-        for (smpli = 0; smpli < nsamples; smpli++)
+        for (smpli = 0; smpli < in_length; smpli++)
         {
             angle += radians;
             angle = (angle > TWO_PI) ? (angle - TWO_PI) : angle;
@@ -487,7 +581,7 @@ int sq_mix(FILE* instream, FILE* outstream, unsigned int nsamples, float radians
             smpls_bfr[(smpli<<1)+1] = (im * (float)cos(angle) + re * (float)sin(angle));
         }
 
-        fwrite(smpls_bfr, 8, nsamples, outstream);
+        fwrite(smpls_bfr, 8, in_length, outstream);
     }
 
     free(smpls_bfr);
@@ -495,11 +589,14 @@ int sq_mix(FILE* instream, FILE* outstream, unsigned int nsamples, float radians
     return 0;
 }
 
-int sq_zoom(FILE* instream, FILE* outstream, unsigned int zoom_len)
+int sq_zoom(FILE* instream, FILE* outstream, unsigned int in_length)
 {
     // TODO: Not properly tested yet
-    if (!((zoom_len >= 2) && (zoom_len <= MAX_ZOOM_LEN)))
+    if (!((in_length >= 2) && (in_length <= MAX_ZOOM_LEN)))
+    {
+        fprintf(stderr, "Zoom length must be between 2 and %u\n", MAX_SMPLS_LEN);
         return ERR_ARG_BOUNDS;
+    }
 
     float *input_bfr;
     float *output_bfr;
@@ -509,18 +606,25 @@ int sq_zoom(FILE* instream, FILE* outstream, unsigned int zoom_len)
 
     outbfri = 0;
 
-    input_bfr = malloc(zoom_len * sizeof(float) * 2);
+    input_bfr = malloc(in_length * sizeof(float) * 2);
     if(input_bfr == NULL)
-        return ERR_MALLOC;
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
+
     output_bfr = malloc(ZOOM_OUTPUT_BFR_LEN * sizeof(float) * 2);
     if(output_bfr == NULL)
-        return ERR_MALLOC;
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
 
-    while (fread(input_bfr, sizeof(float) * 2, zoom_len, instream) == zoom_len)
+    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
     {
         sum_r = 0.0;
         sum_i = 0.0;
-        for (inbfri = 0; inbfri < zoom_len; inbfri++)
+        for (inbfri = 0; inbfri < in_length; inbfri++)
         {
             sum_r += input_bfr[(inbfri<<1)+0];
             sum_i += input_bfr[(inbfri<<1)+1];
@@ -563,8 +667,25 @@ void init_window(float* wndwbfr, unsigned int wndwlen, unsigned int folds)
     }
 }
 
-int sq_wola(FILE* instream, FILE* outstream, unsigned int fftlen, unsigned int folds, unsigned int overlap, unsigned char is_window_dump)
+int sq_wola(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int folds, 
+		unsigned int overlap, unsigned char is_window_dump)
 {
+    if (!((in_length >= 2) && (in_length <= MAX_ZOOM_LEN)))
+    {
+        fprintf(stderr, "Zoom length must be between 2 and %u\n", MAX_SMPLS_LEN);
+        return ERR_ARG_BOUNDS;
+    }
+    if (folds < 1)
+    {
+        sq_error_print("Number of folds must be greater than 1.\n");
+        return ERR_ARG_BOUNDS;
+    }
+    if (!((overlap < 1) && (overlap >= in_length)))
+    {
+        sq_error_print("Overlap must be in range (1, in_length).\n");
+        return ERR_ARG_BOUNDS;
+    }
+
     unsigned int wndwlen;
 
     float *wndwbfr;
@@ -575,10 +696,13 @@ int sq_wola(FILE* instream, FILE* outstream, unsigned int fftlen, unsigned int f
     unsigned int wndwi, readi, smpli, ffti;
     unsigned int readlen;
 
-    wndwlen = folds * fftlen;
+    wndwlen = folds * in_length;
     wndwbfr = malloc(wndwlen * sizeof(float));
     if(wndwbfr == NULL)
-        return ERR_MALLOC;
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
 
     init_window(wndwbfr, wndwlen, folds);
 
@@ -591,21 +715,32 @@ int sq_wola(FILE* instream, FILE* outstream, unsigned int fftlen, unsigned int f
         return 0;
     }
 
-    readlen = fftlen;
+    readlen = in_length;
     if (overlap == 25)
-        readlen = (fftlen * 3) / 4;
+        readlen = (in_length * 3) / 4;
     if (overlap == 50)
-        readlen = (fftlen * 2) / 4;
+        readlen = (in_length * 2) / 4;
 
     readbfr = malloc(readlen * sizeof(cmplx));
     if(readbfr == NULL)
-        return ERR_MALLOC;
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
+
     smplbfr = malloc(wndwlen * sizeof(cmplx));
     if(smplbfr == NULL)
-        return ERR_MALLOC;
-    fftbfr = malloc(fftlen * sizeof(cmplx));
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
+
+    fftbfr = malloc(in_length * sizeof(cmplx));
     if(fftbfr == NULL)
-        return ERR_MALLOC;
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
 
     // initially fill the sample buffer to satisfy the first weight,
     // overlap, and add
@@ -622,7 +757,7 @@ int sq_wola(FILE* instream, FILE* outstream, unsigned int fftlen, unsigned int f
 
     for (;;)
     {
-        for (ffti = 0; ffti < fftlen; ffti++)
+        for (ffti = 0; ffti < in_length; ffti++)
             fftbfr[ffti][0] = fftbfr[ffti][1] = 0.0;
         ffti = 0;
         for (wndwi = 0; wndwi < wndwlen; wndwi++)
@@ -632,9 +767,9 @@ int sq_wola(FILE* instream, FILE* outstream, unsigned int fftlen, unsigned int f
             smpli++;
             if (!(smpli < wndwlen)) smpli = 0;
             ffti++;
-            if (!(ffti < fftlen)) ffti = 0;
+            if (!(ffti < in_length)) ffti = 0;
         }
-        fwrite(fftbfr, sizeof(cmplx), fftlen, outstream);
+        fwrite(fftbfr, sizeof(cmplx), in_length, outstream);
         if (!(fread(readbfr, sizeof(cmplx), readlen, instream) == readlen))
             break;
         for (readi = 0; readi < readlen; readi++)
@@ -654,26 +789,41 @@ int sq_wola(FILE* instream, FILE* outstream, unsigned int fftlen, unsigned int f
     return 0;
 }
 
-int sq_bin(FILE* instream, FILE* outstream, unsigned int nsamples, unsigned int out_length)
+int sq_pad(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int out_length)
 {
-    if (!((nsamples >= 2) && (nsamples <= MAX_SMPLS_LEN)))
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN))
+       && ((out_length >= 2) && (out_length <= MAX_SMPLS_LEN)))
+    {
+        fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
         return ERR_ARG_BOUNDS;
+    }
+    if (out_length <= in_length)
+    {
+        sq_error_print("Output array length must be greater than input length.\n");
+        return ERR_ARG_BOUNDS;
+    }
 
     float *input_bfr;
     float *output_bfr;
 
-    input_bfr = malloc(nsamples * sizeof(float) * 2);
+    input_bfr = malloc(in_length * sizeof(float) * 2);
     if(input_bfr == NULL)
-        return ERR_MALLOC;
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
     output_bfr = calloc(out_length,  sizeof(float) * 2);
     if(output_bfr == NULL)
-        return ERR_MALLOC;
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
     
     unsigned int bin_size;
-    bin_size = nsamples / out_length;
+    bin_size = in_length / out_length;
 
     unsigned int in_i = 0, out_i, start, stop;
-    while (fread(input_bfr, sizeof(float) * 2, nsamples, instream) == nsamples)
+    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
     {
         memset(output_bfr, 0, out_length * sizeof(float) * 2);
         for (out_i = 0; out_i < out_length; out_i++)
@@ -696,20 +846,85 @@ int sq_bin(FILE* instream, FILE* outstream, unsigned int nsamples, unsigned int 
     return 0;
 }
 
-int sq_chop(FILE* instream, FILE* outstream, unsigned int nsamples, float chop_fraction)
+int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int out_length)
 {
-    if (!((nsamples >= 2) && (nsamples <= MAX_SMPLS_LEN)))
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN))
+       && ((out_length >= 2) && (out_length <= MAX_SMPLS_LEN)))
+    {
+        fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
         return ERR_ARG_BOUNDS;
+    }
+    if (out_length >= in_length)
+    {
+        sq_error_print("Output array length must be less than input length.\n");
+        return ERR_ARG_BOUNDS;
+    }
 
     float *input_bfr;
     float *output_bfr;
 
-    int samples_to_discard = (int)((float)nsamples * chop_fraction);
-    int out_length = nsamples - 2 * samples_to_discard;
+    input_bfr = malloc(in_length * sizeof(float) * 2);
+    if(input_bfr == NULL)
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
+    output_bfr = calloc(out_length,  sizeof(float) * 2);
+    if(output_bfr == NULL)
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
+    
+    unsigned int bin_size;
+    bin_size = in_length / out_length;
 
-    input_bfr = malloc(nsamples * sizeof(float) * 2);
+    unsigned int in_i = 0, out_i, start, stop;
+    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    {
+        memset(output_bfr, 0, out_length * sizeof(float) * 2);
+        for (out_i = 0; out_i < out_length; out_i++)
+        {
+            start = out_i * bin_size;
+            stop = (out_i + 1) * bin_size;
+            for(in_i = start; in_i < stop; in_i++)
+            {
+                output_bfr[(out_i<<1) + REAL] += input_bfr[(in_i<<1) + REAL] / bin_size;
+                output_bfr[(out_i<<1) + IMAG] += input_bfr[(in_i<<1) + IMAG] / bin_size;
+            }
+        }
+
+        fwrite(output_bfr, sizeof(float) * 2, out_length , outstream);
+    }
+
+    free(input_bfr);
+    free(output_bfr);
+
+    return 0;
+}
+
+int sq_chop(FILE* instream, FILE* outstream, unsigned int in_length, float chop_fraction)
+{
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+    {
+        fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
+        return ERR_ARG_BOUNDS;
+    }
+    if (!((chop_fraction > 0) && (chop_fraction) < 0.5))
+    {
+        sq_error_print("Chop fraction must be nonzero, positive and less than 0.5\n");
+        return ERR_ARG_BOUNDS;
+    }
+
+    float *input_bfr;
+    float *output_bfr;
+
+    int samples_to_discard = (int)((float)in_length * chop_fraction);
+    int out_length = in_length - 2 * samples_to_discard;
+
+    input_bfr = malloc(in_length * sizeof(float) * 2);
   
-    while (fread(input_bfr, sizeof(float) * 2, nsamples, instream) == nsamples)
+    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
     {
         fwrite(output_bfr, sizeof(float) * 2, out_length , outstream);
     }
@@ -719,10 +934,18 @@ int sq_chop(FILE* instream, FILE* outstream, unsigned int nsamples, float chop_f
     return 0;
 }
 
-int sq_overlap(FILE* instream, FILE* outstream, unsigned int nsamples, float overlap_factor)
+int sq_overlap(FILE* instream, FILE* outstream, unsigned int in_length, float overlap_factor)
 {
-    if (!((nsamples >= 2) && (nsamples <= MAX_SMPLS_LEN)))
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+    {
+        fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
         return ERR_ARG_BOUNDS;
+    }
+    if (!((overlap_factor <= 0) && (overlap_factor >= 1)))
+    {
+        sq_error_print("Overlap factor must be in range (0, 1)\n");
+        return ERR_ARG_BOUNDS;
+    }
 
     float *input_bfr;
     float *input_bfr_1;
@@ -736,18 +959,24 @@ int sq_overlap(FILE* instream, FILE* outstream, unsigned int nsamples, float ove
             return ERR_ARG_BOUNDS;
     }
     
-    input_bfr = malloc(nsamples * sizeof(float) * 2);
+    input_bfr = malloc(in_length * sizeof(float) * 2);
     if(input_bfr == NULL)
-        return ERR_MALLOC;
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
     input_bfr_1 = input_bfr;
-    input_bfr_2 = input_bfr + nsamples/2;
+    input_bfr_2 = input_bfr + in_length/2;
     
-    output_bfr = malloc(nsamples * sizeof(float) * 2);
+    output_bfr = malloc(in_length * sizeof(float) * 2);
     if(output_bfr == NULL)
-        return ERR_MALLOC;
+    {
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
     /** output_bfr = input_bfr + 2 * samples_to_discard; // factor of 2 for complex sampling
   
-    while (fread(input_bfr, sizeof(float) * 2, nsamples, instream) == nsamples)
+    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
     {
         fwrite(output_bfr, sizeof(float) * 2, out_length , outstream);
     }
@@ -760,22 +989,28 @@ int sq_overlap(FILE* instream, FILE* outstream, unsigned int nsamples, float ove
 }
 
 
-int sq_ascii(FILE* instream, FILE* outstream, unsigned int nsamples)
+int sq_ascii(FILE* instream, FILE* outstream, unsigned int in_length)
 {
-    if (!((nsamples >= 2) && (nsamples <= MAX_SMPLS_LEN)))
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+    {
+        fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
         return ERR_ARG_BOUNDS;
+    }
 
     int i;
     float *input_bfr;
     float *output_bfr;
 
-    input_bfr = malloc(nsamples * sizeof(float) * 2);
+    input_bfr = malloc(in_length * sizeof(float) * 2);
     if(input_bfr == NULL)
-        return ERR_MALLOC;
-    
-    while (fread(input_bfr, sizeof(float) * 2, nsamples, instream) == nsamples)
     {
-	for (i = 0; i < nsamples; ++i)
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
+    
+    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    {
+	for (i = 0; i < in_length; ++i)
 	{
 	    fprintf(outstream, "%f, %f\n", 
 			    input_bfr[(i<<1) + 0], input_bfr[(i<<1) + 1]);
@@ -787,22 +1022,28 @@ int sq_ascii(FILE* instream, FILE* outstream, unsigned int nsamples)
     return 0;
 }
 
-int sq_phase(FILE* instream, FILE* outstream, unsigned int nsamples)
+int sq_phase(FILE* instream, FILE* outstream, unsigned int in_length)
 {
-    if (!((nsamples >= 2) && (nsamples <= MAX_SMPLS_LEN)))
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+    {
+        fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
         return ERR_ARG_BOUNDS;
+    }
 
     int i;
     float *input_bfr;
     float val;
 
-    input_bfr = malloc(nsamples * sizeof(float) * 2);
+    input_bfr = malloc(in_length * sizeof(float) * 2);
     if(input_bfr == NULL)
-        return ERR_MALLOC;
-    
-    while (fread(input_bfr, sizeof(float) * 2, nsamples, instream) == nsamples)
     {
-	for (i = 0; i < nsamples; ++i)
+        sq_error_handle(ERR_MALLOC);
+	exit(EXIT_FAILURE);
+    }
+    
+    while (fread(input_bfr, sizeof(float) * 2, in_length, instream) == in_length)
+    {
+	for (i = 0; i < in_length; ++i)
 	{
 	    // compute absolute value of complex sample
 	    val = input_bfr[(i<<1) + 0] * input_bfr[(i<<1) + 0] +
@@ -819,7 +1060,7 @@ int sq_phase(FILE* instream, FILE* outstream, unsigned int nsamples)
 	    }
 	}
 
-        fwrite(input_bfr, sizeof(float) * 2, nsamples , outstream);
+        fwrite(input_bfr, sizeof(float) * 2, in_length , outstream);
     }
 
     free(input_bfr);
