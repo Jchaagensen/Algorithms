@@ -833,7 +833,7 @@ int sq_chop(FILE* instream, FILE* outstream, unsigned int in_length, float chop_
     return 0;
 }
 
-int sq_overlap(FILE* instream, FILE* outstream, unsigned int in_length, float overlap_factor)
+int sq_overlap2x(FILE* instream, FILE* outstream, unsigned int in_length)
 {
     if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
     {
@@ -841,13 +841,6 @@ int sq_overlap(FILE* instream, FILE* outstream, unsigned int in_length, float ov
         return ERR_ARG_BOUNDS;
     }
 
-    if (overlap_factor != 2.0)
-    {
-	    fprintf(stderr, "Only overlap factor of 2 is supported (you supplied %f)\n", 
-			    overlap_factor);
-            return ERR_ARG_BOUNDS;
-    }
-   
     float *input_bfr1;
     float *input_bfr2;
     float *temp;

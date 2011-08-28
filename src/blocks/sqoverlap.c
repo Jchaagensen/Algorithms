@@ -2,8 +2,8 @@
 
   File:    sqoverlap.c
   Project: SETIkit
-  Authors: Aditya Bhatt <aditya at adityabhatt dot org>
-           Gerry Harp <gharp at seti dot org>
+  Authors: Gerry Harp <gharp at seti dot org>
+           Aditya Bhatt <aditya at adityabhatt dot org>
 
   Copyright 2011 The SETI Institute
 
@@ -46,21 +46,21 @@ char *usage_text[] =
 {
     "                                                                        ",
     "NAME                                                                    ",
-    "  sqoverlap -  take input rasters length N and overlap by a percent x   ",
+    "  sqoverlap -  take input rasters length N and overlaps by 50%          ",
+    " (2x overlap) as typically needed for Hann window                       ",
     "SYNOPSIS                                                                ",
     "  sqoverlap [OPTIONS] ...                                               ",
     "DESCRIPTION                                                             ",
     "  -l  Input number of samples                                           ",
-    "  -x  Percentage overlap between outgoing rasters                       "
 };
 
 unsigned int in_length = SMPLS_PER_READ;
-float overlap = 0;
+float overlap_factor = 0;
 
 int main(int argc, char *argv[])
 {
     int opt;
-    while ((opt = getopt(argc, argv, "hl:x:")) != -1)
+    while ((opt = getopt(argc, argv, "hl:")) != -1)
     {
         switch (opt)
         {
@@ -70,16 +70,13 @@ int main(int argc, char *argv[])
             case 'l':
                 sscanf(optarg, "%u", &in_length);
                 break;
-            case 'x':
-                sscanf(optarg, "%u", &overlap);
-                break;
             default:
                 print_usage(usage_text);
                 exit(EXIT_FAILURE);
         }
     }
 
-    int status = sq_overlap(stdin, stdout, in_length, overlap);
+    int status = sq_overlap2x(stdin, stdout, in_length);
     
     if(status < 0)
     {

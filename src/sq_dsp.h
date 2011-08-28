@@ -256,11 +256,11 @@ int sq_ascii(FILE* instream, FILE* outstream, unsigned int in_length);
 int sq_phase(FILE* instream, FILE* outstream, unsigned int in_length);
 
 /**
- * To be used before a (eg Hann) window function, this utility introduces X% overlaps between
- * adjaent chunks of data. Supposing your overlap is 50%, then for input data length N,
- * the output of this function will be 2N in length. Each output chunk is the concatenation
- * of two reads length L/2 each (where L is -l input size option).
+ * To be used before a (eg Hann) window function, this utility introduces 50% overlaps between
+ * adjaent chunks of data. For input data length N, the output of this function will be 2N in 
+ * length. Each output chunk is the concatenation of two reads length L/2 each 
+ * (where L is -l input size option).
  */
-int sq_overlap(FILE* instream, FILE* outstream, unsigned int in_length, float overlap_factor);
+int sq_overlap2x(FILE* instream, FILE* outstream, unsigned int in_length);
 
 #endif
