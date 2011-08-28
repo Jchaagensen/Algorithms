@@ -264,7 +264,7 @@ int sq_window( FILE* instream, FILE* outstream, unsigned int in_length, char* wi
             out_bfr[(bfri<<1)+1] = in_bfr[(bfri<<1)+1] * wndw_bfr[bfri];
         }
         fwrite(out_bfr, sizeof(float) * 2, in_length, outstream);
-        memcpy(&in_bfr[0], &in_bfr[(in_length/2)*2], (in_length / 2)*4*2);
+        memcpy(&in_bfr[0], &in_bfr[(in_length/2)*2], (in_length / 2)*sizeof(float)*2);
     }
 
     free(wndw_bfr);
@@ -395,7 +395,7 @@ int sq_offset(FILE* instream, FILE* outstream, unsigned int in_length, float rea
     unsigned int smpli;
     float *smpls_bfr;
 
-    smpls_bfr = malloc(in_length * 4 * 2);
+    smpls_bfr = malloc(in_length * sizeof(float) * 2);
     if(smpls_bfr == NULL) return ERR_MALLOC;
     
     while (fread(smpls_bfr, 8, in_length, instream) == in_length)
@@ -453,7 +453,7 @@ int sq_scaleandrotate(FILE* instream, FILE* outstream, unsigned int in_length, f
     unsigned int smpli;
     float *smpls_bfr;
 
-    smpls_bfr = malloc(in_length * 4 * 2);
+    smpls_bfr = malloc(in_length * sizeof(float) * 2);
     if(smpls_bfr == NULL) return ERR_MALLOC;
 
     float re, im;
@@ -505,7 +505,7 @@ int sq_mix(FILE* instream, FILE* outstream, unsigned int in_length, float radian
 
     radians = radians * -1.0;
 
-    smpls_bfr = malloc(in_length * 4 * 2);
+    smpls_bfr = malloc(in_length * sizeof(float) * 2);
     if(smpls_bfr == NULL) return ERR_MALLOC;
 
     float re, im;
