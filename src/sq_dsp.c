@@ -730,14 +730,16 @@ int sq_pad(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
     output_bfr = calloc(out_length, sizeof(cmplx));
     if(output_bfr == NULL) return ERR_MALLOC;
 
-    size_t pad_samples = (out_length - in_length) / 2;
+    // even though this is a complex array, it was declaried as float
+    // hence we count memory positions in floats
+    float * offset_output_bfr = output_bfr + (out_length - in_length);
     
 
     while (fread(input_bfr, sizeof(cmplx), in_length, instream) == in_length)
     {
 	// output buffer contains zero on edges already
 	// copy input buffer to middle of output buffer
-	memcpy(output_bfr + pad_samples, input_bfr, in_length);
+	memcpy(offset_output_bfr, input_bfr, in_length * sizeof(cmplx));
 
         fwrite(output_bfr, sizeof(cmplx), out_length , outstream);
     }
