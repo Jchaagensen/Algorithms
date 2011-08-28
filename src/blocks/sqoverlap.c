@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-  File:    sqbin.c
+  File:    sqoverlap.c
   Project: SETIkit
   Authors: Aditya Bhatt <aditya at adityabhatt dot org>
            Gerry Harp <gharp at seti dot org>
@@ -46,21 +46,21 @@ char *usage_text[] =
 {
     "                                                                        ",
     "NAME                                                                    ",
-    "  sqbin -  bin samples to a smaller number of samples                   ",
+    "  sqoverlap -  take input rasters length N and overlap by a percent x   ",
     "SYNOPSIS                                                                ",
-    "  sqbin [OPTIONS] ...                                                   ",
+    "  sqoverlap [OPTIONS] ...                                               ",
     "DESCRIPTION                                                             ",
     "  -l  Input number of samples                                           ",
-    "  -o  Number of samples in the output for the given input number        "
+    "  -x  Percentage overlap between outgoing rasters                       "
 };
 
 unsigned int in_length = SMPLS_PER_READ;
-unsigned int out_length = SMPLS_PER_READ;
+float overlap = 0;
 
 int main(int argc, char *argv[])
 {
     int opt;
-    while ((opt = getopt(argc, argv, "hl:o:")) != -1)
+    while ((opt = getopt(argc, argv, "hl:x:")) != -1)
     {
         switch (opt)
         {
@@ -70,8 +70,8 @@ int main(int argc, char *argv[])
             case 'l':
                 sscanf(optarg, "%u", &in_length);
                 break;
-            case 'o':
-                sscanf(optarg, "%u", &out_length);
+            case 'x':
+                sscanf(optarg, "%u", &overlap);
                 break;
             default:
                 print_usage(usage_text);
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    int status = sq_bin(stdin, stdout, in_length, out_length);
+    int status = sq_overlap(stdin, stdout, in_length, overlap);
     
     if(status < 0)
     {

@@ -16,6 +16,7 @@ set(PROGRAMS
              sqgensine
              sqmix
              sqoffset 
+	     sqoverlap
 	     sqpad
 	     sqphase
              sqpnm

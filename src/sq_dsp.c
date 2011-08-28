@@ -840,11 +840,6 @@ int sq_overlap(FILE* instream, FILE* outstream, unsigned int in_length, float ov
         fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
         return ERR_ARG_BOUNDS;
     }
-    if (!((overlap_factor <= 0) && (overlap_factor >= 1)))
-    {
-        sq_error_print("Overlap factor must be in range (0, 1)\n");
-        return ERR_ARG_BOUNDS;
-    }
 
     if (overlap_factor != 2.0)
     {
