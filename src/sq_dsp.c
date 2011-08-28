@@ -846,36 +846,50 @@ int sq_overlap(FILE* instream, FILE* outstream, unsigned int in_length, float ov
         return ERR_ARG_BOUNDS;
     }
 
-    float *input_bfr;
-    float *input_bfr_1;
-    float *input_bfr_2;
-    float *output_bfr;
-
     if (overlap_factor != 2.0)
     {
 	    fprintf(stderr, "Only overlap factor of 2 is supported (you supplied %f)\n", 
 			    overlap_factor);
             return ERR_ARG_BOUNDS;
     }
-    
-    input_bfr = malloc(in_length * sizeof(cmplx));
-    if(input_bfr == NULL) return ERR_MALLOC;
+   
+    float *input_bfr1;
+    float *input_bfr2;
+    float *temp;
+    float *output_bfr;
+    float *offset_output_bfr;
+    unsigned int half_len = in_length/2;
 
-    input_bfr_1 = input_bfr;
-    input_bfr_2 = input_bfr + in_length/2;
-    
+    input_bfr1 = malloc(half_len * sizeof(cmplx));
+    if(input_bfr1 == NULL) return ERR_MALLOC;
+
+    input_bfr2 = malloc(half_len * sizeof(cmplx));
+    if(input_bfr2 == NULL) return ERR_MALLOC;
+
     output_bfr = malloc(in_length * sizeof(cmplx));
     if(output_bfr == NULL) return ERR_MALLOC;
 
-    /** output_bfr = input_bfr + 2 * samples_to_discard; // factor of 2 for complex sampling
+    // even thought output_bfr is a complex array, it is declared as
+    // float. Hence we must count floats when computing memory offset
+    offset_output_bfr = output_bfr + in_length;
+
+    // read first half-raster from stream -- assume it works, we'll check second read below
+    fread(input_bfr1, sizeof(cmplx), half_len, instream); 
   
-    while (fread(input_bfr, sizeof(cmplx), in_length, instream) == in_length)
+    while (fread(input_bfr2, sizeof(cmplx), half_len, instream) == half_len)
     {
-        fwrite(output_bfr, sizeof(cmplx), out_length , outstream);
+	memcpy(output_bfr,        input_bfr1, half_len * sizeof(cmplx));
+	memcpy(offset_output_bfr, input_bfr2, half_len * sizeof(cmplx));
+        fwrite(output_bfr, sizeof(cmplx), in_length , outstream);
+
+	// swap buffers
+	temp = input_bfr1;
+	input_bfr1 = input_bfr2;
+	input_bfr2 = temp;
     }
 
-    */
-    free(input_bfr);
+    free(input_bfr1);
+    free(input_bfr2);
     free(output_bfr);
 
     return 0;
