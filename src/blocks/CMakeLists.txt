@@ -4,21 +4,21 @@ INCLUDE_DIRECTORIES(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/../)
 
 set(PROGRAMS 
              sqabs
-	     sqascii
+             sqascii
              sqbin
-	     sqchop
+             sqchop
              sqconjugate 
              sqcrossmultiply
              sqedgechop
              sqgetimgtfp
              sqimag 
-	     sqfft 
+             sqfft 
              sqgensine
              sqmix
              sqoffset 
-	     sqoverlap
-	     sqpad
-	     sqphase
+             sqoverlap
+             sqpad
+             sqphase
              sqpnm
              sqpower 
              sqread 
