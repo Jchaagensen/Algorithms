@@ -13,7 +13,7 @@ set(SCRIPTS
 foreach(program ${PROGRAMS})
     add_executable(${program} ${program}.c)
     target_link_libraries(${program} setikit)
-    install(TARGETS ${program} EXPORT setikit DESTINATION bin)
+    install(TARGETS ${program} DESTINATION bin)
 endforeach(program)
 
 foreach(script ${SCRIPTS})

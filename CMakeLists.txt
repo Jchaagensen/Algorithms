@@ -1,6 +1,6 @@
 PROJECT(setikit C)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
 # Set SETIkit library version 
 SET(setikit_VERSION_MAJOR 0)
@@ -58,7 +58,7 @@ IF(ALL_FOUND)
   MESSAGE("===================================================================")
   MESSAGE("-- Congratulations! All required libraries were successfully found.")
   MESSAGE("===================================================================")
-ELSE(FFTW_FOUND)
+ELSE(ALL_FOUND)
   MESSAGE("===================================================================")
   MESSAGE(FATAL_ERROR "-- Not all required libraries were found. Aborting.")
   MESSAGE("===================================================================")
