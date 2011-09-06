@@ -44,13 +44,15 @@ char* usage_text[] =
     "NAME                                                               ",
     "   sqwindow - applies a hann window with 50% overlap               ",
     "SYNOPSIS                                                           ",
-    "   sqwindow [OPTIONS] ...                                       ",
+    "   sqwindow [OPTIONS] ...                                          ",
     "DESCRIPTION                                                        ",
-    "   -l number of samples to read in one go.                         "
+    "   -l number of samples to read in one go.                         ",
     "   -w name of window:                                              ",
-    "      hann",
-    "      hamming"
+    "      hann                                                         ",
+    "      hamming                                                      "
+    "                                                                   ",
 };
+int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 
 
 unsigned int wndw_len = 0;
@@ -64,7 +66,7 @@ int main(int argc, char **argv)
         switch (opt)
         {
             case 'h':
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_FAILURE);
             case 'l':
                 sscanf(optarg, "%u", &wndw_len);
@@ -73,7 +75,7 @@ int main(int argc, char **argv)
                 sscanf(optarg, "%s", window_name);
                 break;
             default:
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_FAILURE);
         }
     }

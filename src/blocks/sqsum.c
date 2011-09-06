@@ -55,6 +55,9 @@ char *usage_text[] =
     "  -n  Number of input lines to sum before generating output line        ",
     "  -h Print usage                                                        "
 };
+int arrlen = sizeof(usage_text)/sizeof(*usage_text);
+
+
 int main(int argc, char **argv)
 {
     unsigned int nsamples = SMPLS_PER_READ;
@@ -67,7 +70,7 @@ int main(int argc, char **argv)
         switch (opt)
         {
             case 'h':
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_FAILURE);
             case 'l':
                 sscanf(optarg, "%u", &nsamples);

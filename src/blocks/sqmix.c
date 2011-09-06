@@ -53,6 +53,7 @@ char* usage_text[] =
     "   -r radians per sample                                           ",
     "   -c frequency to heterodyne                                      "
 };
+int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 
 unsigned int data_len = 1000000;
 float channel = 0.0;
@@ -68,7 +69,7 @@ int main(int argc, char **argv)
         switch (opt)
         {
             case 'h':
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_FAILURE);
             case 'l':
                 sscanf(optarg, "%u", &data_len);
@@ -81,7 +82,7 @@ int main(int argc, char **argv)
                 rad_per_sample = TWO_PI * (channel / (float) SQ_STAGE1_FFT_LEN);  
                 break;
             default:
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_FAILURE);
         }
     }

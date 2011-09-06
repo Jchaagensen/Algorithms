@@ -36,11 +36,10 @@
 #include "sq_constants.h"
 #include "sq_utils.h"
 
-void print_usage(char** usage_text)
+void print_usage(char* usage_text[], int arrlen)
 {
     unsigned int i;
-
-    for (i = 0; i < (sizeof(usage_text) / sizeof(char)); i++)
+    for (i = 0; i < arrlen; i++)
         fprintf(stderr, "%s\n", usage_text[i]);
 }
 
@@ -211,7 +210,7 @@ void sq_error_handle(int errcode)
             if(errcode < 0)
                 sq_error_print("Unhandled error.");
     }
-    
+   
     sq_error_print("\n");
 }
 

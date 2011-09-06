@@ -62,6 +62,7 @@ char *usage_text[] =
     "  -x  flag, power values not scaled                                     ",
     "                                                                        "
 };
+int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 
 float *imgbfr;
 float* imgbfr_avg;
@@ -83,7 +84,7 @@ int main(int argc, char *argv[])
         switch (opt)
         {
             case 'h':
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_FAILURE);
             case 'r':
                 sscanf(optarg, "%u", &rows);
@@ -101,7 +102,7 @@ int main(int argc, char *argv[])
                 scale_fnctn = sq_no_scale;
                 break;
             default:
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_FAILURE);
         }
     }

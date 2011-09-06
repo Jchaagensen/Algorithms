@@ -52,6 +52,7 @@ char *usage_text[] = {
     "  -o  integer (required), offset (0 through 7)                          ",
     "                                                                        "
 };
+int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 
 #define TFPW 8388608
 #define CHANW (TFPW / 4096)
@@ -69,7 +70,6 @@ FILE *tfp;
 float imgd[MAXROWS*(STATW*IMGW)];
 
 void power_scale(unsigned int rowN);
-void usage();
 
 int main(int argc, char *argv[]) {
     unsigned int rowi, rowN;
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
     }
 
     if ((!(flags == 0x03)) || (!((argc - optind) == 1))) {
-        usage();
+        print_usage(usage_text, arrlen);
         exit(EXIT_FAILURE);
     }
 
@@ -163,11 +163,4 @@ void power_scale(unsigned int rowN) {
         imgvalf *= ((float) MAXVAL) / (max - min);
         imgd[imgi] = imgvalf;
     }
-}
-
-void usage() {
-    unsigned int i;
-
-    for (i = 0; i < (sizeof(usage_text)/sizeof(char *)); i++)
-        fprintf(stderr, "%s\n", usage_text[i]);
 }

@@ -53,6 +53,7 @@ char* usage_text[] =
     "      hamming",
     "      sine/cosine"
 };
+int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 
 
 unsigned int wndw_len = 1024;
@@ -66,7 +67,7 @@ int main(int argc, char **argv)
         switch (opt)
         {
             case 'h':
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_FAILURE);
             case 'l':
                 sscanf(optarg, "%u", &wndw_len);
@@ -75,7 +76,7 @@ int main(int argc, char **argv)
                 sscanf(optarg, "%s", window_name);
                 break;
             default:
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_FAILURE);
         }
     }

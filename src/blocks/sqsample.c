@@ -55,6 +55,7 @@ char* usage_text[] =
     "   -s (optional) size of input - if this is passed, the percentage progress  ",
     "      will be printed.                                                       "
 };
+int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 
 int main(int argc, char **argv)
 {
@@ -65,7 +66,7 @@ int main(int argc, char **argv)
         switch (opt)
         {
             case 'h':
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_SUCCESS);
             case 'l':
                 sscanf(optarg, "%u", &samples_len);
@@ -74,7 +75,7 @@ int main(int argc, char **argv)
                 sscanf(optarg, "%u", &filesize);
                 break;
             default:
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_SUCCESS);
         }
     }

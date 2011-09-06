@@ -53,6 +53,7 @@ char* usage_text[] =
     "DESCRIPTION                                                        ",
     "   -l number of samples to read in one go.                         "
 };
+int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 
 unsigned int smpls_len = 100000;
 
@@ -65,13 +66,13 @@ int main(int argc, char **argv)
         switch (opt)
         {
             case 'h':
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_FAILURE);
             case 'l':
                 sscanf(optarg, "%u", &smpls_len);
                 break;
             default:
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_FAILURE);
         }
     }

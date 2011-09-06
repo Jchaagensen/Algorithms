@@ -39,8 +39,9 @@
 /** 
  * Prints a processing block's usage to the output stream.
  * @param usage_text A two-dimensional character array; each row is printed on a new line.
+ * @param arrlen the length of the string array (number of strings it contains)
  */
-void print_usage(char** usage_text);
+void print_usage(char** usage_text, int arrlen);
 
 /** Takes a string and writes it as a log message to a given stream.
  * @param message The log message.

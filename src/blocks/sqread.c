@@ -51,6 +51,7 @@ char *usage_text[] =
     "  -c  pos. integer (required),  columns                                 ",
     "                                                                        "
 };
+int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 
 unsigned int cols = 0;
 
@@ -62,13 +63,13 @@ int main(int argc, char *argv[])
         switch (opt)
         {
             case 'h':
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_FAILURE);
             case 'c':
                 sscanf(optarg, "%u", &cols);
                 break;
             default:
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_FAILURE);
         }
     }
@@ -79,7 +80,7 @@ int main(int argc, char *argv[])
     {
         fprintf(stderr, "%s encountered a fatal error.", argv[0]);
         sq_error_handle(status);
-        print_usage(usage_text);
+        print_usage(usage_text, arrlen);
         exit(EXIT_FAILURE);
     }
     

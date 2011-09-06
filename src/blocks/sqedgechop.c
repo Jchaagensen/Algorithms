@@ -55,6 +55,7 @@ char *usage_text[] =
     "  -x  fraction of columns to be discarded from the left and right edges.",
     "  -y  fraction of columns to be discarded from the top and bottom edges."
 };
+int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 
 float *imgbfr, *imgbfr_chopped;
 unsigned int rows = 0;
@@ -75,7 +76,7 @@ int main(int argc, char *argv[])
         switch (opt)
         {
             case 'h':
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_SUCCESS);
             case 'r':
                 sscanf(optarg, "%u", &rows);
@@ -90,7 +91,7 @@ int main(int argc, char *argv[])
                 sscanf(optarg, "%f", &height_chop_fraction);
                 break;
             default:
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_SUCCESS);
         }
     }

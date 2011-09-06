@@ -49,6 +49,7 @@ char* usage_text[] =
     "DESCRIPTION                                                        ",
     "   -l number of samples to read in one go.                         "
 };
+int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 
 unsigned int data_len = 1000000;
 
@@ -61,13 +62,13 @@ int main(int argc, char **argv)
         switch (opt)
         {
             case 'h':
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_SUCCESS);
             case 'l':
                 sscanf(optarg, "%u", &data_len);
                 break;
             default:
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_SUCCESS);
         }
     }
@@ -78,7 +79,7 @@ int main(int argc, char **argv)
     {
         fprintf(stderr, "%s encountered a fatal error.", argv[0]);
         sq_error_handle(status);
-        print_usage(usage_text);
+        print_usage(usage_text, arrlen);
         exit(EXIT_FAILURE);
     }
     

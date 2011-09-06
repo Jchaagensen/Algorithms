@@ -52,6 +52,7 @@ char* usage_text[] =
     "   -r Scaling factor                                               ",
     "   -t phase offset                                                 "
 };
+int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 
 
 unsigned int data_len = 1000000;
@@ -67,7 +68,7 @@ int main(int argc, char **argv)
         switch (opt)
         {
             case 'h':
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_FAILURE);
             case 'l':
                 sscanf(optarg, "%u", &data_len);
@@ -79,7 +80,7 @@ int main(int argc, char **argv)
                 sscanf(optarg, "%f", &theta);
                 break;
             default:
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_FAILURE);
         }
     }

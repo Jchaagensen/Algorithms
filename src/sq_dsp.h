@@ -211,15 +211,6 @@ int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
 int sq_sum(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int num_to_sum);
 
 /**
- * Zoom?
- * @param instream Input stream of float data
- * @param outstream Output stream of float data
- * zoom_length 
- */ 
-int sq_zoom(FILE* instream, FILE* outstream, unsigned int zoom_length); 
-
-
-/**
  * Discard samples on left and right of spectrum
  * @param instream Input stream of float data
  * @param outstream Output stream of float data

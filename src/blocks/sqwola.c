@@ -58,6 +58,7 @@ char *usage_text[] =
     "  -w  flag, dump window coefficients to stdout and then exit            ",
     "                                                                        "
 };
+int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 
 unsigned int fftlen;
 unsigned int folds;
@@ -78,7 +79,7 @@ int main(int argc, char *argv[])
         switch (opt)
         {
             case 'h':
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_FAILURE);
             case 'l':
                 sscanf(optarg, "%u", &fftlen);
@@ -96,13 +97,13 @@ int main(int argc, char *argv[])
                 is_window_dump = 1;
                 break;
             default:
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_FAILURE);
         }
     }
     if (!(argflags == 0x07))
     {
-        print_usage(usage_text);
+        print_usage(usage_text, arrlen);
         exit(EXIT_FAILURE);
     }
 
@@ -112,7 +113,7 @@ int main(int argc, char *argv[])
     {
         fprintf(stderr, "%s encountered a fatal error.", argv[0]);
         sq_error_handle(status);
-        print_usage(usage_text);
+        print_usage(usage_text, arrlen);
         exit(EXIT_FAILURE);
     }
 

@@ -531,55 +531,6 @@ int sq_mix(FILE* instream, FILE* outstream, unsigned int in_length, float radian
     return 0;
 }
 
-int sq_zoom(FILE* instream, FILE* outstream, unsigned int in_length)
-{
-    // TODO: Not properly tested yet
-    if (!((in_length >= 2) && (in_length <= MAX_ZOOM_LEN)))
-    {
-        fprintf(stderr, "Zoom length must be between 2 and %u\n", MAX_SMPLS_LEN);
-        return ERR_ARG_BOUNDS;
-    }
-
-    float *input_bfr;
-    float *output_bfr;
-
-    int inbfri, outbfri;
-    float sum_r, sum_i;
-
-    outbfri = 0;
-
-    input_bfr = malloc(in_length * sizeof(cmplx));
-    if(input_bfr == NULL) return ERR_MALLOC;
-
-    output_bfr = malloc(ZOOM_OUTPUT_BFR_LEN * sizeof(cmplx));
-    if(output_bfr == NULL) return ERR_MALLOC;
-
-    while (fread(input_bfr, sizeof(cmplx), in_length, instream) == in_length)
-    {
-        sum_r = 0.0;
-        sum_i = 0.0;
-        for (inbfri = 0; inbfri < in_length; inbfri++)
-        {
-            sum_r += input_bfr[(inbfri<<1)+0];
-            sum_i += input_bfr[(inbfri<<1)+1];
-        }
-        output_bfr[(outbfri<<1) + REAL] = sum_r;
-        output_bfr[(outbfri<<1) + IMAG] = sum_i;
-        outbfri++;
-
-        if (!(outbfri < ZOOM_OUTPUT_BFR_LEN))
-        {
-            fwrite(output_bfr, sizeof(cmplx), ZOOM_OUTPUT_BFR_LEN, outstream);
-            outbfri = 0;
-        }
-    }
-
-    free(input_bfr);
-    free(output_bfr);
-
-    return 0;
-}
-
 void init_window(float* wndwbfr, unsigned int wndwlen, unsigned int folds)
 {
     unsigned int wndwi;
@@ -724,27 +675,21 @@ int sq_pad(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
     float *input_bfr;
     float *output_bfr;
 
-    input_bfr = malloc(in_length * sizeof(cmplx));
-    if(input_bfr == NULL) return ERR_MALLOC;
-
     output_bfr = calloc(out_length, sizeof(cmplx));
     if(output_bfr == NULL) return ERR_MALLOC;
 
-    // even though this is a complex array, it was declaried as float
-    // hence we count memory positions in floats
-    float * offset_output_bfr = output_bfr + (out_length - in_length);
-    
+    // find the insertion point for reading data
+    int offset = (out_length - in_length) / 2; 
+
+    // input_bfr points to the center section of the output buffer
+    input_bfr = output_bfr + offset * 2; // each cmplx sample is 2 floats
 
     while (fread(input_bfr, sizeof(cmplx), in_length, instream) == in_length)
     {
-	// output buffer contains zero on edges already
-	// copy input buffer to middle of output buffer
-	memcpy(offset_output_bfr, input_bfr, in_length * sizeof(cmplx));
-
+        // the input data is already surrounded by zeros, just write it out
         fwrite(output_bfr, sizeof(cmplx), out_length , outstream);
     }
 
-    free(input_bfr);
     free(output_bfr);
 
     return 0;
@@ -840,6 +785,12 @@ int sq_overlap2x(FILE* instream, FILE* outstream, unsigned int in_length)
         fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
         return ERR_ARG_BOUNDS;
     }
+    if (!((in_length/2)*2 == in_length))
+    {
+        fprintf(stderr, "For overlaps, input array length must be divisible by 2.\n");
+        return ERR_ARG_BOUNDS;
+    }
+
 
     float *input_bfr1;
     float *input_bfr2;
@@ -859,6 +810,7 @@ int sq_overlap2x(FILE* instream, FILE* outstream, unsigned int in_length)
 
     // even thought output_bfr is a complex array, it is declared as
     // float. Hence we must count floats when computing memory offset
+    // adding in_length offsets to middle of array
     offset_output_bfr = output_bfr + in_length;
 
     // read first half-raster from stream -- assume it works, we'll check second read below

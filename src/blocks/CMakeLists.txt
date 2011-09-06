@@ -28,7 +28,6 @@ set(PROGRAMS
              sqsum 
              sqwindow 
              sqwola
-             sqzoom
    )
 
 set(SCRIPTS sqautocorr

@@ -52,6 +52,7 @@ char *usage_text[] =
     "  -l  Input number of samples ",
     "  -x  Fraction (<0.5) of samples to chop from each end"
 };
+int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 
 unsigned int in_length = SMPLS_PER_READ;
 float discard_fraction = 0.125;
@@ -64,7 +65,7 @@ int main(int argc, char *argv[])
         switch (opt)
         {
             case 'h':
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_FAILURE);
             case 'l':
                 sscanf(optarg, "%u", &in_length);
@@ -73,7 +74,7 @@ int main(int argc, char *argv[])
                 sscanf(optarg, "%f", &discard_fraction);
                 break;
             default:
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_FAILURE);
         }
     }
@@ -84,7 +85,7 @@ int main(int argc, char *argv[])
     {
         fprintf(stderr, "%s encountered a fatal error.", argv[0]);
         sq_error_handle(status);
-        print_usage(usage_text);
+        print_usage(usage_text, arrlen);
         exit(EXIT_FAILURE);
     }
 

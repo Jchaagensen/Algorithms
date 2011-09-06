@@ -55,6 +55,7 @@ char* usage_text[] =
     "   -w Wavelength of the sinusoid                                       ",
     "   -n The SNR (Signal to Noise Ratio)                                  "
 };
+int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 
 
 unsigned int nsamples = 1000000;
@@ -72,7 +73,7 @@ int main(int argc, char *argv[])
         switch (opt)
         {
             case 'h':
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_SUCCESS);
             case 'l':
                 sscanf(optarg, "%u", &nsamples);
@@ -90,7 +91,7 @@ int main(int argc, char *argv[])
                 sscanf(optarg, "%f", &SNR);
                 break;
             default:
-                print_usage(usage_text);
+                print_usage(usage_text, arrlen);
                 exit(EXIT_SUCCESS);
         }
     }
