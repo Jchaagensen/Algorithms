@@ -51,7 +51,8 @@ char *usage_text[] =
     "  sqbin [OPTIONS] ...                                                   ",
     "DESCRIPTION                                                             ",
     "  -l  Input number of samples                                           ",
-    "  -o  Number of samples in the output for the given input number        "
+    "  -o  Number of samples in the output for the given input number        ",
+    "                                                                        "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 

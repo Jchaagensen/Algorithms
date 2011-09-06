@@ -48,10 +48,11 @@ char* usage_text[] =
     "                     samples of the other.                                     ",
     "                     If the two signals are a1, a2, a3, ... and b1, b2, b3, ...",
     "                     the result would be a1*b1, a2*b2, a3*b3, ...              ",
-    "SYNOPSIS                                                           ",
-    "   sqcrossmultiply [OPTIONS] file1 file2                           ",
-    "DESCRIPTION                                                        ",
-    "   -l number of samples to read in one go.                         "
+    "SYNOPSIS                                                                       ",
+    "   sqcrossmultiply [OPTIONS] file1 file2                                       ",
+    "DESCRIPTION                                                                    ",
+    "   -l number of samples to read in one go.                                     ",
+    "                                                                               "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 

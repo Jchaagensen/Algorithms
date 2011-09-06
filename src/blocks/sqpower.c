@@ -45,9 +45,10 @@ char* usage_text[] =
     "NAME                                                               ",
     "   sqpower - computes the instantaneous power                      ",
     "SYNOPSIS                                                           ",
-    "   sqpower [OPTIONS] ...                                             ",
+    "   sqpower [OPTIONS] ...                                           ",
     "DESCRIPTION                                                        ",
-    "   -l number of samples to read in one go.                         "
+    "   -l number of samples to read in one go.                         ",
+    "                                                                   "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 

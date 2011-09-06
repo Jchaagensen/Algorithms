@@ -52,6 +52,7 @@ char *usage_text[] =
     "  sqoverlap [OPTIONS] ...                                               ",
     "DESCRIPTION                                                             ",
     "  -l  Input number of samples                                           ",
+    "                                                                        "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 

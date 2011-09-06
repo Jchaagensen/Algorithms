@@ -49,7 +49,8 @@ char* usage_text[] =
     "DESCRIPTION                                                        ",
     "   -l number of samples to read in one go.                         ",
     "   -r real offset                                                  ",
-    "   -i imaginary offset                                             "
+    "   -i imaginary offset                                             ",
+    "                                                                   "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 

@@ -50,7 +50,8 @@ char* usage_text[] =
     "DESCRIPTION                                                        ",
     "   -l number of samples to read in one go.                         ",
     "   -r Scaling factor                                               ",
-    "   -t phase offset                                                 "
+    "   -t phase offset                                                 ",
+    "                                                                   "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 

@@ -47,9 +47,10 @@ char *usage_text[] =
     "NAME                                                                    ",
     "  sqphase -  divide each data point by its absolute value)              ",
     "SYNOPSIS                                                                ",
-    "  sqphase [OPTIONS] ...                                                  ",
+    "  sqphase [OPTIONS] ...                                                 ",
     "DESCRIPTION                                                             ",
-    "  -l  Input number of samples ",
+    "  -l  Input number of samples                                           ",
+    "                                                                        "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 

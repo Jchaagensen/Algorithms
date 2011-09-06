@@ -53,7 +53,8 @@ char *usage_text[] =
     "DESCRIPTION                                                             ",
     "  -l  Input number of samples                                           ",
     "  -n  Number of input lines to sum before generating output line        ",
-    "  -h Print usage                                                        "
+    "  -h Print usage                                                        ",
+    "                                                                        "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 

@@ -51,7 +51,8 @@ char *usage_text[] =
     "  sqpad [OPTIONS] ...                                                   ",
     "DESCRIPTION                                                             ",
     "  -l  Input number of samples                                           ",
-    "  -o  Number of output stamples, must be > than input"
+    "  -o  Number of output stamples, must be > than input                   ",
+    "                                                                        "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 

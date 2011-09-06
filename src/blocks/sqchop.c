@@ -49,8 +49,9 @@ char *usage_text[] =
     "SYNOPSIS                                                                ",
     "  sqchop [OPTIONS] ...                                                  ",
     "DESCRIPTION                                                             ",
-    "  -l  Input number of samples ",
-    "  -x  Fraction (<0.5) of samples to chop from each end"
+    "  -l  Input number of samples                                           ",
+    "  -x  Fraction (<0.5) of samples to chop from each end                  ",
+    "                                                                        "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 

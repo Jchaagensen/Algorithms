@@ -50,7 +50,8 @@ char *usage_text[] =
     "SYNOPSIS                                                                ",
     "  sqreal [OPTIONS] ...                                                  ",
     "DESCRIPTION                                                             ",
-    "  -l  number of samples to process in one go.                           "
+    "  -l  number of samples to process in one go.                           ",
+    "                                                                        "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 

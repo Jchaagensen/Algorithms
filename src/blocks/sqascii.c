@@ -39,17 +39,18 @@
 #include <sq_dsp.h>
 #include <sq_utils.h>
 
-//          1         2         3         4         5         6         7
-// 123456789012345678901234567890123456789012345678901234567890123456789012
+//       1         2         3         4         5         6         7
+//34567890123456789012345678901234567890123456789012345678901234567890123456789
 char *usage_text[] = 
 {
     "                                                                        ",
     "NAME                                                                    ",
     "  sqascii -  convert incoming data to ascii format (real, imag)         ",
     "SYNOPSIS                                                                ",
-    "  sqascii [OPTIONS] ...                                                  ",
+    "  sqascii [OPTIONS] ...                                                 ",
     "DESCRIPTION                                                             ",
-    "  -l  Input number of samples ",
+    "  -l  Input number of samples                                           ",
+    "                                                                        "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 

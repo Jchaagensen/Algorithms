@@ -51,7 +51,8 @@ char* usage_text[] =
     "DESCRIPTION                                                        ",
     "   -l number of samples to read in one go.                         ",
     "   -r radians per sample                                           ",
-    "   -c frequency to heterodyne                                      "
+    "   -c frequency to heterodyne                                      ",
+    "                                                                   "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 

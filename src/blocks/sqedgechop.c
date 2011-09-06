@@ -53,7 +53,8 @@ char *usage_text[] =
     "  -r  pos. integer (required), image rows                               ",
     "  -c  pos. integer (required), image columns                            ",
     "  -x  fraction of columns to be discarded from the left and right edges.",
-    "  -y  fraction of columns to be discarded from the top and bottom edges."
+    "  -y  fraction of columns to be discarded from the top and bottom edges.",
+    "                                                                        "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 

@@ -53,7 +53,8 @@ char* usage_text[] =
     "   -s Length of the sinusoid in terms of number of cycles              ",
     "   -a Length of a cycle in terms of number of samples                  ",
     "   -w Wavelength of the sinusoid                                       ",
-    "   -n The SNR (Signal to Noise Ratio)                                  "
+    "   -n The SNR (Signal to Noise Ratio)                                  ",
+    "                                                                       "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 

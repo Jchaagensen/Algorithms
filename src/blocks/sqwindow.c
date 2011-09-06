@@ -49,8 +49,8 @@ char* usage_text[] =
     "   -l number of samples to read in one go.                         ",
     "   -w name of window:                                              ",
     "      hann                                                         ",
-    "      hamming                                                      "
-    "                                                                   ",
+    "      hamming                                                      ",
+    "                                                                   "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 

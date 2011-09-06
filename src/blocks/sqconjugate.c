@@ -47,7 +47,8 @@ char* usage_text[] =
     "SYNOPSIS                                                           ",
     "   sqconjugate [OPTIONS] ...                                       ",
     "DESCRIPTION                                                        ",
-    "   -l number of samples to read in one go.                         "
+    "   -l number of samples to read in one go.                         ",
+    "                                                                   "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 

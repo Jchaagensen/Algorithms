@@ -45,6 +45,7 @@ uint64_t filesize = 0;
 
 char* usage_text[] = 
 {
+    "                                                                             ",
     "NAME                                                                         ",
     "   sqsample - Takes 2-channel (quadrature) 8-bit data from the input stream, ",
     "               and writes samples in the form of floats to the output stream,",
@@ -53,7 +54,8 @@ char* usage_text[] =
     "   sqsample [OPTIONS] ...                                                    ",
     "   -l number of samples to read in one go.                                   ",
     "   -s (optional) size of input - if this is passed, the percentage progress  ",
-    "      will be printed.                                                       "
+    "      will be printed.                                                       ",
+    "                                                                             "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 
