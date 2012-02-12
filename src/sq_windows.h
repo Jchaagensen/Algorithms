@@ -76,6 +76,16 @@ float sq_window_cosine(unsigned int n, unsigned int length);
 float sq_window_lanczos(unsigned int n, unsigned int length);
 
 /**
+ * Returns a value that is 1 in the bottom half and 0 in the top half
+ */
+float sq_window_bothalf(unsigned int n, unsigned int length);
+
+/**
+ * Returns a value that is 0 in the bottom half and 1 in the top half
+ */
+float sq_window_tophalf(unsigned int n, unsigned int length);
+
+/**
  * Returns a value on a Triangular window
  * @param n index at which value is needed
  * @param length length of window

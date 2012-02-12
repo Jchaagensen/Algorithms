@@ -50,6 +50,12 @@ char* usage_text[] =
     "   -w name of window:                                              ",
     "      hann                                                         ",
     "      hamming                                                      ",
+    "      cosine                                                       ",
+    "      lanczos                                                      ",
+    "      triangular                                                   ",
+    "      gaussian                                                     ",
+    "      bothalf (bottom half)                                        ",
+    "      tophalf (top half)                                           ",
     "                                                                   "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);

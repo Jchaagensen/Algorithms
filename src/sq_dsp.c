@@ -28,10 +28,14 @@
   The SETI Institute at www.seti.org or setiquest.org.
 
 *******************************************************************************/
+typedef unsigned int boolean;
+#define false 0
+#define true (!false)
 
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <stdio.h>
 
 #include <fftw3.h>
 
@@ -226,6 +230,66 @@ int sq_sum(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
     return 0;
 }
 
+int sq_bandpass( FILE* instream, FILE* outstream, unsigned int in_length, char bp_file[])
+{
+fprintf(stderr, "sq_bandpass not yet implemented.");
+return -1;
+    char line[100] = "";
+    float *in_bfr;
+    float *wndw_bfr;
+    unsigned int smpli;
+    int count;
+
+    if (!((in_length >= 2) && (in_length <= MAX_WNDW_LEN)))
+    {
+        fprintf(stderr, "Window lengths must be between 2 and %u\n", MAX_WNDW_LEN);
+        return ERR_ARG_BOUNDS;
+    }
+
+    wndw_bfr = malloc(in_length * sizeof(float));
+    if (wndw_bfr == NULL) return ERR_MALLOC;
+
+    in_bfr = malloc(in_length * sizeof(cmplx));
+    if (in_bfr == NULL) return ERR_MALLOC;
+
+    // Read bandpass file
+    FILE *bp;
+    bp = fopen(bp_file, "r");
+    fprintf(stderr, "*** $s", bp_file);
+    if ( bp != NULL )
+    {
+	count = 0;
+        while(fgets(line, sizeof line, bp) != NULL )
+	{
+            fputs(line, stdout);
+	    count++;
+            printf("Bandpass length = %i.\n", count);
+	    if (count > in_length)
+            {
+                sq_error_print("ERROR: Bandpass file too long\n");
+		return ERR_ARG_BOUNDS;
+            }
+        }
+        fclose(bp);
+
+        printf("Bandpass length = %i.\n", count);
+	if (count < in_length)
+        {
+            sprintf(line, "Bandpass length = %i.\n", count);
+            sq_error_print(line);
+            sq_error_print("ERROR: Bandpass file too short\n");
+            return ERR_ARG_BOUNDS;
+        }
+    }
+    else
+    {
+        sprintf(line, "ERROR: Bandpass file \"%s\" does not exist\n", bp_file);
+        sq_error_print(line);
+        return ERR_ARG_BOUNDS;
+    }
+
+}
+
 int sq_window( FILE* instream, FILE* outstream, unsigned int in_length, char* window_name)
 {
     float *wndw_bfr;
@@ -247,7 +311,7 @@ int sq_window( FILE* instream, FILE* outstream, unsigned int in_length, char* wi
     out_bfr = malloc(in_length * sizeof(cmplx));
     if (out_bfr == NULL) return ERR_MALLOC;
 
-    // Make window buffer
+    // Make window 
     int status = sq_make_window_from_name(wndw_bfr, in_length, window_name);
     if (status < 0)
         return status;
@@ -263,6 +327,7 @@ int sq_window( FILE* instream, FILE* outstream, unsigned int in_length, char* wi
             out_bfr[(bfri<<1)+0] = in_bfr[(bfri<<1)+0] * wndw_bfr[bfri];
             out_bfr[(bfri<<1)+1] = in_bfr[(bfri<<1)+1] * wndw_bfr[bfri];
         }
+
         fwrite(out_bfr, sizeof(cmplx), in_length, outstream);
         memcpy(&in_bfr[0], &in_bfr[(in_length/2)*2], (in_length / 2)*sizeof(cmplx));
     }
@@ -424,15 +489,15 @@ int sq_conjugate(FILE* instream, FILE* outstream, unsigned int in_length)
     }
 
     float *data_bfr;
-    unsigned int datai;
+    unsigned int smpli;
 
     data_bfr = malloc(in_length * sizeof(cmplx));
     if (data_bfr == NULL) return ERR_MALLOC;
 
     while (fread(data_bfr, 8, in_length, instream) == in_length)
     {
-        for (datai = 0; datai < in_length; datai += 1)
-            data_bfr[(datai<<1)+1] *= -1.0;
+        for (smpli = 0; smpli < in_length; smpli += 1)
+            data_bfr[(smpli<<1)+1] *= -1.0;
 
         fwrite(data_bfr, sizeof(cmplx), in_length, outstream);
     }
@@ -691,6 +756,40 @@ int sq_pad(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
     }
 
     free(output_bfr);
+
+    return 0;
+}
+
+int sq_fftflip(FILE* instream, FILE* outstream, unsigned int in_length)
+{
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+    {
+        fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
+        return ERR_ARG_BOUNDS;
+    }
+
+    float *input_bfr;
+
+    input_bfr = malloc(in_length * sizeof(cmplx));
+    if (input_bfr == NULL) return ERR_MALLOC;
+
+    unsigned int smpli;
+    while (fread(input_bfr, sizeof(cmplx), in_length, instream) == in_length)
+    {
+	for (smpli = 0; smpli < in_length/2; smpli++)
+        {
+            float temp0 = input_bfr[(smpli<<1) + 0];
+            float temp1 = input_bfr[(smpli<<1) + 1];
+	    input_bfr[(smpli<<1) + 0] = input_bfr[(smpli<<1) + in_length + 0];
+	    input_bfr[(smpli<<1) + 1] = input_bfr[(smpli<<1) + in_length + 1];
+	    input_bfr[(smpli<<1) + in_length + 0] = temp0;
+	    input_bfr[(smpli<<1) + in_length + 1] = temp1;
+        }
+ 
+        fwrite(input_bfr, sizeof(cmplx), in_length , outstream);
+    }
+
+    free(input_bfr);
 
     return 0;
 }

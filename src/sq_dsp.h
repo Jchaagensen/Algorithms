@@ -191,6 +191,22 @@ int sq_abs(FILE* instream, FILE* outstream, unsigned int nsamples);
 int sq_crossmultiply(FILE* instream1, FILE* instream2, FILE* outstream, unsigned int nsamples);
 
 /**
+ * Multiplies the input data, one raster at a time, but a transfer function which is provided.
+ * This is typically used to bandpass filter a set of data by applying this function in the
+ * Fourier domain. The input transfer function file is an ascii file with one row of numbers.
+ * The number of lines in the file must be equal to the number of in_length supplied on the
+ * command line.
+ */
+int sq_bandpass(FILE* instream, FILE* outstream, unsigned int in_length, char * bpfile);
+
+/**
+ * Performs a "fft flip" on the raster and outputs. The definition of an fft-flip is to
+ * take the top half of the samples and swap them (without rearrangement) with the bottom
+ * half of the samples. Useful to convert the output of an FFT to human-readable spectrum.
+ */
+int sq_fftflip(FILE* instream, FILE* outstream, unsigned int in_length);
+
+/**
  * Bins the specified number of contiguous samples from the input stream into a new (smaller) specified number of samples
  * @param instream Input stream of float data
  * @param outstream Output stream of float data

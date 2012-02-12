@@ -128,11 +128,7 @@ int sq_read_img(FILE* instream, float* img_buf, int rows, int cols)
         }
     }
 
-    if (!(rows > 0))
-    {
-        free(img_buf);
-        return ERR_STREAM_READ;
-    }
+    return rows;
 }
 
 int sq_write_img(FILE* outstream, float* img_buf, int rows, int cols)
@@ -153,7 +149,6 @@ int sq_write_img(FILE* outstream, float* img_buf, int rows, int cols)
     
     if (!(rows > 0))
     {
-        free(img_buf);
         return ERR_STREAM_WRITE;
     }
 }
@@ -190,6 +185,7 @@ int sq_write_pnm(FILE* outstream, float* img_buf, int rows, int cols)
     float imgvalf;
     unsigned char imgvalb;
 
+    // write pnm header
     fprintf(outstream, "P5\n");
     fprintf(outstream, "%u %u\n", cols, rows);
     fprintf(outstream, "%u\n", MAX_PIXEL_VAL);

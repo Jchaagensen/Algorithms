@@ -119,15 +119,16 @@ int main(int argc, char *argv[])
     }
     
     //fprintf(stderr, "reading image\n");
-    int read_status = sq_read_img(stdin, imgbfr, rows, cols);
-    
-    //fprintf(stderr, "read image\n");
-    if(read_status < 0)
+    rows = sq_read_img(stdin, imgbfr, rows, cols);
+
+    // Check the number of rows and deal
+    if (!(rows > 0))
     {
-        free(imgbfr);
-        sq_error_handle(read_status);
+        free(imgbfr); 
+        sq_error_handle(ERR_STREAM_READ);
         exit(EXIT_FAILURE);
     }
+
     //fprintf(stderr, "Scaling image\n");
 
     scale_fnctn(imgbfr, rows, cols);
@@ -145,8 +146,9 @@ int main(int argc, char *argv[])
     else
     {
         sq_write_pnm(stdout, imgbfr, rows, cols);
-        free(imgbfr);
     }
+
+    free(imgbfr);
 
     //fprintf(stderr, "Exiting image\n");
     exit(EXIT_SUCCESS);

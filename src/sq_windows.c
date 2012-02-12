@@ -57,6 +57,10 @@ int sq_make_window_from_name ( float* window_buffer, unsigned int length, char* 
         window_function = sq_window_triangular;
     else if(!strcmp(window_name, "gaussian"))
         window_function = sq_window_gaussian;
+    else if(!strcmp(window_name, "bothalf"))
+        window_function = sq_window_bothalf;
+    else if(!strcmp(window_name, "tophalf"))
+        window_function = sq_window_tophalf;
     else
         return ERR_UNKNOWN_WINDOW;
     
@@ -82,6 +86,28 @@ float sq_window_cosine ( unsigned int n, unsigned int length )
 float sq_window_lanczos(unsigned int n, unsigned int length)
 {
     return SINC( ((double)2*n/(double)(length-1)) - 1 );
+}
+
+float sq_window_bothalf ( unsigned int n, unsigned int length )
+{
+    // kill one sample at beginning and end of each band
+    if (n == 0) return 0;
+    if (n == length/2-1) return 0;
+    if (n == length/2) return 0;
+    if (n == length-1) return 0;
+    if (n <  length/2) return 1;
+    if (n >= length/2) return 0;
+}
+
+float sq_window_tophalf ( unsigned int n, unsigned int length )
+{
+    // kill one sample at beginning and end of each band
+    if (n == 0) return 0;
+    if (n == length/2-1) return 0;
+    if (n == length/2) return 0;
+    if (n == length-1) return 0;
+    if (n <= length/2) return 0;
+    if (n >  length/2) return 1;
 }
 
 float sq_window_triangular ( unsigned int n, unsigned int length )
