@@ -31,6 +31,10 @@
 #   define _FILE_OFFSET_BITS 64
 #endif
 
+typedef unsigned int boolean;
+#define false 0
+#define true (!false)
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -67,6 +71,7 @@ char window_name[10] = {"hann"};
 int main(int argc, char **argv)
 {
     int opt;
+    boolean overlaps = true;
     while ((opt = getopt(argc, argv, "hl:w:")) != -1)
     {
         switch (opt)

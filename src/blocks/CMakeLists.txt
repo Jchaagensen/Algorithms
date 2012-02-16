@@ -27,6 +27,7 @@ set(PROGRAMS
              sqreal 
              sqsample 
              sqscaleandrotate 
+	     sqsubavg
              sqsum 
              sqwindow 
              sqwola

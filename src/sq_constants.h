@@ -34,6 +34,11 @@
 #include <inttypes.h>
 #include <math.h>
 
+// define booleans
+typedef unsigned int boolean;
+#define false 0
+#define true (!false)
+
 // Error codes
 #define ERR_ARG_BOUNDS -1
 #define ERR_STREAM_OPEN -2

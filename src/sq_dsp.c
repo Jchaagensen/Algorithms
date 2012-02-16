@@ -28,10 +28,6 @@
   The SETI Institute at www.seti.org or setiquest.org.
 
 *******************************************************************************/
-typedef unsigned int boolean;
-#define false 0
-#define true (!false)
-
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
@@ -46,7 +42,7 @@ typedef unsigned int boolean;
 
 int sq_abs(FILE* instream, FILE* outstream, unsigned int in_length)
 {
-    float *smpls_bfr;
+    float *in_buffer;
     unsigned int smpli;
 
     if ((in_length < 2) || (in_length >= MAX_SMPLS_LEN))
@@ -55,30 +51,30 @@ int sq_abs(FILE* instream, FILE* outstream, unsigned int in_length)
         return ERR_ARG_BOUNDS;
     }
 
-    smpls_bfr = malloc(in_length * sizeof(cmplx));
-    if (smpls_bfr == NULL) return ERR_MALLOC;
+    in_buffer = malloc(in_length * sizeof(cmplx));
+    if (in_buffer == NULL) return ERR_MALLOC;
 
-    while (fread(smpls_bfr, sizeof(cmplx), in_length, instream) == in_length)
+    while (fread(in_buffer, sizeof(cmplx), in_length, instream) == in_length)
     {
         for (smpli = 0; smpli < in_length ; smpli++)
         {
-            smpls_bfr[(smpli<<1)+0] =
-                sqrt(  (smpls_bfr[(smpli<<1)+0] * smpls_bfr[(smpli<<1)+0]) +
-                       (smpls_bfr[(smpli<<1)+1] * smpls_bfr[(smpli<<1)+1])   );
-            smpls_bfr[(smpli<<1)+1] = 0.0;
+            in_buffer[(smpli<<1)+0] =
+                sqrt(  (in_buffer[(smpli<<1)+0] * in_buffer[(smpli<<1)+0]) +
+                       (in_buffer[(smpli<<1)+1] * in_buffer[(smpli<<1)+1])   );
+            in_buffer[(smpli<<1)+1] = 0.0;
         }
 
-        fwrite(smpls_bfr, sizeof(cmplx), in_length, outstream);
+        fwrite(in_buffer, sizeof(cmplx), in_length, outstream);
     }
 
-    free(smpls_bfr);
+    free(in_buffer);
 
     return 0;
 }
 
 int sq_power(FILE* instream, FILE* outstream, unsigned int in_length)
 {
-    float *smpls_bfr;
+    float *in_buffer;
     unsigned int smpli;
 
     if ((in_length < 2) || (in_length >= MAX_SMPLS_LEN))
@@ -87,28 +83,29 @@ int sq_power(FILE* instream, FILE* outstream, unsigned int in_length)
         return ERR_ARG_BOUNDS;
     }
 
-    smpls_bfr = malloc(in_length * sizeof(cmplx));
-    if (smpls_bfr == NULL) return ERR_MALLOC;
+    in_buffer = malloc(in_length * sizeof(cmplx));
+    if (in_buffer == NULL) return ERR_MALLOC;
 
-    while (fread(smpls_bfr, sizeof(cmplx), in_length, instream) == in_length)
+    while (fread(in_buffer, sizeof(cmplx), in_length, instream) == in_length)
     {
         for (smpli = 0; smpli < in_length ; smpli++)
         {
-            smpls_bfr[(smpli<<1)+0] =
-                (smpls_bfr[(smpli<<1)+0] * smpls_bfr[(smpli<<1)+0]) +
-                (smpls_bfr[(smpli<<1)+1] * smpls_bfr[(smpli<<1)+1]);
-            smpls_bfr[(smpli<<1)+1] = 0.0;
+            in_buffer[(smpli<<1)+0] =
+                (in_buffer[(smpli<<1)+0] * in_buffer[(smpli<<1)+0]) +
+                (in_buffer[(smpli<<1)+1] * in_buffer[(smpli<<1)+1]);
+            in_buffer[(smpli<<1)+1] = 0.0;
         }
 
-        fwrite(smpls_bfr, sizeof(cmplx), in_length, outstream);
+        fwrite(in_buffer, sizeof(cmplx), in_length, outstream);
     }
 
-    free(smpls_bfr);
+    free(in_buffer);
 
     return 0;
 }
 
-int sq_crossmultiply(FILE* instream1, FILE* instream2, FILE* outstream, unsigned int in_length) {
+int sq_crossmultiply(FILE* instream1, FILE* instream2, FILE* outstream, unsigned int in_length) 
+{
     float *bfr1, *bfr2;
     float real = 0, imag = 0;
     unsigned int smpli;
@@ -167,7 +164,7 @@ int sq_sum(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
         return ERR_ARG_BOUNDS;
     }
 
-    float *smpls_bfr;
+    float *in_buffer;
     float *sum_bfr;
     unsigned int rasteri;
     unsigned int smpli;
@@ -175,8 +172,8 @@ int sq_sum(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
     int first_time = 1;
     int schedule_shutdown = 0;
 
-    smpls_bfr = malloc(in_length * sizeof(cmplx));
-    if (smpls_bfr == NULL) return ERR_MALLOC;
+    in_buffer = malloc(in_length * sizeof(cmplx));
+    if (in_buffer == NULL) return ERR_MALLOC;
 
     sum_bfr = malloc(in_length * sizeof(cmplx));
     if (sum_bfr == NULL) return ERR_MALLOC;
@@ -195,15 +192,15 @@ int sq_sum(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
         for (rasteri = 0; rasteri < num_to_sum; ++rasteri)
         {
             // read a new raster line of data
-            if (fread(smpls_bfr, sizeof(cmplx), in_length, instream) == in_length)
+            if (fread(in_buffer, sizeof(cmplx), in_length, instream) == in_length)
             {
                 ++raster_count;
 
                 // sum this raster with previous
                 for (smpli = 0; smpli < in_length; smpli++)
                 {
-                    sum_bfr[(smpli<<1)+0] += smpls_bfr[(smpli<<1)+0];
-                    sum_bfr[(smpli<<1)+1] += smpls_bfr[(smpli<<1)+1];
+                    sum_bfr[(smpli<<1)+0] += in_buffer[(smpli<<1)+0];
+                    sum_bfr[(smpli<<1)+1] += in_buffer[(smpli<<1)+1];
                 }
             }
             else
@@ -225,7 +222,7 @@ int sq_sum(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
     }
 
     free(sum_bfr);
-    free(smpls_bfr);
+    free(in_buffer);
 
     return 0;
 }
@@ -235,7 +232,7 @@ int sq_bandpass( FILE* instream, FILE* outstream, unsigned int in_length, char b
 fprintf(stderr, "sq_bandpass not yet implemented.");
 return -1;
     char line[100] = "";
-    float *in_bfr;
+    float *in_buffer;
     float *wndw_bfr;
     unsigned int smpli;
     int count;
@@ -249,8 +246,8 @@ return -1;
     wndw_bfr = malloc(in_length * sizeof(float));
     if (wndw_bfr == NULL) return ERR_MALLOC;
 
-    in_bfr = malloc(in_length * sizeof(cmplx));
-    if (in_bfr == NULL) return ERR_MALLOC;
+    in_buffer = malloc(in_length * sizeof(cmplx));
+    if (in_buffer == NULL) return ERR_MALLOC;
 
     // Read bandpass file
     FILE *bp;
@@ -290,11 +287,11 @@ return -1;
 
 }
 
+// NOTE: This function does NOT do overlaps!
 int sq_window( FILE* instream, FILE* outstream, unsigned int in_length, char* window_name)
 {
     float *wndw_bfr;
-    float *in_bfr;
-    float *out_bfr;
+    float *in_buffer;
 
     if (!((in_length >= 2) && (in_length <= MAX_WNDW_LEN)))
     {
@@ -305,36 +302,28 @@ int sq_window( FILE* instream, FILE* outstream, unsigned int in_length, char* wi
     wndw_bfr = malloc(in_length * sizeof(float));
     if (wndw_bfr == NULL) return ERR_MALLOC;
 
-    in_bfr = malloc(in_length * sizeof(cmplx));
-    if (in_bfr == NULL) return ERR_MALLOC;
-
-    out_bfr = malloc(in_length * sizeof(cmplx));
-    if (out_bfr == NULL) return ERR_MALLOC;
+    in_buffer = malloc(in_length * sizeof(cmplx));
+    if (in_buffer == NULL) return ERR_MALLOC;
 
     // Make window 
     int status = sq_make_window_from_name(wndw_bfr, in_length, window_name);
     if (status < 0)
         return status;
 
-    fread(&in_bfr[(in_length/2)*2], sizeof(cmplx), in_length / 2, instream);
-    memcpy(&in_bfr[0], &in_bfr[(in_length/2)*2], (in_length / 2)* sizeof(cmplx));
-
     unsigned int bfri;
-    while (fread(&in_bfr[(in_length/2)*2], sizeof(cmplx), in_length / 2, instream) == (in_length / 2))
+    // remember that in_buffer is declared as floats, but read as complex
+    while (fread(in_buffer, sizeof(cmplx), in_length, instream) == in_length)
     {
         for (bfri = 0; bfri < in_length; bfri++)
         {
-            out_bfr[(bfri<<1)+0] = in_bfr[(bfri<<1)+0] * wndw_bfr[bfri];
-            out_bfr[(bfri<<1)+1] = in_bfr[(bfri<<1)+1] * wndw_bfr[bfri];
+            in_buffer[(bfri<<1)+0] *= wndw_bfr[bfri];
+            in_buffer[(bfri<<1)+1] *= wndw_bfr[bfri];
         }
-
-        fwrite(out_bfr, sizeof(cmplx), in_length, outstream);
-        memcpy(&in_bfr[0], &in_bfr[(in_length/2)*2], (in_length / 2)*sizeof(cmplx));
+        fwrite(in_buffer, sizeof(cmplx), in_length, outstream);
     }
 
     free(wndw_bfr);
-    free(in_bfr);
-    free(out_bfr);
+    free(in_buffer);
 
     return 0;
 }
@@ -353,24 +342,24 @@ int sq_component(FILE* instream, FILE* outstream, unsigned int in_length, int co
     }
 
     int i;
-    cmplx *sbfr;
-    float *rbfr;
+    cmplx *in_buffer;
+    float *out_buffer;
 
-    sbfr = malloc(in_length * sizeof(cmplx));
-    if (sbfr == NULL) return ERR_MALLOC;
+    in_buffer = malloc(in_length * sizeof(cmplx));
+    if (in_buffer == NULL) return ERR_MALLOC;
 
-    rbfr = malloc(in_length * sizeof(float));
-    if (rbfr == NULL) return ERR_MALLOC;
+    out_buffer = malloc(in_length * sizeof(float));
+    if (out_buffer == NULL) return ERR_MALLOC;
 
-    while (fread(sbfr, sizeof(cmplx), in_length, instream) == in_length)
+    while (fread(in_buffer, sizeof(cmplx), in_length, instream) == in_length)
     {
         for (i = 0; i < in_length; i++)
-            rbfr[i] = sbfr[i][component];
-        fwrite(rbfr, sizeof(float), in_length, outstream);
+            out_buffer[i] = in_buffer[i][component];
+        fwrite(out_buffer, sizeof(float), in_length, outstream);
     }
 
-    free(rbfr);
-    free(sbfr);
+    free(out_buffer);
+    free(in_buffer);
 
     return 0;
 }
@@ -458,27 +447,68 @@ int sq_offset(FILE* instream, FILE* outstream, unsigned int in_length, float rea
     }
 
     unsigned int smpli;
-    float *smpls_bfr;
+    float *in_buffer;
 
-    smpls_bfr = malloc(in_length * sizeof(cmplx));
-    if (smpls_bfr == NULL) return ERR_MALLOC;
+    in_buffer = malloc(in_length * sizeof(cmplx));
+    if (in_buffer == NULL) return ERR_MALLOC;
 
-    while (fread(smpls_bfr, 8, in_length, instream) == in_length)
+    while (fread(in_buffer, 8, in_length, instream) == in_length)
     {
         for (smpli = 0; smpli < in_length; smpli++)
         {
-            smpls_bfr[(smpli<<1)+0] += real_delta;
-            smpls_bfr[(smpli<<1)+1] += imag_delta;
+            in_buffer[(smpli<<1)+0] += real_delta;
+            in_buffer[(smpli<<1)+1] += imag_delta;
         }
 
-        fwrite(smpls_bfr, 8, in_length, outstream);
+        fwrite(in_buffer, 8, in_length, outstream);
     }
 
-    free(smpls_bfr);
+    free(in_buffer);
 
     return 0;
 }
 
+int sq_subavg(FILE* instream, FILE* outstream, unsigned int in_length)
+{
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN)))
+    {
+        fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
+        return ERR_ARG_BOUNDS;
+    }
+
+    float *in_buffer;
+    unsigned int smpli;
+
+    in_buffer = malloc(in_length * sizeof(cmplx));
+    if (in_buffer == NULL) return ERR_MALLOC;
+
+    while (fread(in_buffer, 8, in_length, instream) == in_length)
+    {
+        // compute average value
+        double sumr = 0;
+        double sumi = 0;
+        for (smpli = 0; smpli < in_length; smpli += 1)
+        {
+            sumr += in_buffer[(smpli<<1)+0];
+	    sumi += in_buffer[(smpli<<1)+1];
+        }
+	float favgr = (float)(sumr/in_length);
+	float favgi = (float)(sumi/in_length);
+
+        // subtract it off
+        for (smpli = 0; smpli < in_length; smpli += 1)
+        {
+            in_buffer[(smpli<<1)+0] -= favgr;
+	    in_buffer[(smpli<<1)+1] -= favgi;
+        }
+
+        fwrite(in_buffer, sizeof(cmplx), in_length, outstream);
+    }
+
+    free(in_buffer);
+
+    return 0;
+}
 
 int sq_conjugate(FILE* instream, FILE* outstream, unsigned int in_length)
 {
@@ -488,21 +518,21 @@ int sq_conjugate(FILE* instream, FILE* outstream, unsigned int in_length)
         return ERR_ARG_BOUNDS;
     }
 
-    float *data_bfr;
+    float *in_buffer;
     unsigned int smpli;
 
-    data_bfr = malloc(in_length * sizeof(cmplx));
-    if (data_bfr == NULL) return ERR_MALLOC;
+    in_buffer = malloc(in_length * sizeof(cmplx));
+    if (in_buffer == NULL) return ERR_MALLOC;
 
-    while (fread(data_bfr, 8, in_length, instream) == in_length)
+    while (fread(in_buffer, 8, in_length, instream) == in_length)
     {
         for (smpli = 0; smpli < in_length; smpli += 1)
-            data_bfr[(smpli<<1)+1] *= -1.0;
+            in_buffer[(smpli<<1)+1] *= -1.0;
 
-        fwrite(data_bfr, sizeof(cmplx), in_length, outstream);
+        fwrite(in_buffer, sizeof(cmplx), in_length, outstream);
     }
 
-    free(data_bfr);
+    free(in_buffer);
 
     return 0;
 }
@@ -516,26 +546,26 @@ int sq_scaleandrotate(FILE* instream, FILE* outstream, unsigned int in_length, f
     }
 
     unsigned int smpli;
-    float *smpls_bfr;
+    float *in_buffer;
 
-    smpls_bfr = malloc(in_length * sizeof(cmplx));
-    if (smpls_bfr == NULL) return ERR_MALLOC;
+    in_buffer = malloc(in_length * sizeof(cmplx));
+    if (in_buffer == NULL) return ERR_MALLOC;
 
     float re, im;
-    while (fread(smpls_bfr, 8, in_length, instream) == in_length)
+    while (fread(in_buffer, 8, in_length, instream) == in_length)
     {
         for (smpli = 0; smpli < in_length; smpli++)
         {
-            re = smpls_bfr[(smpli<<1)+0];
-            im = smpls_bfr[(smpli<<1)+1];
-            smpls_bfr[(smpli<<1)+0] = scale_factor * (re * cos(radians) - im * sin(radians));
-            smpls_bfr[(smpli<<1)+1] = scale_factor * (im * cos(radians) + re * sin(radians));
+            re = in_buffer[(smpli<<1)+0];
+            im = in_buffer[(smpli<<1)+1];
+            in_buffer[(smpli<<1)+0] = scale_factor * (re * cos(radians) - im * sin(radians));
+            in_buffer[(smpli<<1)+1] = scale_factor * (im * cos(radians) + re * sin(radians));
         }
 
-        fwrite(smpls_bfr, 8, in_length, outstream);
+        fwrite(in_buffer, 8, in_length, outstream);
     }
 
-    free(smpls_bfr);
+    free(in_buffer);
 
     return 0;
 }
@@ -563,18 +593,18 @@ int sq_mix(FILE* instream, FILE* outstream, unsigned int in_length, float radian
     }
 
     unsigned int smpli;
-    float *smpls_bfr;
+    float *in_buffer;
     float angle = 0.0;
 
     const float TWO_PI = 2.0 * M_PI;
 
     radians = radians * -1.0;
 
-    smpls_bfr = malloc(in_length * sizeof(cmplx));
-    if (smpls_bfr == NULL) return ERR_MALLOC;
+    in_buffer = malloc(in_length * sizeof(cmplx));
+    if (in_buffer == NULL) return ERR_MALLOC;
 
     float re, im;
-    while (fread(smpls_bfr, 8, in_length, instream) == in_length)
+    while (fread(in_buffer, 8, in_length, instream) == in_length)
     {
         for (smpli = 0; smpli < in_length; smpli++)
         {
@@ -582,16 +612,16 @@ int sq_mix(FILE* instream, FILE* outstream, unsigned int in_length, float radian
             angle = (angle > TWO_PI) ? (angle - TWO_PI) : angle;
             angle = (angle < -TWO_PI) ? (angle + TWO_PI) : angle;
 
-            re = smpls_bfr[(smpli<<1)+0];
-            im = smpls_bfr[(smpli<<1)+1];
-            smpls_bfr[(smpli<<1)+0] = (re * (float)cos(angle) - im * (float)sin(angle));
-            smpls_bfr[(smpli<<1)+1] = (im * (float)cos(angle) + re * (float)sin(angle));
+            re = in_buffer[(smpli<<1)+0];
+            im = in_buffer[(smpli<<1)+1];
+            in_buffer[(smpli<<1)+0] = (re * (float)cos(angle) - im * (float)sin(angle));
+            in_buffer[(smpli<<1)+1] = (im * (float)cos(angle) + re * (float)sin(angle));
         }
 
-        fwrite(smpls_bfr, 8, in_length, outstream);
+        fwrite(in_buffer, 8, in_length, outstream);
     }
 
-    free(smpls_bfr);
+    free(in_buffer);
 
     return 0;
 }

@@ -95,6 +95,7 @@ float sq_window_bothalf ( unsigned int n, unsigned int length )
     if (n == length/2-1) return 0;
     if (n == length/2) return 0;
     if (n == length-1) return 0;
+    // apply filter
     if (n <  length/2) return 1;
     if (n >= length/2) return 0;
 }
@@ -106,6 +107,7 @@ float sq_window_tophalf ( unsigned int n, unsigned int length )
     if (n == length/2-1) return 0;
     if (n == length/2) return 0;
     if (n == length-1) return 0;
+    // apply filter
     if (n <= length/2) return 0;
     if (n >  length/2) return 1;
 }
