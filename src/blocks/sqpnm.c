@@ -59,6 +59,8 @@ char *usage_text[] =
     "  -p  flag, scale appropriate for power values which have an exponential",
     "      distribution in the right tail.  (m - s) scaled to 0.  (m + 3s)   ",
     "      scaled to 255. Values outside of range are clipped.               ",
+    "  -s  flag, very similar to -p, except the image is plotted as          ",
+    "      sqrt(power) = amp, which highlights lower values more             ",
     "  -x  flag, power values not scaled                                     ",
     "                                                                        "
 };
@@ -79,7 +81,7 @@ int main(int argc, char *argv[])
 
     scale_fnctn = sq_linear_scale;
 
-    while ((opt = getopt(argc, argv, "hr:c:a:px")) != -1)
+    while ((opt = getopt(argc, argv, "hr:c:a:psx")) != -1)
     {
         switch (opt)
         {
@@ -98,6 +100,9 @@ int main(int argc, char *argv[])
             case 'p':
                 scale_fnctn = sq_power_scale;
                 break;
+            case 's':
+		scale_fnctn = sq_amp_scale;
+		break;
             case 'x':
                 scale_fnctn = sq_no_scale;
                 break;

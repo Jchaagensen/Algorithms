@@ -71,6 +71,53 @@ int sq_linear_scale(float* img_buf, int rows, int cols)
     }
 }
 
+int sq_amp_scale(float* img_buf, int rows, int cols)
+{
+    unsigned int imgi;
+    float imgvalf;
+
+    float mean, stddev;
+    float min, max;
+
+    // note image comes in in the power domain
+    min = img_buf[0];
+
+    // compute the minimum value
+    for (imgi = 0; imgi < (rows * cols); imgi++)
+        if (img_buf[imgi] < min) min = img_buf[imgi];
+
+    // don't want errors about taking sqrt of negative numbers! subtract off min
+    for (imgi = 0; imgi < (rows * cols); imgi++)
+       img_buf[imgi] -= min;
+
+    // compute mean value of AMPLITUDE (not power)
+    mean = 0.0;
+    for (imgi = 0; imgi < (rows * cols); imgi++)
+        mean += sqrt(img_buf[imgi]);
+    mean /= (rows * cols);
+
+    // compute variance of Amplitude
+    stddev = 0.0;
+    for (imgi = 0; imgi < (rows * cols); imgi++)
+        stddev += (sqrt(img_buf[imgi]) - mean) * (sqrt(img_buf[imgi]) - mean);
+    stddev = sqrt(stddev / (rows * cols));
+
+    // convert min/max to power levels (is this the right way to go?)
+    min = mean - stddev;
+    if (min < 0.0) min = 0.0;
+    max = mean + (STD_THRESH * stddev);
+
+    // scale image to min=0, max=255
+    for (imgi = 0; imgi < (rows * cols); imgi++)
+    {
+        imgvalf = img_buf[imgi]; // convert to floating point
+	imgvalf = sqrt(imgvalf);
+        imgvalf -= min;
+        imgvalf *= ((float) MAX_PIXEL_VAL) / (max - min);
+        img_buf[imgi] = imgvalf;
+    }
+}
+
 int sq_power_scale(float* img_buf, int rows, int cols)
 {
     unsigned int imgi;
@@ -79,33 +126,40 @@ int sq_power_scale(float* img_buf, int rows, int cols)
     float mean, stddev;
     float min, max;
 
+    // note image comes in already in the power domain
     min = img_buf[0];
 
+    // compute the minimum value
     for (imgi = 0; imgi < (rows * cols); imgi++)
         if (img_buf[imgi] < min) min = img_buf[imgi];
+    // don't want errors about taking sqrt of negative numbers! if necessary subtract off min
     if (min < 0.0)
         for (imgi = 0; imgi < (rows * cols); imgi++)
-            img_buf[imgi] -= min;
+           img_buf[imgi] -= min;
 
+    // compute mean value of AMPLITUDE (not power)
     mean = 0.0;
     for (imgi = 0; imgi < (rows * cols); imgi++)
         mean += sqrt(img_buf[imgi]);
     mean /= (rows * cols);
 
+    // compute variance of Amplitude
     stddev = 0.0;
     for (imgi = 0; imgi < (rows * cols); imgi++)
         stddev += (sqrt(img_buf[imgi]) - mean) * (sqrt(img_buf[imgi]) - mean);
     stddev = sqrt(stddev / (rows * cols));
 
+    // convert min/max to power levels (is this the right way to go?)
     min = mean - stddev;
     if (min < 0.0) min = 0.0;
     min = min * min;
-    max = mean + (2.3 * stddev);
+    max = mean + (STD_THRESH * stddev);
     max = max * max;
 
+    // scale image to min=0, max=255
     for (imgi = 0; imgi < (rows * cols); imgi++)
     {
-        imgvalf = img_buf[imgi];
+        imgvalf = img_buf[imgi]; // convert to floating point
         imgvalf -= min;
         imgvalf *= ((float) MAX_PIXEL_VAL) / (max - min);
         img_buf[imgi] = imgvalf;

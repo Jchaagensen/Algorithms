@@ -51,6 +51,14 @@ int sq_alloc_img(float* img_buf, int rows, int cols);
 int sq_linear_scale(float* img_buf, int rows, int cols);
 
 /**
+ * Amplitude scaling of image brightness
+ * @param img_buf float pointer to image buffer
+ * @param rows Number of rows
+ * @param cols Number of columns
+ */
+int sq_amp_scale(float* img_buf, int rows, int cols);
+
+/**
  * Power scaling of image brightness
  * @param img_buf float pointer to image buffer
  * @param rows Number of rows
