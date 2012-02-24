@@ -57,7 +57,7 @@ typedef unsigned int boolean;
 #define SQ_STAGE1_FFT_LEN 4096
 #define MAX_ZOOM_LEN 134217728
 #define ZOOM_OUTPUT_BFR_LEN 1024
-#define STD_THRESH 6
+#define STD_THRESH 4
 
 // Math constants
 #define PI 3.1415926535897932384626433832795

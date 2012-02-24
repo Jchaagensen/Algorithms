@@ -37,7 +37,10 @@
 #include <inttypes.h>
 #include <math.h>
 
-#define MAXVAL 255
+#include <sq_utils.h>
+#include <sq_imaging.h>
+#include <sq_constants.h>
+#define MAXVAL MAX_PIXEL_VAL
 
 //          1         2         3         4         5         6         7
 // 123456789012345678901234567890123456789012345678901234567890123456789012

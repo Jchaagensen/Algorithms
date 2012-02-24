@@ -107,7 +107,7 @@ int sq_amp_scale(float* img_buf, int rows, int cols)
     if (min < 0.0) min = 0.0;
     max = mean + (STD_THRESH * stddev);
 
-    // scale image to min=0, max=255
+    // scale image to min=0, max=MAX_PIXEL_VAL
     for (imgi = 0; imgi < (rows * cols); imgi++)
     {
         imgvalf = img_buf[imgi]; // convert to floating point
@@ -156,7 +156,7 @@ int sq_power_scale(float* img_buf, int rows, int cols)
     max = mean + (STD_THRESH * stddev);
     max = max * max;
 
-    // scale image to min=0, max=255
+    // scale image to min=0, max=MAX_PIXEL_VAL
     for (imgi = 0; imgi < (rows * cols); imgi++)
     {
         imgvalf = img_buf[imgi]; // convert to floating point

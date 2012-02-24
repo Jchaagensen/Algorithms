@@ -49,16 +49,18 @@ char *usage_text[] =
     "          bottom-right), scales the values, and then outputs the values ",
     "          in 8-bit grayscale (PGM) image format.  Default scale         ",
     "          algorithm is linear.  Smallest value scaled to 0.  Largest    ",
-    "          value scaled to 255.                                          ",
+    "          value scaled to MAX_PIXEL_VAL.                                          ",
     "SYNOPSIS                                                                ",
     "  sqpnm [OPTIONS] ...                                                   ",
     "DESCRIPTION                                                             ",
     "  -r  pos. integer (required), image rows                               ",
     "  -c  pos. integer (required), image columns                            ",
     "  -a  Number of lines to average                                        ",
+    "  -m  flag, use a regular 0-maxpix scale, where 0 -> 0 and maxpix -> 255",
     "  -p  flag, scale appropriate for power values which have an exponential",
-    "      distribution in the right tail.  (m - s) scaled to 0.  (m + 3s)   ",
-    "      scaled to 255. Values outside of range are clipped.               ",
+    "      distribution in the right tail.  (m - s) scaled to 0.             ",
+    "      (m + STD_THRESH*s) scaled to MAX_PIXEL_VAL. Values outside of     ",
+    "      range are clipped.                                                ",
     "  -s  flag, very similar to -p, except the image is plotted as          ",
     "      sqrt(power) = amp, which highlights lower values more             ",
     "  -x  flag, power values not scaled                                     ",
@@ -97,6 +99,9 @@ int main(int argc, char *argv[])
             case 'a':
                 sscanf(optarg, "%u", &averagelines);
                 break;
+            case 'm':
+		scale_fnctn = sq_linear_scale;
+		break;
             case 'p':
                 scale_fnctn = sq_power_scale;
                 break;
