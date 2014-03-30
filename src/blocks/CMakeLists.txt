@@ -5,8 +5,9 @@ INCLUDE_DIRECTORIES(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/../)
 set(PROGRAMS 
              sqabs
              sqascii
-	     sqbandpass
+#	     sqbandpass
              sqbin
+             sqsidechop
              sqchop
              sqconjugate 
              sqcrossmultiply
@@ -14,7 +15,7 @@ set(PROGRAMS
              sqgetimgtfp
              sqimag 
              sqfft 
-	     sqfftflip
+#	     sqfftflip
              sqgensine
              sqmix
              sqoffset 
