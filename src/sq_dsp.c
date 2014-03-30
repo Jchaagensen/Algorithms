@@ -255,22 +255,22 @@ return -1;
     fprintf(stderr, "*** $s", bp_file);
     if ( bp != NULL )
     {
-	count = 0;
+    count = 0;
         while(fgets(line, sizeof line, bp) != NULL )
-	{
+    {
             fputs(line, stdout);
-	    count++;
+        count++;
             printf("Bandpass length = %i.\n", count);
-	    if (count > in_length)
+        if (count > in_length)
             {
                 sq_error_print("ERROR: Bandpass file too long\n");
-		return ERR_ARG_BOUNDS;
+        return ERR_ARG_BOUNDS;
             }
         }
         fclose(bp);
 
         printf("Bandpass length = %i.\n", count);
-	if (count < in_length)
+    if (count < in_length)
         {
             sprintf(line, "Bandpass length = %i.\n", count);
             sq_error_print(line);
@@ -490,16 +490,16 @@ int sq_subavg(FILE* instream, FILE* outstream, unsigned int in_length)
         for (smpli = 0; smpli < in_length; smpli += 1)
         {
             sumr += in_buffer[(smpli<<1)+0];
-	    sumi += in_buffer[(smpli<<1)+1];
+        sumi += in_buffer[(smpli<<1)+1];
         }
-	float favgr = (float)(sumr/in_length);
-	float favgi = (float)(sumi/in_length);
+    float favgr = (float)(sumr/in_length);
+    float favgi = (float)(sumi/in_length);
 
         // subtract it off
         for (smpli = 0; smpli < in_length; smpli += 1)
         {
             in_buffer[(smpli<<1)+0] -= favgr;
-	    in_buffer[(smpli<<1)+1] -= favgi;
+        in_buffer[(smpli<<1)+1] -= favgi;
         }
 
         fwrite(in_buffer, sizeof(cmplx), in_length, outstream);
@@ -806,14 +806,14 @@ int sq_fftflip(FILE* instream, FILE* outstream, unsigned int in_length)
     unsigned int smpli;
     while (fread(input_bfr, sizeof(cmplx), in_length, instream) == in_length)
     {
-	for (smpli = 0; smpli < in_length/2; smpli++)
+    for (smpli = 0; smpli < in_length/2; smpli++)
         {
             float temp0 = input_bfr[(smpli<<1) + 0];
             float temp1 = input_bfr[(smpli<<1) + 1];
-	    input_bfr[(smpli<<1) + 0] = input_bfr[(smpli<<1) + in_length + 0];
-	    input_bfr[(smpli<<1) + 1] = input_bfr[(smpli<<1) + in_length + 1];
-	    input_bfr[(smpli<<1) + in_length + 0] = temp0;
-	    input_bfr[(smpli<<1) + in_length + 1] = temp1;
+            input_bfr[(smpli<<1) + 0] = input_bfr[(smpli<<1) + in_length + 0];
+            input_bfr[(smpli<<1) + 1] = input_bfr[(smpli<<1) + in_length + 1];
+            input_bfr[(smpli<<1) + in_length + 0] = temp0;
+            input_bfr[(smpli<<1) + in_length + 1] = temp1;
         }
  
         fwrite(input_bfr, sizeof(cmplx), in_length , outstream);
@@ -875,6 +875,71 @@ int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
 
     return 0;
 }
+
+int sq_sidechop(FILE* instream, FILE* outstream, unsigned int in_length, 
+	unsigned int out_length, char side)
+{
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN))
+            && ((out_length >= 2) && (out_length < in_length)))
+    {   
+        fprintf(stderr, "Input length must be between 2 and %u\n", MAX_SMPLS_LEN);
+        fprintf(stderr, "Output length must be >= 2 and < Input length.\n");
+        return ERR_ARG_BOUNDS;
+    }
+
+    // check the direction of chop and compute indicies
+    unsigned int num_samples = in_length - out_length;
+    unsigned int start;
+    if (side == 'r' || side == 'R')
+    {
+        start = num_samples;
+    }
+    else if (side == 'l' || side == 'L') 
+    {
+        start = 0;
+    }
+    else
+    {
+        fprintf(stderr, "Side = %c must indicate left or right side to chop.\n", side);
+        return ERR_ARG_BOUNDS;
+    }
+
+    fprintf(stderr, "Chopping %u samples from %c side.\n", num_samples, side);
+
+    // allocate buffers
+    float *input_bfr;
+    float *output_bfr;
+
+    input_bfr = malloc(in_length * sizeof(cmplx));
+    if (input_bfr == NULL) return ERR_MALLOC;
+
+    output_bfr = malloc(out_length * sizeof(cmplx));
+    if (output_bfr == NULL) return ERR_MALLOC;
+
+    // perform chopping
+    unsigned int in_i = 0;
+    unsigned int out_i;
+    while (fread(input_bfr, sizeof(cmplx), in_length, instream) == in_length)
+    {
+        // reinitialize output buffer to zero each iteration
+        memset(output_bfr, 0, out_length * sizeof(cmplx));
+
+        for (in_i = start; in_i < out_length; in_i++)
+        {
+            output_bfr[(out_i<<1) + REAL] += input_bfr[(in_i<<1) + REAL];
+            output_bfr[(out_i<<1) + IMAG] += input_bfr[(in_i<<1) + IMAG];
+        }
+
+        // write to output stream
+        fwrite(output_bfr, sizeof(cmplx), out_length , outstream);
+    }
+
+    free(input_bfr);
+    free(output_bfr);
+
+    return 0;
+}
+
 
 int sq_chop(FILE* instream, FILE* outstream, unsigned int in_length, float chop_fraction)
 {

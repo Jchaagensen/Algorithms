@@ -64,13 +64,9 @@ unsigned int cols = 0;
 float width_chop_fraction = 0.0;
 float height_chop_fraction = 0.0;
 
-int (*scale_fnctn)(float* img_buf, int rows, int cols);
-
 int main(int argc, char *argv[])
 {
     int opt;
-    
-    scale_fnctn = sq_linear_scale;
     
     while ((opt = getopt(argc, argv, "hr:c:x:y:")) != -1)
     {

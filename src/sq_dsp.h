@@ -234,6 +234,18 @@ int sq_fftflip(FILE* instream, FILE* outstream, unsigned int in_length);
  */
 int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int out_length);
 
+/**
+ * Chops out samples from the left or right hand side of the specified number of 
+contiguous samples from the input stream, delivering to a new (smaller) specified 
+number of samples in the output strea.
+ * @param instream Input stream of float data
+ * @param outstream Output stream of float data
+ * @param in_length Number of samples given as input to one binning iteration
+ * @param out_length Number of samples that are written out after one binning iteration
+ * @param side Either 'r' or 'l' (case insensitive) indicating which side to chop.
+ */
+int sq_sidechop(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int out_length, char side);
+
 /** 
  * Sum N raster lines into one. This function reduces the number
  * of rasters produced by a factor of N. Note that this does a
