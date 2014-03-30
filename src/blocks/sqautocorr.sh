@@ -7,7 +7,7 @@ WINDOW="wola"
 usage () {
   echo "                                                                        " >&2
   echo "NAME                                                                    " >&2
-  echo "  sqautocorr - performs autocorrelation of a signal                     " >&2
+  echo "  sqautocorr - computes autocorrelation of a signal                     " >&2
   echo "SYNOPSIS                                                                " >&2
   echo "  sqautocorr [OPTIONS]                                                  " >&2
   echo "OPTIONS                                                                 " >&2
@@ -15,7 +15,7 @@ usage () {
   echo "  -w window type [wola, hann]; default is wola                          " >&2
   echo "  -h show help (this)                                                   " >&2
   echo "EXAMPLE                                                                 " >&2
-  echo "  sqautocorr -l 4096 -w hann time-frequency-power.dat                   " >&2
+  echo "  sqautocorr.sh -l 4096 -w hann time-frequency-power.dat                   " >&2
   echo "                                                                        " >&2
 }
 
