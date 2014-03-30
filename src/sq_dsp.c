@@ -892,10 +892,13 @@ int sq_sidechop(FILE* instream, FILE* outstream, unsigned int in_length,
     unsigned int start;
     if (side == 'r' || side == 'R')
     {
+	side = 'R';
         start = num_samples;
+        if (num_samples <= 0) start = 0;
     }
     else if (side == 'l' || side == 'L') 
     {
+	side = 'L';
         start = 0;
     }
     else
@@ -904,7 +907,8 @@ int sq_sidechop(FILE* instream, FILE* outstream, unsigned int in_length,
         return ERR_ARG_BOUNDS;
     }
 
-    fprintf(stderr, "Chopping %u samples from %c side.\n", num_samples, side);
+    fprintf(stderr, "Deleting %u samples from %c side.\n", num_samples, side);
+    fprintf(stderr, "Start = %u, out_length = %u.\n", start, out_length);
 
     // allocate buffers
     float *input_bfr;
@@ -918,13 +922,13 @@ int sq_sidechop(FILE* instream, FILE* outstream, unsigned int in_length,
 
     // perform chopping
     unsigned int in_i = 0;
-    unsigned int out_i;
     while (fread(input_bfr, sizeof(cmplx), in_length, instream) == in_length)
     {
         // reinitialize output buffer to zero each iteration
         memset(output_bfr, 0, out_length * sizeof(cmplx));
 
-        for (in_i = start; in_i < out_length; in_i++)
+    	unsigned int out_i = 0;
+        for (in_i = start; in_i < start + out_length; in_i++, out_i++)
         {
             output_bfr[(out_i<<1) + REAL] += input_bfr[(in_i<<1) + REAL];
             output_bfr[(out_i<<1) + IMAG] += input_bfr[(in_i<<1) + IMAG];
