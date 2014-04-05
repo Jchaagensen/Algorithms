@@ -2,11 +2,11 @@
 
   File:    sq_dsp.c
   Project: SETIkit
-  Authors: Aditya Bhatt <aditya at adityabhatt dot org>
-           Rob Ackermann
-       Gerry Harp <gharp @ seti dot org>
+  Authors: Rob Ackermann (still living and doing science elsewhere)
+           Gerry Harp <gharp @ seti dot org>
+           Aditya Bhatt <aditya at adityabhatt dot org>
 
-  Copyright 2011 The SETI Institute
+  Copyright 2014 The SETI Institute
 
   SETIkit is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -255,22 +255,22 @@ return -1;
     fprintf(stderr, "*** $s", bp_file);
     if ( bp != NULL )
     {
-    count = 0;
+        count = 0;
         while(fgets(line, sizeof line, bp) != NULL )
-    {
+        {
             fputs(line, stdout);
-        count++;
+            count++;
             printf("Bandpass length = %i.\n", count);
-        if (count > in_length)
+            if (count > in_length)
             {
                 sq_error_print("ERROR: Bandpass file too long\n");
-        return ERR_ARG_BOUNDS;
+                return ERR_ARG_BOUNDS;
             }
         }
         fclose(bp);
 
         printf("Bandpass length = %i.\n", count);
-    if (count < in_length)
+        if (count < in_length)
         {
             sprintf(line, "Bandpass length = %i.\n", count);
             sq_error_print(line);
@@ -284,7 +284,6 @@ return -1;
         sq_error_print(line);
         return ERR_ARG_BOUNDS;
     }
-
 }
 
 // NOTE: This function does NOT do overlaps!
@@ -405,13 +404,14 @@ int sq_fft(FILE* instream, FILE* outstream, unsigned int in_length,
 
         if (inverse)
         {
-            // move channels back to their original positions before the fft, so  that ifft gets what it expects
+            // move channels back to their original positions before the fft
+            // so  that ifft gets what it expects
             sq_channelswap(fft_bfr, in_length);
 
             // perform ifft
             fftwf_execute(plan);
 
-            // inverse fft (effectively) multiples output by N, so take this out
+            // fft (effectively) multiples output by N, so take this out
             float norm = 1.0f / in_length; // multiplies are faster than divides
             for (i = 0; i < in_length; i++)
             {
@@ -490,16 +490,16 @@ int sq_subavg(FILE* instream, FILE* outstream, unsigned int in_length)
         for (smpli = 0; smpli < in_length; smpli += 1)
         {
             sumr += in_buffer[(smpli<<1)+0];
-        sumi += in_buffer[(smpli<<1)+1];
+            sumi += in_buffer[(smpli<<1)+1];
         }
-    float favgr = (float)(sumr/in_length);
-    float favgi = (float)(sumi/in_length);
+        float favgr = (float)(sumr/in_length);
+        float favgi = (float)(sumi/in_length);
 
         // subtract it off
         for (smpli = 0; smpli < in_length; smpli += 1)
         {
             in_buffer[(smpli<<1)+0] -= favgr;
-        in_buffer[(smpli<<1)+1] -= favgi;
+            in_buffer[(smpli<<1)+1] -= favgi;
         }
 
         fwrite(in_buffer, sizeof(cmplx), in_length, outstream);
@@ -770,8 +770,12 @@ int sq_pad(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
     float *input_bfr;
     float *output_bfr;
 
+    // create buffer and initize with zeros
     output_bfr = calloc(out_length, sizeof(cmplx));
     if (output_bfr == NULL) return ERR_MALLOC;
+    // make double-darn sure output array is all zeros
+    int i = 0;
+    for (i = 0; i < out_length*2; ++i) output_bfr[i] = 0.0f;
 
     // find the insertion point for reading data
     int offset = (out_length - in_length) / 2; 
@@ -806,7 +810,7 @@ int sq_fftflip(FILE* instream, FILE* outstream, unsigned int in_length)
     unsigned int smpli;
     while (fread(input_bfr, sizeof(cmplx), in_length, instream) == in_length)
     {
-    for (smpli = 0; smpli < in_length/2; smpli++)
+        for (smpli = 0; smpli < in_length/2; smpli++)
         {
             float temp0 = input_bfr[(smpli<<1) + 0];
             float temp1 = input_bfr[(smpli<<1) + 1];
@@ -832,7 +836,7 @@ int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
         fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
         return ERR_ARG_BOUNDS;
     }
-    if (out_length >= in_length)
+    if (out_length > in_length)
     {
         sq_error_print("Output array length must be less than input length.\n");
         return ERR_ARG_BOUNDS;
@@ -847,6 +851,8 @@ int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
     output_bfr = malloc(out_length * sizeof(cmplx));
     if (output_bfr == NULL) return ERR_MALLOC;
 
+    // note bin_size is integer, so if in_length/out_length is not an integer
+    // it will be truncated
     unsigned int bin_size;
     bin_size = in_length / out_length;
 
@@ -862,6 +868,7 @@ int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
             stop = (out_i + 1) * bin_size;
             for (in_i = start; in_i < stop; in_i++)
             {
+                // it is ok to divide by integer at end because input_bfr are floats.
                 output_bfr[(out_i<<1) + REAL] += input_bfr[(in_i<<1) + REAL] / bin_size;
                 output_bfr[(out_i<<1) + IMAG] += input_bfr[(in_i<<1) + IMAG] / bin_size;
             }
@@ -876,8 +883,81 @@ int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int
     return 0;
 }
 
+// Very much like sq_bin except that it keeps the max value in the bin rather than average val.
+int sq_maxhold(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int out_length)
+{
+    if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN))
+            && ((out_length >= 2) && (out_length <= MAX_SMPLS_LEN)))
+    {
+        fprintf(stderr, "Array lengths must be between 2 and %u\n", MAX_SMPLS_LEN);
+        return ERR_ARG_BOUNDS;
+    }  
+    if (out_length >= in_length)
+    {
+        sq_error_print("Output array length must be less than input length.\n");
+        return ERR_ARG_BOUNDS;
+    }
+
+    float *input_bfr;
+    float *output_bfr;
+
+    input_bfr = malloc(in_length * sizeof(cmplx));
+    if (input_bfr == NULL) return ERR_MALLOC;
+
+    output_bfr = malloc(out_length * sizeof(cmplx));
+    if (output_bfr == NULL) return ERR_MALLOC;
+
+    // note maxhold_size is integer, so if in_length/out_length is not an integer
+    // it will be truncated
+    unsigned int maxhold_size = in_length / out_length;
+
+    unsigned int in_i = 0, out_i, start, stop;
+    while (fread(input_bfr, sizeof(cmplx), in_length, instream) == in_length)
+    {
+        // reinitialize output buffer to zero each iteration
+        memset(output_bfr, 0, out_length * sizeof(cmplx));
+        for (out_i = 0; out_i < out_length; out_i++)
+        {   
+            // find maximum value in range
+            start = out_i * maxhold_size;
+            stop = (out_i + 1) * maxhold_size;
+            double max = 0;
+            unsigned int max_i = 0;
+            double min = -1;
+            double val = 0; 
+            float x = 0;
+            float y =0;
+            for (in_i = start; in_i < stop; in_i++)
+            {
+                x = input_bfr[(in_i<<1) + REAL];
+                y = input_bfr[(in_i<<1) + IMAG];
+
+                val = x*x + y*y;
+                if(min == -1) min = val;
+                if (val > max)
+                {
+                    max = val;
+                    max_i = in_i;
+                }
+		else if (val < min) min = val;
+            }
+
+            // put max value into output buffer
+            output_bfr[(out_i<<1) + REAL] = input_bfr[(max_i<<1) + REAL];
+            output_bfr[(out_i<<1) + IMAG] = input_bfr[(max_i<<1) + IMAG];
+        }
+
+        fwrite(output_bfr, sizeof(cmplx), out_length , outstream);
+    }
+
+    free(input_bfr);
+    free(output_bfr);
+
+    return 0;
+}
+
 int sq_sidechop(FILE* instream, FILE* outstream, unsigned int in_length, 
-	unsigned int out_length, char side)
+    unsigned int out_length, char side)
 {
     if (!((in_length >= 2) && (in_length <= MAX_SMPLS_LEN))
             && ((out_length >= 2) && (out_length < in_length)))
@@ -888,17 +968,16 @@ int sq_sidechop(FILE* instream, FILE* outstream, unsigned int in_length,
     }
 
     // check the direction of chop and compute indicies
-    unsigned int num_samples = in_length - out_length;
+    unsigned int num_discard_samples = in_length - out_length;
     unsigned int start;
     if (side == 'r' || side == 'R')
     {
-	side = 'R';
-        start = num_samples;
-        if (num_samples <= 0) start = 0;
+        side = 'R';
+        start = num_discard_samples;
     }
     else if (side == 'l' || side == 'L') 
     {
-	side = 'L';
+        side = 'L';
         start = 0;
     }
     else
@@ -907,8 +986,8 @@ int sq_sidechop(FILE* instream, FILE* outstream, unsigned int in_length,
         return ERR_ARG_BOUNDS;
     }
 
-    fprintf(stderr, "Deleting %u samples from %c side.\n", num_samples, side);
-    fprintf(stderr, "Start = %u, out_length = %u.\n", start, out_length);
+//    fprintf(stderr, "Deleting %u samples from %c side.\n", num_discard_samples, side);
+//    fprintf(stderr, "Start = %u, out_length = %u.\n", start, out_length);
 
     // allocate buffers
     float *input_bfr;
@@ -927,7 +1006,7 @@ int sq_sidechop(FILE* instream, FILE* outstream, unsigned int in_length,
         // reinitialize output buffer to zero each iteration
         memset(output_bfr, 0, out_length * sizeof(cmplx));
 
-    	unsigned int out_i = 0;
+        unsigned int out_i = 0;
         for (in_i = start; in_i < start + out_length; in_i++, out_i++)
         {
             output_bfr[(out_i<<1) + REAL] += input_bfr[(in_i<<1) + REAL];
@@ -935,7 +1014,7 @@ int sq_sidechop(FILE* instream, FILE* outstream, unsigned int in_length,
         }
 
         // write to output stream
-        fwrite(output_bfr, sizeof(cmplx), out_length , outstream);
+        fwrite(output_bfr, sizeof(cmplx), out_length, outstream);
     }
 
     free(input_bfr);
