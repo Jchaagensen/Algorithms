@@ -161,11 +161,12 @@ int sq_sample( FILE* instream, FILE* outstream, unsigned int nsamples, uint64_t 
         // Sample
         for (smpli = 0; smpli < nsamples; smpli++)
         {
+            // notice that imaginary part is negated, assuming SETIQuest convention
             smpls_out[(smpli<<1) + REAL] =  (float) smpls_in[(smpli<<1) + REAL];
             smpls_out[(smpli<<1) + IMAG] = -(float) smpls_in[(smpli<<1) + IMAG];
         }
         
-        // Write
+        // Write 8 byte complex values
         fwrite(smpls_out, 8, nsamples, outstream);
         
         // Print progress

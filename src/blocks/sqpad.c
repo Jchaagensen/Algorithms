@@ -46,12 +46,12 @@ char *usage_text[] =
 {
     "                                                                        ",
     "NAME                                                                    ",
-    "  sqpad - add zero bins to either side of a raster  ",
+    "  sqpad - add zero bins to either side of a raster                      ",
     "SYNOPSIS                                                                ",
     "  sqpad [OPTIONS] ...                                                   ",
     "DESCRIPTION                                                             ",
     "  -l  Input number of samples                                           ",
-    "  -o  Number of output samples, must be > than input                   ",
+    "  -o  Number of output samples, must be > than input                    ",
     "                                                                        "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);

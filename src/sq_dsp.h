@@ -235,9 +235,20 @@ int sq_fftflip(FILE* instream, FILE* outstream, unsigned int in_length);
 int sq_bin(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int out_length);
 
 /**
+ * Finds the peak value from a specified number n (bin-size) of contiguous samples from the input 
+ * stream, outputting a new stream containing with N/n samples containing the max value in each
+ * bin. Modeled after "peak hold" function of a spectrum analyzer.
+ * @param instream Input stream of float data
+ * @param outstream Output stream of float data
+ * @param in_length Number of samples given as input to one max hold (binning) iteration
+ * @param out_length Number of samples that are written out after one max hold iteration
+ */
+int sq_maxhold(FILE* instream, FILE* outstream, unsigned int in_length, unsigned int out_length);
+
+/**
  * Chops out samples from the left or right hand side of the specified number of 
-contiguous samples from the input stream, delivering to a new (smaller) specified 
-number of samples in the output strea.
+ * contiguous samples from the input stream, delivering to a new (smaller) specified 
+ * number of samples in the output strea.
  * @param instream Input stream of float data
  * @param outstream Output stream of float data
  * @param in_length Number of samples given as input to one binning iteration

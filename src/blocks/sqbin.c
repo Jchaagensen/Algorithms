@@ -2,10 +2,10 @@
 
   File:    sqbin.c
   Project: SETIkit
-  Authors: Aditya Bhatt <aditya at adityabhatt dot org>
-           Gerry Harp <gharp at seti dot org>
+  Authors: Gerry Harp <gharp at seti dot org>
+           Aditya Bhatt <aditya at adityabhatt dot org>
 
-  Copyright 2011 The SETI Institute
+  Copyright 2014 The SETI Institute
 
   SETIkit is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by

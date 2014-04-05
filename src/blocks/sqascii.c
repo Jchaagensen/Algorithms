@@ -50,11 +50,12 @@ char *usage_text[] =
     "  sqascii [OPTIONS] ...                                                 ",
     "DESCRIPTION                                                             ",
     "  -l  Input number of samples                                           ",
+    "  -h  print usage statement                                             ",
     "                                                                        "
 };
 int arrlen = sizeof(usage_text)/sizeof(*usage_text);
 
-unsigned int in_length = SMPLS_PER_READ;
+unsigned int in_length = 0;
 
 int main(int argc, char *argv[])
 {

@@ -7,6 +7,7 @@ set(PROGRAMS
              sqascii
 #	     sqbandpass
              sqbin
+             sqmaxhold
              sqsidechop
              sqchop
              sqconjugate 

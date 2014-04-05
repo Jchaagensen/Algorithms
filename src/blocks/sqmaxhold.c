@@ -46,7 +46,7 @@ char *usage_text[] =
     "                                                                        ",
     "NAME                                                                    ",
     "  sqmaxhold -  bin samples to a smaller number of samples keeping max   ",
-                    value in each bin (as opposed to average value in sqbin) ",
+    "               value in each bin (as opposed to average value in sqbin) ",
     "SYNOPSIS                                                                ",
     "  sqmaxhold [OPTIONS] ...                                               ",
     "DESCRIPTION                                                             ",
