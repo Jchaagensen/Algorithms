@@ -78,6 +78,7 @@ int main(int argc, char **argv)
         }
     }
 
+    // this is BS, use argument parsing to get filenames
     FILE* signal1 = fopen(argv[3], "r");
     FILE* signal2 = fopen(argv[4], "r");
     

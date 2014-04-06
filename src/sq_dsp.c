@@ -147,7 +147,7 @@ int sq_crossmultiply(FILE* instream1, FILE* instream2, FILE* outstream, unsigned
 
         fwrite(bfr1, sizeof(cmplx), in_length, outstream);
 
-        if (buf_count%10000 == 1) fprintf(stderr, "Cross multiply completed cycle %i\n", buf_count);
+//        if (buf_count%10000 == 1) fprintf(stderr, "Cross multiply completed cycle %i\n", buf_count);
     }
 
     free(bfr1);

@@ -248,7 +248,9 @@ int sq_maxhold(FILE* instream, FILE* outstream, unsigned int in_length, unsigned
 /**
  * Chops out samples from the left or right hand side of the specified number of 
  * contiguous samples from the input stream, delivering to a new (smaller) specified 
- * number of samples in the output strea.
+ * number of samples in the output stream. Notice that the number to be chopped off is
+ * the difference between in_length and out_length. This is intentional to make scripting
+ * easier to write.
  * @param instream Input stream of float data
  * @param outstream Output stream of float data
  * @param in_length Number of samples given as input to one binning iteration

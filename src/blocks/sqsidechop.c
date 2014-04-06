@@ -52,6 +52,12 @@ char *usage_text[] =
     "  -l  Input number of samples                                           ",
     "  -o  Number of samples in the output for the given input number        ",
     "  -s  Which side to chop away samples ('r' and 'l' are permissible)     ",
+    "EXAMPLE                                                                 ",
+    "  Take input stream with 1024 sample chunks, chop off 768 samples from  ",
+    "  the right-hands side and output chunks with length 256 samples        ",
+    "      sqsidechop -l 1024 -o 256 -s r                                    ",
+    "  Note: As always the right-hand side of a chunk of samples             ",
+    "  are the _leading_ samples of the stream.                              ",
     "                                                                        "
 };
 
